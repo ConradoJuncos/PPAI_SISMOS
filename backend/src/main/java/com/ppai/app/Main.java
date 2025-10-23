@@ -1,6 +1,7 @@
 package com.ppai.app;
 
 import com.ppai.app.controlador.ControladorEjemplo;
+import com.ppai.app.datos.DatabaseConnection;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 
@@ -13,6 +14,8 @@ public class Main {
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
+        // Inicializar la base de datos
+        DatabaseConnection.inicializarDB();
         // Crear el servidor Javalin
         Javalin app = Javalin.create(config -> {
             // Configurar CORS para permitir conexiones desde el frontend de escritorio
@@ -57,7 +60,7 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\nCerrando servidor...");
             app.stop();
-            // TODO: Cerrar aquí tus conexiones de base de datos si las usas
+            DatabaseConnection.cerrarConexion();
             System.out.println("Servidor cerrado correctamente");
         }));
     }

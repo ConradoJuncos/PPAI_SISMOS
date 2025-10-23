@@ -1,4 +1,5 @@
 com\ppai\app\gestor\Gestor.class
+com\ppai\app\datos\DatabaseConnection.class
 com\ppai\app\Main.class
 com\ppai\app\entidad\EntidadEjemplo.class
 com\ppai\app\controlador\ControladorEjemplo.class
