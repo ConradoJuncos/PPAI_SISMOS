@@ -34,4 +34,3 @@ public class EntidadEjemplo {
         this.nombre = nombre;
     }
 }
-

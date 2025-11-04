@@ -14,8 +14,7 @@ public class Main {
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
-        // Inicializar la base de datos
-        DatabaseConnection.inicializarDB();
+
         // Crear el servidor Javalin
         Javalin app = Javalin.create(config -> {
             // Configurar CORS para permitir conexiones desde el frontend de escritorio
