@@ -1,9 +1,10 @@
 package com.ppai.app;
 
-import com.ppai.app.controlador.ControladorPrincipal; // Se actualiza la importación
+import com.ppai.app.controlador.ControladorPrincipal;
 import com.ppai.app.datos.DatabaseConnection;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
+import java.sql.SQLException; // Necesitas importar esto
 
 /**
  * Clase principal que inicia el servidor HTTP del backend.
@@ -13,6 +14,21 @@ public class Main {
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
+
+        // #################################################
+        // PASO CLAVE: Inicialización de la Base de Datos
+        // #################################################
+        try {
+            System.out.println("Intentando inicializar la Base de Datos y las tablas...");
+            // Al llamar a getConnection(), si el archivo no existe, se crea y llama a initDatabase().
+            DatabaseConnection.getConnection(); 
+            System.out.println("Base de Datos (redSismica.sqlite3) inicializada exitosamente.");
+        } catch (SQLException e) {
+            System.err.println("FATAL ERROR: No se pudo conectar/crear la base de datos.");
+            e.printStackTrace();
+            // Terminar la aplicación si el recurso esencial (la DB) falla.
+            return; 
+        }
 
         // Crear el servidor Javalin
         Javalin app = Javalin.create(config -> {
@@ -26,8 +42,8 @@ public class Main {
         });
 
         // Registrar el controlador principal del sistema
-        ControladorPrincipal controladorPrincipal = new ControladorPrincipal(); // Se actualiza la clase
-        controladorPrincipal.registrarRutas(app); // Se registran las rutas del nuevo controlador
+        ControladorPrincipal controladorPrincipal = new ControladorPrincipal();
+        controladorPrincipal.registrarRutas(app);
 
         // Ruta de health check
         app.get("/", ctx -> ctx.result("Backend funcionando correctamente"));
