@@ -39,6 +39,7 @@ com\ppai\app\dao\MagnitudRichterDAO.class
 com\ppai\app\dao\EventoSismicoDAO.class
 com\ppai\app\dao\ReparacionDAO.class
 com\ppai\app\entidad\Estado.class
+com\ppai\app\gestor\GestorRevisionManual.class
 com\ppai\app\entidad\AutoDetectado.class
 com\ppai\app\entidad\MuestraSismica.class
 com\ppai\app\entidad\TareaAsignada.class
@@ -72,7 +73,6 @@ com\ppai\app\dao\TipoDeDatoDAO.class
 com\ppai\app\dao\UsuarioDAO.class
 com\ppai\app\dao\EmpleadoDAO.class
 com\ppai\app\entidad\MagnitudRichter.class
-com\ppai\app\gestor\Gestor.class
 com\ppai\app\entidad\PendienteDeRevision.class
 com\ppai\app\dao\ApreciacionTipoDAO.class
 com\ppai\app\dto\SerieTemporalDTO.class

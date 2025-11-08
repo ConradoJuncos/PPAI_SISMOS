@@ -287,6 +287,12 @@ public class DatabaseConnection {
                                         + "FOREIGN KEY (idInspeccion) REFERENCES Inspeccion(idInspeccion), "
                                         + "FOREIGN KEY (idMotivoFueraServicio) REFERENCES MotivoFueraServicio(idMotivoFueraServicio));");
 
+                        s.execute("CREATE TABLE IF NOT EXISTS EventoSismico_CambioEstado ("
+                                        + "idEventoSismico INTEGER, idCambioEstado INTEGER, "
+                                        + "PRIMARY KEY(idEventoSismico, idCambioEstado), "
+                                        + "FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico), "
+                                        + "FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado));");
+
                         System.out.println("Base de datos inicializada (tablas creadas y FKs definidas).");
 
                         // #################################################
@@ -304,15 +310,18 @@ public class DatabaseConnection {
 
         private static void populateDatabase(Connection conn) throws SQLException {
 
+                // NOTA: Se asume que los IDs auto-incrementales comienzan en 1 para las FKs.
+
                 String[] inserts = {
                                 // =============================================
-                                // FASE 1: Catálogo y Clasificación (10 estados, 3 roles, 3 perfiles)
+                                // FASE 1: Tablas de Catálogo y Clasificación
                                 // =============================================
                                 "INSERT INTO Estado (ambito, nombreEstado) VALUES ('General', 'Activo');", // 1
                                 "INSERT INTO Estado (ambito, nombreEstado) VALUES ('General', 'Inactivo');", // 2
                                 "INSERT INTO Estado (ambito, nombreEstado) VALUES ('Mantenimiento', 'Pendiente');", // 3
                                 "INSERT INTO Estado (ambito, nombreEstado) VALUES ('Mantenimiento', 'Cerrado');", // 4
 
+                                // ESTADOS ESPECÍFICOS PARA EL EVENTO SÍSMICO (CRUCIALES PARA CU 23)
                                 "INSERT INTO Estado (ambito, nombreEstado) VALUES ('Sismico', 'Detectado');", // 5:
                                                                                                               // Inicial
                                                                                                               // (Filtro
@@ -430,32 +439,17 @@ public class DatabaseConnection {
 
                                 // --- Escenarios de Éxito para Analista (idEstadoActual = 6)
                                 "INSERT INTO EventoSismico (fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocentro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion, idAlcanceSismo, idEstadoActual, idAnalistaSupervisor) VALUES (NULL, '2024-10-20 10:15:00', '-32.0000', '-32.0000', '-65.0000', '-65.0000', 4.5, 1, 3, 1, 3, 6, 1);", // ID
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 1:
-                                                                                                                                                                                                                                                                                                                                                                                                                            // Aceptado
-                                                                                                                                                                                                                                                                                                                                                                                                                            // (Analista
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 1)
+                                                                                                                                                                                                                                                                                                                                                                                                                            // 1
                                 "INSERT INTO EventoSismico (fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocentro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion, idAlcanceSismo, idEstadoActual, idAnalistaSupervisor) VALUES (NULL, '2024-12-10 18:00:00', '-35.0000', '-35.0000', '-69.5000', '-69.5000', 2.1, 1, 2, 1, 2, 6, 1);", // ID
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 2:
-                                                                                                                                                                                                                                                                                                                                                                                                                            // Aceptado
-                                                                                                                                                                                                                                                                                                                                                                                                                            // (Analista
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 1)
+                                                                                                                                                                                                                                                                                                                                                                                                                            // 2
                                 "INSERT INTO EventoSismico (fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocentro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion, idAlcanceSismo, idEstadoActual, idAnalistaSupervisor) VALUES (NULL, '2025-01-05 07:30:00', '-33.5000', '-33.5000', '-68.5000', '-68.5000', 5.8, 2, 3, 1, 3, 6, 1);", // ID
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 3:
-                                                                                                                                                                                                                                                                                                                                                                                                                            // Aceptado
-                                                                                                                                                                                                                                                                                                                                                                                                                            // (Analista
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 1)
+                                                                                                                                                                                                                                                                                                                                                                                                                            // 3
 
                                 // --- Escenarios de Éxito para Supervisor (idEstadoActual = 7)
                                 "INSERT INTO EventoSismico (fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocentro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion, idAlcanceSismo, idEstadoActual, idAnalistaSupervisor) VALUES (NULL, '2024-11-05 08:30:00', '-33.0000', '-33.0000', '-69.0000', '-69.0000', 6.2, 2, 4, 1, 4, 7, 3);", // ID
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 4:
-                                                                                                                                                                                                                                                                                                                                                                                                                            // Derivado
-                                                                                                                                                                                                                                                                                                                                                                                                                            // (Supervisor
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 3)
+                                                                                                                                                                                                                                                                                                                                                                                                                            // 4
                                 "INSERT INTO EventoSismico (fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocentro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion, idAlcanceSismo, idEstadoActual, idAnalistaSupervisor) VALUES (NULL, '2025-02-20 11:15:00', '-30.5000', '-30.5000', '-66.0000', '-66.0000', 3.1, 1, 2, 1, 2, 7, 3);", // ID
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 5:
-                                                                                                                                                                                                                                                                                                                                                                                                                            // Derivado
-                                                                                                                                                                                                                                                                                                                                                                                                                            // (Supervisor
-                                                                                                                                                                                                                                                                                                                                                                                                                            // 3)
+                                                                                                                                                                                                                                                                                                                                                                                                                            // 5
 
                                 // --- Escenarios de Fallo (Deben ser filtrados por el CU 23)
                                 // 5: Detectado (Aún no Aceptado)
@@ -476,30 +470,42 @@ public class DatabaseConnection {
                                 // FASE 4: Trazabilidad y Relaciones (CRÍTICO: Histórico de estados)
                                 // =============================================
 
-                                // Historial para ID 1 (Aceptado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2024-10-20 10:15:00', 6, 1, 1);",
-                                // Historial para ID 2 (Aceptado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2024-12-10 18:00:00', 6, 1, 2);",
-                                // Historial para ID 3 (Aceptado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2025-01-05 07:30:00', 6, 1, 3);",
+                                // --- Historial de Estados (CambioEstado)
+                                // Las IDs de CambioEstado irán del 1 al 10.
+                                // CE ID 1: Evento 1 (Aceptado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2024-10-20 10:15:00', 6, 1);",
+                                // CE ID 2: Evento 2 (Aceptado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2024-12-10 18:00:00', 6, 1);",
+                                // CE ID 3: Evento 3 (Aceptado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2025-01-05 07:30:00', 6, 1);",
+                                // CE ID 4: Evento 4 (Derivado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2024-11-05 08:30:00', 7, 3);",
+                                // CE ID 5: Evento 5 (Derivado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2025-02-20 11:15:00', 7, 3);",
+                                // CE ID 6: Evento 6 (Detectado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2024-12-01 15:30:00', 5, 1);",
+                                // CE ID 7: Evento 7 (Detectado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2025-03-01 09:00:00', 5, 1);",
+                                // CE ID 8: Evento 8 (Confirmado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2024-11-25 08:00:00', 8, 1);",
+                                // CE ID 9: Evento 9 (Confirmado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2025-04-10 15:00:00', 8, 3);",
+                                // CE ID 10: Evento 10 (Rechazado)
+                                "INSERT INTO CambioEstado (fechaHoraInicio, idEstado, idResponsableInspeccion) VALUES ('2025-05-01 09:00:00', 9, 1);",
 
-                                // Historial para ID 4 (Derivado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2024-11-05 08:30:00', 7, 1, 4);",
-                                // Historial para ID 5 (Derivado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2025-02-20 11:15:00', 7, 1, 5);",
-
-                                // Historial para ID 6 (Detectado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2024-12-01 15:30:00', 5, 1, 6);",
-                                // Historial para ID 7 (Detectado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2025-03-01 09:00:00', 5, 1, 7);",
-
-                                // Historial para ID 8 (Confirmado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2024-11-25 08:00:00', 8, 1, 8);",
-                                // Historial para ID 9 (Confirmado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2025-04-10 15:00:00', 8, 3, 9);",
-
-                                // Historial para ID 10 (Rechazado)
-                                "INSERT INTO CambioEstado (fechaHoralnicio, idEstado, idEmpleado, idEventoSismico) VALUES ('2025-05-01 09:00:00', 9, 1, 10);",
+                                // --- Tablas Intermedias (N:M)
+                                // CRÍTICO: Vincula los CambioEstado recién insertados (IDs 1-10) con los
+                                // EventoSismico (IDs 1-10)
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (1, 1);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (2, 2);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (3, 3);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (4, 4);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (5, 5);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (6, 6);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (7, 7);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (8, 8);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (9, 9);",
+                                "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (10, 10);",
 
                                 // --- Series Temporales (Datos de Muestras)
                                 "INSERT INTO SerieTemporal (condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, idEstado) VALUES ('Normal', '2024-10-20 10:00:00', '100 Hz', 1);", // 1
