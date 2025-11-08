@@ -7,6 +7,9 @@ public class TipoTrabajo {
     private String descripcion;
     private String nombre;
 
+    // Método Constructor sin Parámetros
+    public TipoTrabajo(){}
+
     // Métodos Getter y Setter
     public long getIdTipoTrabajo(){
         return this.idTipoTrabajo;

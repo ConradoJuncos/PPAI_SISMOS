@@ -14,6 +14,9 @@ public class SerieTemporal {
     private long idEstado; 
     private List<Long> idMuestraSismica = new ArrayList<>();
 
+    // Constructor sin parámetros
+    public SerieTemporal(){}
+
     // Comportamiento
     public String getDatos(){
         // Implementar la lógica de este método

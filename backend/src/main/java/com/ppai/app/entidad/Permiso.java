@@ -7,6 +7,9 @@ public class Permiso {
     private String descripcion;
     private String nombre;
 
+    // Método constructor sin paráemtros
+    public Permiso(){}
+
     // Métodos Getter y Setter
     public long getIdPermiso(){
         return this.idPermiso;

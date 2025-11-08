@@ -17,6 +17,9 @@ public class Sismografo {
     private EstacionSismologica estacionSismologica;
     private ModeloSismografo modelo;
 
+    // Método constructor sin parámetros
+    public Sismografo(){}
+
     // Comportamiento 
 
     /* Este método permite obtener el código y nombre de la estacion sismologica del sismógrafo
@@ -79,7 +82,7 @@ public class Sismografo {
     public void setIdentificadorSismografo(long identificadorSismografo){
         this.identificadorSismografo = identificadorSismografo;
     }
-    public void setFechaAdquicision(LocalDateTime fechaAdquisicion){
+    public void setFechaAdquisicion(LocalDateTime fechaAdquisicion){
         this.fechaAdquicision = fechaAdquisicion;
     }
     public void setNroSerie(long nroSerie){

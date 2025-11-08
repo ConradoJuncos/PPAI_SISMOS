@@ -3,6 +3,7 @@ package com.ppai.app.entidad;
 import java.time.LocalDateTime;
 
 public class EstacionSismologica {
+    
 
     // Atributos
     private long codigoEstacion;
@@ -13,6 +14,10 @@ public class EstacionSismologica {
     private String nombre;
     private int nroCertificacionAdquisicion;
 
+
+    // Comportamiento
+    // getDatosEstacion(): String (Revisar si es necesario segun la secuencia)
+
     // Métodos Getter y Setter
     public long getCodigoEstacion(){
         return this.codigoEstacion;
@@ -20,7 +25,7 @@ public class EstacionSismologica {
     public String getDocumentoCertificacionAdq(){
         return this.documentoCertificacionAdq;
     }
-    public LocalDateTime fechaSolicitudCertificacion(){
+    public LocalDateTime getFechaSolicitudCertificacion(){
         return this.fechaSolicitudCertificacion;
     }
     public double getLatitud(){
@@ -56,5 +61,4 @@ public class EstacionSismologica {
     public void setNroCertificacionAdquisicion(int nroCertificacionAdquisicion){
         this.nroCertificacionAdquisicion = nroCertificacionAdquisicion;
     }
-    
 }

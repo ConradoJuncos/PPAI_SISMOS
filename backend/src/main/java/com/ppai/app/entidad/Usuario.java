@@ -13,6 +13,9 @@ public class Usuario {
     private List<Suscripcion> suscripcion = new ArrayList<Suscripcion>();
     private Empleado empleado;
 
+    // Método Constructor sin parámetros
+    public Usuario(){}
+
     // Comportamiento
     public Empleado obtenerEmpleado(){
         return getEmpleado();

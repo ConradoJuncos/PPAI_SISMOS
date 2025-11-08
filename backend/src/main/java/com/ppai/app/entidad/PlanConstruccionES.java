@@ -17,6 +17,9 @@ public class PlanConstruccionES {
     private Sismografo sismografoAsignado;
     private EstacionSismologica estacionSismologica;
 
+    // Método constructor sin parámetros
+    public PlanConstruccionES(){}
+
     // Comportamiento
     public boolean esVigente(){
         if (this.fechaFinalizacion == null) {
@@ -55,6 +58,9 @@ public class PlanConstruccionES {
     }
     public void setFechaFinalizacion(LocalDateTime fechaFinalizacion){
         this.fechaFinalizacion = fechaFinalizacion;
+    }
+    public void setFechaPrevistaInicio(LocalDateTime fechaPrevistaInicio){
+        this.fechaPrevistaInicio = fechaPrevistaInicio;
     }
     public void setFechaProbableInicioPruebas(LocalDateTime fechaProbableInicioPruebas){
         this.fechaProbableInicioPruebas = fechaProbableInicioPruebas;

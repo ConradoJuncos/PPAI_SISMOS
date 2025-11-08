@@ -8,6 +8,9 @@ public class TipoTareaInspeccion {
     private String duracionEstimada;
     private String nombre;
 
+    // Método Constructor sin parámetros
+    public TipoTareaInspeccion(){}
+
     // Métodos Getter y Setter
     public long getCodigo(){
         return this.codigo;

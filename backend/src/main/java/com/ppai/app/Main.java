@@ -1,13 +1,12 @@
 package com.ppai.app;
 
-import com.ppai.app.controlador.ControladorEjemplo;
+import com.ppai.app.controlador.ControladorPrincipal; // Se actualiza la importación
 import com.ppai.app.datos.DatabaseConnection;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 
 /**
  * Clase principal que inicia el servidor HTTP del backend.
- * Aquí puedes configurar tu aplicación según el patrón arquitectónico que necesites implementar.
  */
 public class Main {
 
@@ -26,14 +25,9 @@ public class Main {
             config.http.asyncTimeout = 10_000L;
         });
 
-        // Registrar el controlador de ejemplo (puedes comentar o eliminar después)
-        ControladorEjemplo controladorEjemplo = new ControladorEjemplo();
-        controladorEjemplo.registrarRutas(app);
-
-        // TODO: Registrar aquí tus controladores y rutas
-        // Ejemplo:
-        // MiControlador controlador = new MiControlador();
-        // controlador.registrarRutas(app);
+        // Registrar el controlador principal del sistema
+        ControladorPrincipal controladorPrincipal = new ControladorPrincipal(); // Se actualiza la clase
+        controladorPrincipal.registrarRutas(app); // Se registran las rutas del nuevo controlador
 
         // Ruta de health check
         app.get("/", ctx -> ctx.result("Backend funcionando correctamente"));
@@ -47,12 +41,13 @@ public class Main {
         app.start(PORT);
 
         System.out.println("╔═══════════════════════════════════════════════════════╗");
-        System.out.println("║   Backend - Servidor Iniciado                         ║");
-        System.out.println("║   Puerto: " + PORT + "                                        ║");
-        System.out.println("║   URL: http://localhost:" + PORT + "                          ║");
-        System.out.println("║   CORS: Habilitado                                    ║");
+        System.out.println("║   Backend - Servidor Iniciado                         ║");
+        System.out.println("║   Puerto: " + PORT + "                                        ║");
+        System.out.println("║   URL: http://localhost:" + PORT + "                          ║");
+        System.out.println("║   CORS: Habilitado                                    ║");
         System.out.println("╚═══════════════════════════════════════════════════════╝");
         System.out.println("\nPuedes probar la API en http://localhost:" + PORT);
+        System.out.println("Prueba el endpoint de ejemplo de sismos: http://localhost:" + PORT + "/api/eventos_sismicos");
         System.out.println("Presiona Ctrl+C para detener el servidor\n");
 
         // Hook para cerrar recursos al detener el servidor
@@ -64,4 +59,3 @@ public class Main {
         }));
     }
 }
-

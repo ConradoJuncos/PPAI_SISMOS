@@ -11,6 +11,9 @@ public class MuestraSismica {
     private LocalDateTime fechaHoraMuestraSismica;
     private List<Long> idDetalleMuestraSismica = new ArrayList<>();
 
+    // Constructor sin parámetros
+    public MuestraSismica(){}
+
     // Comportamiento
     public String getDatos(){
         // Implementar la lógica de este metodo

@@ -7,6 +7,9 @@ public class DetalleMuestraSismica {
     private long idTipoDeDato;
     private double valor;
 
+    // Constructor sin parametros
+    public DetalleMuestraSismica(){}
+
     // Comportamiento
     public String getDatos(){
         // Implementar la logica del método para

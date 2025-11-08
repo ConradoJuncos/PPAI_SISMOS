@@ -10,6 +10,9 @@ public class Perfil {
     private String descripcion;
     private String nombre;
     private List<Permiso> permisos = new ArrayList<Permiso>();
+
+    // Método constructor sin parámetros
+    public Perfil(){}
     
     // Métodos Getter y Setter
     public long getIdPerfil(){

@@ -1,6 +1,6 @@
 package com.ppai.app.entidad;
 
-public class tipoDeDato {
+public class TipoDeDato {
     
     // Atributos
     private long idTipoDeDato;

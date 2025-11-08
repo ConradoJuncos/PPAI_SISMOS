@@ -13,6 +13,9 @@ public class TareaAsignada {
     private TipoTareaInspeccion tarea;
     private List<ApreciacionTipo> apreciacion = new ArrayList<ApreciacionTipo>();
 
+    // Método constructor sin parámetros
+    public TareaAsignada(){}
+
     // Métodos Getter y Setter
     public long getIdTareaAsignada(){
         return this.idTareaAsignada;
@@ -31,6 +34,9 @@ public class TareaAsignada {
     }
     public void setIdTareaAsignada(long idTareaAsignada){
         this.idTareaAsignada = idTareaAsignada;
+    }
+    public void setTipoTareaInspeccion(TipoTareaInspeccion tarea){
+        this.tarea = tarea;
     }
     public void setComentario(String comentario){
         this.comentario = comentario;

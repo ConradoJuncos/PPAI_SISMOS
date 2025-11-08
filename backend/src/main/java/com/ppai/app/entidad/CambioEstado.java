@@ -6,6 +6,7 @@ import java.util.List;
 
 public class CambioEstado {
 
+    // Atributos
     private long idCambioEstado;
     private LocalDateTime fechaHoraFin;
     private LocalDateTime fechaHoraInicio;
@@ -13,7 +14,10 @@ public class CambioEstado {
     private List<MotivoFueraServicio> motivoFueraServicio = new ArrayList<MotivoFueraServicio>();
     private Empleado responsableInspeccion;
 
-    // Constructor
+    // Constructor sin parámetros
+    public CambioEstado(){}
+
+    // Constructor con parámetros minimos
     public CambioEstado(LocalDateTime fechaHoraActual, Estado estado, Empleado responsableInspeccion) {
         this.fechaHoraInicio = fechaHoraActual;
         this.estado = estado;

@@ -24,6 +24,9 @@ public class EventoSismico {
     private List<CambioEstado> cambioEstado = new ArrayList<CambioEstado>();
     private Empleado analistaSupervisor; 
 
+    // Método constructor sin parámetros
+    public EventoSismico(){}
+
     // Constructor (No incluye id por ser autogenerado, y no incluye analista supervisor por ser no revisado)
     public EventoSismico(LocalDateTime fechaHoraOcurrencia, String latitudEpicentro, String latitudHipocentro,
         String longitudEpicentro, String longitudHipocentro, double valorMagnitud, ClasificacionSismo clasificacionSismo,

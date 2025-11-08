@@ -8,6 +8,9 @@ public class ClasificacionSismo {
     private double kmProfundidadHasta;
     private String nombre;
 
+    // Métodos Constructores
+    public ClasificacionSismo() {}
+
     // Métodos Getter y Setter
     public long getIdClasificacionSismo(){
         return this.idClasificacionSismo;
@@ -15,7 +18,7 @@ public class ClasificacionSismo {
     public String getNombre(){
         return this.nombre;
     }
-    public double getkmProfundidadDesde(){
+    public double getKmProfundidadDesde(){
         return this.kmProfundidadDesde;
     }
     public double getKmProfundidadHasta(){

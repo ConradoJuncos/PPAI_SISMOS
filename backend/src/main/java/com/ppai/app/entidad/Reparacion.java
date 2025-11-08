@@ -11,6 +11,9 @@ public class Reparacion {
     private LocalDateTime fechaEnvioReparacion;
     private LocalDateTime fechaRespuestaReparacion;
 
+    // Método Constructor sin parámetros
+    public Reparacion(){}
+
     // Métodos Getter y Setter
     public int getNroReparacion(){
         return this.nroReparacion;
