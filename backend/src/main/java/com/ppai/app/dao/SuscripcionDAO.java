@@ -1,6 +1,5 @@
 package com.ppai.app.dao;
 
-
 import com.ppai.app.datos.DatabaseConnection;
 import com.ppai.app.entidad.Suscripcion;
 import java.sql.*;

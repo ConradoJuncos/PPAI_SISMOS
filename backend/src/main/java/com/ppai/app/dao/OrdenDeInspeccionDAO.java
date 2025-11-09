@@ -12,27 +12,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DAO para la entidad OrdenDeInspeccion, corregido según la clase de entidad proporcionada.
+ * DAO para la entidad OrdenDeInspeccion.
  * Maneja las operaciones CRUD y sus relaciones con Empleado, Estado, TareaAsignada y EstacionSismologica.
  */
 public class OrdenDeInspeccionDAO {
 
+    // Se asume que EstadoDAO ya fue actualizado para usar findByAmbitoAndNombre
     private final EstacionSismologicaDAO estacionSismologicaDAO = new EstacionSismologicaDAO();
     private final EmpleadoDAO empleadoDAO = new EmpleadoDAO();
-    private final EstadoDAO estadoDAO = new EstadoDAO();
+    private final EstadoDAO estadoDAO = new EstadoDAO(); 
     private final TareaAsignadaDAO tareaAsignadaDAO = new TareaAsignadaDAO();
-    // private final CambioEstadoDAO cambioEstadoDAO = new CambioEstadoDAO(); // Asumiendo que el historial se maneja aparte.
     
     // El nombre de la tabla de BD es 'OrdenDeInspeccion' y su PK es 'numeroOrden'
     private static final String TABLE_NAME = "OrdenDeInspeccion";
     private static final String PK_NAME = "numeroOrden";
 
     /* --------------------------------------------------------------
-       INSERT – guarda datos principales + dependencias 1:N
+       INSERT – guarda datos principales + dependencias 1:N. FK Estado es compuesta.
        -------------------------------------------------------------- */
     public void insert(OrdenDeInspeccion o) throws SQLException {
-        // SQL corregido para incluir todos los campos de la entidad
-        String sql = "INSERT INTO " + TABLE_NAME + " (fechaHoraCierre, fechaHoraFinalizacion, fechaHoraInicio, observacionCierre, idEmpleado, idEstado, idEstacionSismologica) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // SQL: Se cambia idEstado por ambitoEstado y nombreEstado (aumenta el n° de parámetros a 8)
+        String sql = "INSERT INTO " + TABLE_NAME + " (fechaHoraCierre, fechaHoraFinalizacion, fechaHoraInicio, observacionCierre, idEmpleado, ambitoEstado, nombreEstado, idEstacionSismologica) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -45,11 +45,13 @@ public class OrdenDeInspeccionDAO {
             
             // Claves foráneas (FKs)
             ps.setLong(5, o.getEmpleado().getIdEmpleado());
-            // Asumiendo que Estado tiene un ID
-            ps.setLong(6, o.getEstado().getIdEstado()); 
             
-            // Usar getCodigoEstacion() en lugar de getIdEstacionSismologica()
-            ps.setLong(7, o.getEstacionSismologica().getCodigoEstacion()); 
+            // AHORA se usan los campos de la clave compuesta del Estado
+            ps.setString(6, o.getEstado().getAmbito());
+            ps.setString(7, o.getEstado().getNombreEstado());
+            
+            // Usar getCodigoEstacion()
+            ps.setLong(8, o.getEstacionSismologica().getCodigoEstacion()); 
 
             ps.executeUpdate();
 
@@ -62,7 +64,7 @@ public class OrdenDeInspeccionDAO {
                     // Persistir la colección 1:N TareaAsignada
                     if (o.getTareaAsignada() != null) {
                         for (TareaAsignada ta : o.getTareaAsignada()) {
-                            // Asumimos que TareaAsignadaDAO tiene un método para persistir
+                            // Se asume que TareaAsignadaDAO tiene un método para persistir
                             tareaAsignadaDAO.insertForOrden(conn, numeroOrden, ta); 
                         }
                     }
@@ -72,10 +74,11 @@ public class OrdenDeInspeccionDAO {
     }
 
     /* --------------------------------------------------------------
-       UPDATE – actualiza datos principales
+       UPDATE – actualiza datos principales. FK Estado es compuesta.
        -------------------------------------------------------------- */
     public void update(OrdenDeInspeccion o) throws SQLException {
-        String sql = "UPDATE " + TABLE_NAME + " SET fechaHoraCierre = ?, fechaHoraFinalizacion = ?, fechaHoraInicio = ?, observacionCierre = ?, idEmpleado = ?, idEstado = ?, idEstacionSismologica = ? WHERE " + PK_NAME + " = ?";
+        // SQL: Se cambia idEstado por ambitoEstado y nombreEstado (aumenta el n° de parámetros a 9)
+        String sql = "UPDATE " + TABLE_NAME + " SET fechaHoraCierre = ?, fechaHoraFinalizacion = ?, fechaHoraInicio = ?, observacionCierre = ?, idEmpleado = ?, ambitoEstado = ?, nombreEstado = ?, idEstacionSismologica = ? WHERE " + PK_NAME + " = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -85,11 +88,14 @@ public class OrdenDeInspeccionDAO {
             ps.setObject(3, o.getFechaHoraInicio());
             ps.setString(4, o.getObservacionCierre());
             ps.setLong(5, o.getEmpleado().getIdEmpleado());
-            ps.setLong(6, o.getEstado().getIdEstado());
             
-            // Usar getCodigoEstacion() en lugar de getIdEstacionSismologica()
-            ps.setLong(7, o.getEstacionSismologica().getCodigoEstacion()); 
-            ps.setLong(8, o.getNumeroOrden());
+            // AHORA se usan los campos de la clave compuesta del Estado
+            ps.setString(6, o.getEstado().getAmbito());
+            ps.setString(7, o.getEstado().getNombreEstado());
+            
+            // Usar getCodigoEstacion()
+            ps.setLong(8, o.getEstacionSismologica().getCodigoEstacion()); 
+            ps.setLong(9, o.getNumeroOrden()); // PK en el WHERE
 
             ps.executeUpdate();
             
@@ -136,10 +142,15 @@ public class OrdenDeInspeccionDAO {
         Empleado empleado = empleadoDAO.findById(idEmpleado);
         o.setEmpleado(empleado);
         
-        // Cargar Estado Actual (1:N - el puntero directo)
-        long idEstado = rs.getLong("idEstado");
-        Estado estado = estadoDAO.findById(idEstado);
-        // o.setEstado(estado); // Se asume que el objeto OrdenDeInspeccion tiene setEstado, aunque no está en el snippet
+        // Cargar Estado Actual (1:N - usando la clave compuesta)
+        String ambito = rs.getString("ambitoEstado");   // <--- CAMBIO: Leer ámbito
+        String nombreEstado = rs.getString("nombreEstado"); // <--- CAMBIO: Leer nombreEstado
+        
+        // Llamar al nuevo método del EstadoDAO
+        Estado estado = estadoDAO.findByAmbitoAndNombre(ambito, nombreEstado); 
+        // Se asume que el objeto OrdenDeInspeccion tiene setEstado
+        // Asumiendo que el método es setEstado o similar para la carga
+        // o.setEstado(estado); 
         
         // Cargar EstacionSismologica (1:N)
         long idEstacion = rs.getLong("idEstacionSismologica");
@@ -158,6 +169,8 @@ public class OrdenDeInspeccionDAO {
      */
     private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
         String dateTimeStr = rs.getString(column);
-        return dateTimeStr != null ? LocalDateTime.parse(dateTimeStr) : null;
+        // Asumiendo el formato estándar ISO-8601 (YYYY-MM-DDTHH:MM:SS) si es un string directo
+        // o el formato de Base de Datos (YYYY-MM-DD HH:MM:SS) que luego debe ser parseado.
+        return dateTimeStr != null ? LocalDateTime.parse(dateTimeStr.replace(' ', 'T')) : null;
     }
 }

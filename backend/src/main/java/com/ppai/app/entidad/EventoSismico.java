@@ -45,7 +45,89 @@ public class EventoSismico {
     }
 
     // Comportamiento
-    // Agregar a medida que sean necesarios según el diagrama de secuencia
+    // Verificar si el evento sismico 
+    public boolean esAutoDetectado(){ 
+
+        // Consultar al cambioDeEstado si esEstadoActual(): boolean si es actual, reiteradamente, si se encuentra, retornar el evento simsico
+        for (CambioEstado historialEstado : cambioEstado){
+
+            // Verficar si el cambio estado es actual
+            if (historialEstado.esEstadoActual()) {
+
+                // Si es actual, evento sismico se retorna a si mismo
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Preguntar si el evento sismico seleccionado es no revisado (no tiene analista asignado)
+    public boolean sosNoRevisado(){
+
+        // Verificar si hay un analista supervisor asignado
+        if (this.analistaSupervisor == null) {
+
+            // No nay analista supervisor asignado, es no revisado
+            return true;
+        }
+
+        // Hay analsta supervisor asignado, es revisado
+        return false;
+    }
+
+    // Obtener los datos princpales
+    public String obtenerDatosPrincipales(){
+
+        String datosPrincipales = "";
+
+        datosPrincipales += getFechaHoraOcurrencia().toString() + ", ";
+        datosPrincipales += getLatitudEpicentro().toString() + ", ";
+        datosPrincipales += getLatitudHipocentro().toString() + ", ";
+        datosPrincipales += getLongitudEpicentro().toString() + ", ";
+        datosPrincipales += getLongitudHipocentro().toString();
+
+        return datosPrincipales;
+
+    }
+
+    // Verificar si un conjunto de datos principales son propios de un evento sismico
+    public EventoSismico sonMisDatosPrincipales(String datosPrincipales){
+     
+        // Comparando el string con los datos principales del evento sismico
+        if (datosPrincipales != null && datosPrincipales.equals(obtenerDatosPrincipales())){
+
+            // Se retorna a si mismo
+            return this;
+        }
+
+        // Caso contrario, los datos principales no son propios de este vento sismico
+        return null;
+    }
+
+    // Bloquear por revisión el evento sismico
+    public void bloquearPorRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+
+        // Delegación del cambio de estado al estado concreto actual
+        this.estadoActual.bloquearPorRevision(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
+    }
+
+    // Obtener el Cambio de Estado (Historial de Estado) Actual del Evento
+    public CambioEstado obtenerCambioEstadoActual(){
+
+        // Sobre los cambio de estado del evento sismico
+        for (CambioEstado hitorialEstado : cambioEstado){
+            
+            // Si el cambio de estao es actual
+            if (hitorialEstado.esEstadoActual()){
+
+                // se retorna dicho cambio de estado
+                return hitorialEstado;
+            }
+        }
+
+        return null; // Para evitar fallos
+    }
 
     // Métodos Getter y Setter
     public long getIdEventoSismico(){

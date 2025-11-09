@@ -48,7 +48,7 @@ public class ControladorPrincipal {
         
         // Endpoints funcionales del sistema
         // Prueba con: GET http://localhost:8080/api/eventos_sismicos
-        app.get("/api/eventos_sismicos", this::obtenerEventosSismicos);
+        app.get("/api/eventosSismicosAutoDetectadosNoRevisados", this::obtenerEventosSismicos);
     }
 
     /* --------------------------------------------------------------

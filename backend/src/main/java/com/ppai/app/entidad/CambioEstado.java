@@ -19,12 +19,13 @@ public class CambioEstado {
 
     // Constructor con parámetros minimos
     public CambioEstado(LocalDateTime fechaHoraActual, Estado estado, Empleado responsableInspeccion) {
-        this.fechaHoraInicio = fechaHoraActual;
-        this.estado = estado;
-        this.responsableInspeccion = responsableInspeccion;
+        setFechaHoraInicio(fechaHoraActual);
+        setEstado(estado);
+        setResponsableInspeccion(responsableInspeccion);
     }
 
     // Comportamiento
+    // Verficar si el cambio de estado es actual
     public boolean esEstadoActual() {
         if (this.fechaHoraFin == null) {
             return true;
@@ -32,12 +33,18 @@ public class CambioEstado {
         return false;
     }
     
-    public void sosAutoDetectado(){
-        // resolver el comportamiento con retorno boolean
-    }
+    // verificar si el estado asociado al cambio de estado es auto
+    public boolean sosAutoDetectado(){
 
-    public void sosPendienteDeRevision(){
-        // reslver el comportamiento con retorno boolean
+        // Preguntar al estado asociado si es auto detectado
+        if (this.estado.sosAutoDetectado()){
+            
+            // El estado asociado es auto detectad
+            return true;
+        }
+
+        // El estado asociado no es auto detectado
+        return false;
     }
 
     // Métodos Getters y Setters
