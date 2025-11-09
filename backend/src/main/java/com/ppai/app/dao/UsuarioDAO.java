@@ -1,7 +1,7 @@
 package com.ppai.app.dao;
 
-import com.ppai.app.entidad.Usuario;
 import com.ppai.app.datos.DatabaseConnection;
+import com.ppai.app.entidad.Usuario;
 import com.ppai.app.entidad.Empleado;
 import com.ppai.app.entidad.Perfil;
 import com.ppai.app.entidad.Suscripcion;
@@ -11,99 +11,89 @@ import java.util.List;
 
 /**
  * DAO para la entidad Usuario.
- * Maneja las operaciones CRUD y las relaciones con Empleado, Perfil y Suscripcion.
+ * Corrige inconsistencias de columnas, FK a Empleado y evita conexiones
+ * anidadas.
  */
 public class UsuarioDAO {
 
-    // DAOs para las entidades relacionadas
     private final EmpleadoDAO empleadoDAO = new EmpleadoDAO();
     private final PerfilDAO perfilDAO = new PerfilDAO();
-    // Requerimos SuscripcionDAO, ya generado previamente.
-    private final SuscripcionDAO suscripcionDAO = new SuscripcionDAO(); 
+    private final SuscripcionDAO suscripcionDAO = new SuscripcionDAO();
 
-    // Asumimos que DatabaseConnection y SuscripcionDAO existen y están implementados.
-
-    /* --------------------------------------------------------------
-       INSERT – guarda datos principales + relaciones N:N
-       -------------------------------------------------------------- */
+    /*
+     * ==============================================================
+     * INSERT
+     * ==============================================================
+     */
     public void insert(Usuario u) throws SQLException {
-        // SQL para la tabla principal 'Usuario'
-        String sql = "INSERT INTO Usuario (contraseña, nombreUsuario, idEmpleado) VALUES (?, ?, ?)";
-        
+        String sql = """
+                    INSERT INTO Usuario (nombreUsuario, contraseña, idEmpleado)
+                    VALUES (?, ?, ?)
+                """;
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, u.getContraseña());
-            ps.setString(2, u.getNombreUsuario());
-            // Asume que el objeto Empleado ya tiene su ID persistido (idEmpleado).
-            ps.setLong(3, u.getEmpleado().getIdEmpleado()); 
-
+            ps.setString(1, u.getNombreUsuario());
+            ps.setString(2, u.getContraseña());
+            ps.setLong(3, u.getEmpleado().getIdEmpleado());
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    long idUsuario = rs.getLong(1);
-                    u.setIdUsuario(idUsuario);
-
-                    // Persistir relaciones N:N
-                    insertPerfiles(conn, idUsuario, u.getPerfil());
-                    insertSuscripciones(conn, idUsuario, u.getSuscripcion());
+                    u.setIdUsuario(rs.getLong(1));
                 }
             }
         }
     }
 
-    /* --------------------------------------------------------------
-       UPDATE – actualiza todo (incluyendo relaciones N:N)
-       -------------------------------------------------------------- */
+    /*
+     * ==============================================================
+     * UPDATE
+     * ==============================================================
+     */
     public void update(Usuario u) throws SQLException {
-        String sql = "UPDATE Usuario SET contraseña = ?, nombreUsuario = ?, idEmpleado = ? WHERE idUsuario = ?";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = """
+                    UPDATE Usuario
+                    SET nombreUsuario = ?, contraseña = ?, idEmpleado = ?
+                    WHERE idUsuario = ?
+                """;
 
-            ps.setString(1, u.getContraseña());
-            ps.setString(2, u.getNombreUsuario());
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, u.getNombreUsuario());
+            ps.setString(2, u.getContraseña());
             ps.setLong(3, u.getEmpleado().getIdEmpleado());
             ps.setLong(4, u.getIdUsuario());
-
             ps.executeUpdate();
-
-            // Actualizar relaciones N:N (borrar existentes e insertar nuevas)
-            deletePerfiles(conn, u.getIdUsuario());
-            deleteSuscripciones(conn, u.getIdUsuario());
-            
-            insertPerfiles(conn, u.getIdUsuario(), u.getPerfil());
-            insertSuscripciones(conn, u.getIdUsuario(), u.getSuscripcion());
         }
     }
 
-    /* --------------------------------------------------------------
-       DELETE – elimina registro + relaciones N:N
-       -------------------------------------------------------------- */
+    /*
+     * ==============================================================
+     * DELETE
+     * ==============================================================
+     */
     public void delete(long idUsuario) throws SQLException {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            // 1. Eliminar relaciones N:N (tablas de unión)
-            deletePerfiles(conn, idUsuario);
-            deleteSuscripciones(conn, idUsuario);
-
-            // 2. Eliminar la entidad principal
-            String sql = "DELETE FROM Usuario WHERE idUsuario = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setLong(1, idUsuario);
-                ps.executeUpdate();
-            }
+        String sql = "DELETE FROM Usuario WHERE idUsuario = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idUsuario);
+            ps.executeUpdate();
         }
     }
 
-    /* --------------------------------------------------------------
-       FIND BY ID – carga todo: empleado, perfiles, suscripciones
-       -------------------------------------------------------------- */
+    /*
+     * ==============================================================
+     * FIND BY ID
+     * ==============================================================
+     */
     public Usuario findById(long idUsuario) throws SQLException {
         String sql = "SELECT * FROM Usuario WHERE idUsuario = ?";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, idUsuario);
 
@@ -111,133 +101,119 @@ public class UsuarioDAO {
                 if (rs.next()) {
                     Usuario u = new Usuario();
                     u.setIdUsuario(rs.getLong("idUsuario"));
-                    u.setContraseña(rs.getString("contraseña"));
                     u.setNombreUsuario(rs.getString("nombreUsuario"));
+                    u.setContraseña(rs.getString("contraseña"));
 
-                    // Cargar objeto Empleado (1:1 o 1:N)
+                    // Cargar empleado (FK obligatoria)
                     long idEmpleado = rs.getLong("idEmpleado");
                     Empleado empleado = empleadoDAO.findById(idEmpleado);
                     u.setEmpleado(empleado);
 
-                    // Cargar lista de Perfiles (N:N)
-                    List<Perfil> perfiles = findPerfilesByUsuario(conn, idUsuario);
-                    u.setPerfil(perfiles);
-
-                    // Cargar lista de Suscripciones (N:N)
-                    // Usamos el método auxiliar de SuscripcionDAO para evitar recursión
-                    List<Suscripcion> suscripciones = suscripcionDAO.findByUsuarioId(conn, idUsuario);
-                    u.setSuscripcion(suscripciones);
+                    // Cargar relaciones N:N (cada DAO maneja su propia conexión)
+                    u.setPerfil(findPerfilesByUsuario(idUsuario));
+                    u.setSuscripcion(findSuscripcionesByUsuario(idUsuario));
 
                     return u;
                 }
             }
         }
-        return null; // No se encontró
+        return null;
     }
 
-    /* --------------------------------------------------------------
-       FIND ALL – lista completa con todas las relaciones
-       -------------------------------------------------------------- */
+    /*
+     * ==============================================================
+     * FIND ALL (SOLUCIÓN)
+     * ==============================================================
+     */
     public List<Usuario> findAll() throws SQLException {
         String sql = "SELECT * FROM Usuario";
-        List<Usuario> list = new ArrayList<>();
+        List<Usuario> usuarios = new ArrayList<>();
+        // Mantenemos una lista temporal de IDs de Empleado para la carga diferida
+        List<Long> idEmpleados = new ArrayList<>();
+        // Almacenamos los IDs de Usuario para las relaciones N:N
+        List<Long> idUsuarios = new ArrayList<>();
 
+        // 1. CARGA DE DATOS ESCALARES Y RECUPERACIÓN DE IDs
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) { // rs, ps, conn se cierran aquí automáticamente
 
             while (rs.next()) {
                 Usuario u = new Usuario();
                 long idUsuario = rs.getLong("idUsuario");
-                u.setIdUsuario(idUsuario);
-                u.setContraseña(rs.getString("contraseña"));
-                u.setNombreUsuario(rs.getString("nombreUsuario"));
-
-                // Cargar Empleado
                 long idEmpleado = rs.getLong("idEmpleado");
-                Empleado empleado = empleadoDAO.findById(idEmpleado);
-                u.setEmpleado(empleado);
 
-                // Cargar Perfiles
-                List<Perfil> perfiles = findPerfilesByUsuario(conn, idUsuario);
-                u.setPerfil(perfiles);
+                u.setIdUsuario(idUsuario);
+                u.setNombreUsuario(rs.getString("nombreUsuario"));
+                u.setContraseña(rs.getString("contraseña"));
 
-                // Cargar Suscripciones
-                List<Suscripcion> suscripciones = suscripcionDAO.findByUsuarioId(conn, idUsuario);
-                u.setSuscripcion(suscripciones);
-
-                list.add(u);
+                // Guardamos IDs para la carga diferida
+                idEmpleados.add(idEmpleado);
+                idUsuarios.add(idUsuario);
+                usuarios.add(u);
             }
         }
-        return list;
-    }
+        // FIN del primer try-with-resources. TODOS los recursos están cerrados.
 
-    // ==============================================================
-    // MÉTODOS AUXILIARES PARA RELACIÓN N:N CON Perfil
-    // ==============================================================
+        // 2. CARGA DIFERIDA (Lazy Loading) de Empleados y Relaciones N:N
+        // Aquí puedes llamar de forma segura a otros DAOs que abren/cierran sus propias
+        // conexiones.
 
-    private void insertPerfiles(Connection conn, long idUsuario, List<Perfil> perfiles) throws SQLException {
-        String sql = "INSERT INTO Usuario_Perfil (idUsuario, idPerfil) VALUES (?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (Perfil p : perfiles) {
-                ps.setLong(1, idUsuario);
-                ps.setLong(2, p.getIdPerfil());
-                ps.addBatch();
-            }
-            ps.executeBatch();
+        for (int i = 0; i < usuarios.size(); i++) {
+            Usuario u = usuarios.get(i);
+            long currentIdUsuario = idUsuarios.get(i);
+            long currentIdEmpleado = idEmpleados.get(i);
+
+            // Cargar Empleado (1:N)
+            Empleado empleado = empleadoDAO.findById(currentIdEmpleado);
+            u.setEmpleado(empleado);
+
+            // Cargar Perfiles (N:N)
+            u.setPerfil(findPerfilesByUsuario(currentIdUsuario));
+
+            // Cargar Suscripciones (N:N)
+            u.setSuscripcion(findSuscripcionesByUsuario(currentIdUsuario));
         }
+
+        return usuarios;
     }
 
-    private void deletePerfiles(Connection conn, long idUsuario) throws SQLException {
-        String sql = "DELETE FROM Usuario_Perfil WHERE idUsuario = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, idUsuario);
-            ps.executeUpdate();
-        }
-    }
+    /*
+     * ==============================================================
+     * AUXILIARES: RELACIÓN N:N Usuario–Perfil
+     * ==============================================================
+     */
+    private List<Perfil> findPerfilesByUsuario(long idUsuario) throws SQLException {
+        String sql = """
+                    SELECT p.idPerfil
+                    FROM Usuario_Perfil up
+                    JOIN Perfil p ON p.idPerfil = up.idPerfil
+                    WHERE up.idUsuario = ?
+                """;
 
-    private List<Perfil> findPerfilesByUsuario(Connection conn, long idUsuario) throws SQLException {
-        String sql = "SELECT p.* FROM Perfil p " +
-                     "JOIN Usuario_Perfil up ON p.idPerfil = up.idPerfil " +
-                     "WHERE up.idUsuario = ?";
         List<Perfil> perfiles = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setLong(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // Usamos findById del PerfilDAO para asegurar que el objeto esté completamente cargado.
                     long idPerfil = rs.getLong("idPerfil");
                     Perfil p = perfilDAO.findById(idPerfil);
-                    if (p != null) {
+                    if (p != null)
                         perfiles.add(p);
-                    }
                 }
             }
         }
         return perfiles;
     }
 
-    // ==============================================================
-    // MÉTODOS AUXILIARES PARA RELACIÓN N:N CON Suscripcion
-    // ==============================================================
-
-    private void insertSuscripciones(Connection conn, long idUsuario, List<Suscripcion> suscripciones) throws SQLException {
-        String sql = "INSERT INTO Usuario_Suscripcion (idUsuario, idSuscripcion) VALUES (?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (Suscripcion s : suscripciones) {
-                ps.setLong(1, idUsuario);
-                ps.setLong(2, s.getIdSuscripcion());
-                ps.addBatch();
-            }
-            ps.executeBatch();
-        }
-    }
-
-    private void deleteSuscripciones(Connection conn, long idUsuario) throws SQLException {
-        String sql = "DELETE FROM Usuario_Suscripcion WHERE idUsuario = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, idUsuario);
-            ps.executeUpdate();
-        }
+    /*
+     * ==============================================================
+     * AUXILIARES: RELACIÓN N:N Usuario–Suscripción
+     * ==============================================================
+     */
+    private List<Suscripcion> findSuscripcionesByUsuario(long idUsuario) throws SQLException {
+        return suscripcionDAO.findByUsuarioId(idUsuario);
     }
 }

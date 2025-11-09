@@ -16,20 +16,22 @@ public class EventoSismicoDAO {
     private final CambioEstadoDAO cambioEstadoDAO = new CambioEstadoDAO();
     private final EstadoDAO estadoActualDAO = new EstadoDAO(); // <-- Usaremos este para cargar el estado
 
-    /* --------------------------------------------------------------
-       INSERT – AHORA incluye FK compuesta a Estado (2 parámetros nuevos)
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * INSERT – AHORA incluye FK compuesta a Estado (2 parámetros nuevos)
+     * --------------------------------------------------------------
+     */
     public void insert(EventoSismico e) throws SQLException {
         String sql = """
-            INSERT INTO EventoSismico (
-                fechaHoraOcurrencia, fechaHoraFin, latitudEpicentro, latitudHipocentro,
-                longitudEpicentro, longitudHipocentro, valorMagnitud,
-                idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion,
-                idAlcanceSismo, idAnalistaSupervisor, ambitoEstadoActual, nombreEstadoActual
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) -- 14 placeholders
-            """;
+                INSERT INTO EventoSismico (
+                    fechaHoraOcurrencia, fechaHoraFin, latitudEpicentro, latitudHipocentro,
+                    longitudEpicentro, longitudHipocentro, valorMagnitud,
+                    idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion,
+                    idAlcanceSismo, idAnalistaSupervisor, ambitoEstadoActual, nombreEstadoActual
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) -- 14 placeholders
+                """;
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setObject(1, e.getFechaHoraOcurrencia());
             ps.setObject(2, e.getFechaHoraFin());
@@ -38,19 +40,20 @@ public class EventoSismicoDAO {
             ps.setString(5, e.getLongitudEpicentro());
             ps.setString(6, e.getLongitudHipocentro());
             ps.setDouble(7, e.getValorMagnitud());
-            ps.setLong  (8, e.getClasificacionSismo().getIdClasificacionSismo());
-            ps.setInt   (9, e.getMagnitudRichter().getNumero());
-            ps.setLong  (10, e.getOrigenGegeneracion().getOrigenDeGeneracion());
-            ps.setLong  (11, e.getAlcanceSismo().getIdAlcanceSismo());
+            ps.setLong(8, e.getClasificacionSismo().getIdClasificacionSismo());
+            ps.setInt(9, e.getMagnitudRichter().getNumero());
+            ps.setLong(10, e.getOrigenGegeneracion().getOrigenDeGeneracion());
+            ps.setLong(11, e.getAlcanceSismo().getIdAlcanceSismo());
             ps.setObject(12, e.getAnalistaSupervisor() != null ? e.getAnalistaSupervisor().getIdEmpleado() : null);
-            
+
             // CAMPOS NUEVOS: FK al Estado Actual
             ps.setString(13, e.getEstadoActual().getAmbito());
             ps.setString(14, e.getEstadoActual().getNombreEstado());
 
             ps.executeUpdate();
 
-            // ... (Resto de la lógica de INSERT: obtener keys, insertar SerieTemporal, CambioEstado) ...
+            // ... (Resto de la lógica de INSERT: obtener keys, insertar SerieTemporal,
+            // CambioEstado) ...
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     long idEvento = rs.getLong(1);
@@ -64,21 +67,23 @@ public class EventoSismicoDAO {
         }
     }
 
-    /* --------------------------------------------------------------
-       UPDATE – AHORA incluye FK compuesta a Estado (2 parámetros nuevos)
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * UPDATE – AHORA incluye FK compuesta a Estado (2 parámetros nuevos)
+     * --------------------------------------------------------------
+     */
     public void update(EventoSismico e) throws SQLException {
         String sql = """
-            UPDATE EventoSismico SET
-                fechaHoraOcurrencia = ?, fechaHoraFin = ?, latitudEpicentro = ?, latitudHipocentro = ?,
-                longitudEpicentro = ?, longitudHipocentro = ?, valorMagnitud = ?,
-                idClasificacionSismo = ?, idMagnitudRichter = ?, idOrigenGeneracion = ?,
-                idAlcanceSismo = ?, idAnalistaSupervisor = ?,
-                ambitoEstadoActual = ?, nombreEstadoActual = ? -- CAMPOS NUEVOS
-            WHERE idEventoSismico = ?
-            """;
+                UPDATE EventoSismico SET
+                    fechaHoraOcurrencia = ?, fechaHoraFin = ?, latitudEpicentro = ?, latitudHipocentro = ?,
+                    longitudEpicentro = ?, longitudHipocentro = ?, valorMagnitud = ?,
+                    idClasificacionSismo = ?, idMagnitudRichter = ?, idOrigenGeneracion = ?,
+                    idAlcanceSismo = ?, idAnalistaSupervisor = ?,
+                    ambitoEstadoActual = ?, nombreEstadoActual = ? -- CAMPOS NUEVOS
+                WHERE idEventoSismico = ?
+                """;
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setObject(1, e.getFechaHoraOcurrencia());
             ps.setObject(2, e.getFechaHoraFin());
@@ -87,17 +92,17 @@ public class EventoSismicoDAO {
             ps.setString(5, e.getLongitudEpicentro());
             ps.setString(6, e.getLongitudHipocentro());
             ps.setDouble(7, e.getValorMagnitud());
-            ps.setLong  (8, e.getClasificacionSismo().getIdClasificacionSismo());
-            ps.setInt   (9, e.getMagnitudRichter().getNumero());
-            ps.setLong  (10, e.getOrigenGegeneracion().getOrigenDeGeneracion());
-            ps.setLong  (11, e.getAlcanceSismo().getIdAlcanceSismo());
+            ps.setLong(8, e.getClasificacionSismo().getIdClasificacionSismo());
+            ps.setInt(9, e.getMagnitudRichter().getNumero());
+            ps.setLong(10, e.getOrigenGegeneracion().getOrigenDeGeneracion());
+            ps.setLong(11, e.getAlcanceSismo().getIdAlcanceSismo());
             ps.setObject(12, e.getAnalistaSupervisor() != null ? e.getAnalistaSupervisor().getIdEmpleado() : null);
 
             // CAMPOS NUEVOS: FK al Estado Actual
             ps.setString(13, e.getEstadoActual().getAmbito());
             ps.setString(14, e.getEstadoActual().getNombreEstado());
 
-            ps.setLong  (15, e.getIdEventoSismico()); // Cláusula WHERE
+            ps.setLong(15, e.getIdEventoSismico()); // Cláusula WHERE
 
             ps.executeUpdate();
 
@@ -109,14 +114,16 @@ public class EventoSismicoDAO {
         }
     }
 
-    /* --------------------------------------------------------------
-       FIND BY ID – carga el Estado Actual directamente
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * FIND BY ID – carga el Estado Actual directamente
+     * --------------------------------------------------------------
+     */
     public EventoSismico findById(long idEventoSismico) throws SQLException {
         // La consulta SELECT trae los dos campos de la FK compuesta
         String sql = "SELECT * FROM EventoSismico WHERE idEventoSismico = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, idEventoSismico);
             try (ResultSet rs = ps.executeQuery()) {
@@ -141,19 +148,19 @@ public class EventoSismicoDAO {
                     Long idAnalista = rs.getObject("idAnalistaSupervisor", Long.class);
                     e.setAnalistaSupervisor(idAnalista != null ? empleadoDAO.findById(idAnalista) : null);
 
-
                     // Carga del Estado Actual (Directa)
                     String ambito = rs.getString("ambitoEstadoActual");
                     String nombreEstado = rs.getString("nombreEstadoActual");
                     e.setEstadoActual(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
-
                     // Listas 1:N
                     e.setSerieTemporal(findSerieTemporalByEvento(conn, idEventoSismico));
                     e.setCambioEstado(cambioEstadoDAO.findByEventoSismicoId(conn, idEventoSismico));
 
-                    // El antiguo "Estado actual" por historial ya no se usa, la propiedad ya se cargó arriba.
-                    // e.setEstadoActual(findEstadoActual(conn, idEventoSismico)); // <-- ESTE CÓDIGO SE VUELVE OBSOLETO
+                    // El antiguo "Estado actual" por historial ya no se usa, la propiedad ya se
+                    // cargó arriba.
+                    // e.setEstadoActual(findEstadoActual(conn, idEventoSismico)); // <-- ESTE
+                    // CÓDIGO SE VUELVE OBSOLETO
 
                     return e;
                 }
@@ -162,18 +169,22 @@ public class EventoSismicoDAO {
         return null;
     }
 
-    // ... (El resto de los métodos como delete, findAll, y auxiliares 1:N permanecen iguales) ...
+    // ... (El resto de los métodos como delete, findAll, y auxiliares 1:N
+    // permanecen iguales) ...
 
-    /* --------------------------------------------------------------
-       MÉTODOS AUXILIARES
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * MÉTODOS AUXILIARES
+     * --------------------------------------------------------------
+     */
 
     // NOTA IMPORTANTE: La lógica de findEstadoActual ya NO es necesaria
     // porque el estado se carga directamente desde la tabla EventoSismico.
     // Si la dejamos, solo sirve como validación o fallback, pero la fuente
     // principal de verdad ahora es la columna FK de EventoSismico.
     private Estado findEstadoActual(Connection conn, long idEvento) throws SQLException {
-        // ... (Este método es OBSOLETO. Se mantiene solo si el Negocio lo usa de forma interna) ...
+        // ... (Este método es OBSOLETO. Se mantiene solo si el Negocio lo usa de forma
+        // interna) ...
         return null; // Retorna null o se elimina.
     }
 
@@ -181,8 +192,9 @@ public class EventoSismicoDAO {
         Timestamp ts = rs.getTimestamp(column);
         return ts != null ? ts.toLocalDateTime() : null;
     }
-    
-    // ... (insertSerieTemporal, insertCambioEstado, deleteSerieTemporal, deleteCambioEstado, findSerieTemporalByEvento) ...
+
+    // ... (insertSerieTemporal, insertCambioEstado, deleteSerieTemporal,
+    // deleteCambioEstado, findSerieTemporalByEvento) ...
     private void insertSerieTemporal(Connection conn, long idEvento, List<SerieTemporal> series) throws SQLException {
         String sql = "INSERT INTO EventoSismico_SerieTemporal (idEventoSismico, idSerieTemporal) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -227,4 +239,26 @@ public class EventoSismicoDAO {
         // Implementar con SerieTemporalDAO cuando exista
         return new ArrayList<>();
     }
+
+    // --- Listar todos los eventos sísmicos ---
+    public List<EventoSismico> findAll() throws SQLException {
+        List<EventoSismico> eventos = new ArrayList<>();
+
+        String sql = "SELECT idEventoSismico FROM EventoSismico ORDER BY idEventoSismico";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                long id = rs.getLong("idEventoSismico");
+                // Reutiliza tu método existente para no duplicar lógica
+                EventoSismico e = findById(id);
+                if (e != null) {
+                    eventos.add(e);
+                }
+            }
+        }
+        return eventos;
+    }
+
 }

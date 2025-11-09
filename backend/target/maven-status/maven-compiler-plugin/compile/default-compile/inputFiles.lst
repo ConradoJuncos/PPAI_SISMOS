@@ -1,7 +1,7 @@
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\Reparacion.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\BloqueadoEnRevision.java
-C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\controlador\ControladorPrincipal.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\dao\ModeloSismografoDAO.java
+C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\controlador\ControladorRevisionManual.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\dao\SuscripcionDAO.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\ModeloSismografo.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\dao\EmpleadoDAO.java
@@ -56,6 +56,7 @@ C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPA
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\MotivoTipo.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\dao\RolDAO.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\Perfil.java
+C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\contexto\Contexto.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\Rol.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\entidad\ApreciacionTipo.java
 C:\Users\Delider\Documents\DANI DOCUMENTOS\Diseño de Sistemas de Información\PPAI Red Sismica\Implementación\PPAI Ultima Entrega\backend\src\main\java\com\ppai\app\dao\OrigenDeGeneracionDAO.java

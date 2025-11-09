@@ -4,28 +4,30 @@ import com.ppai.app.datos.DatabaseConnection;
 import com.ppai.app.entidad.*;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EstadoDAO {
 
     private static final String TABLE_NAME = "Estado";
 
-    public Estado findByNombreYAmbito(String nombreEstado, String ambito) throws SQLException {
-        return findByAmbitoAndNombre(ambito, nombreEstado);
+    public Estado findByNombreYAmbito(String nombreEstado, String ambitoEstado) throws SQLException {
+        return findByAmbitoAndNombre(ambitoEstado, nombreEstado);
     }
 
     // --- Buscar un estado concreto por nombreEstado y ámbito ---
-    public Estado findByPk(String nombreEstado, String ambito) throws SQLException {
-        String sql = "SELECT * FROM Estado WHERE nombreEstado = ? AND ambito = ?";
+    public Estado findByPk(String nombreEstado, String ambitoEstado) throws SQLException {
+        String sql = "SELECT * FROM Estado WHERE nombreEstado = ? AND ambitoEstado = ?";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, nombreEstado);
-            ps.setString(2, ambito);
+            ps.setString(2, ambitoEstado);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     // Aquí creamos la subclase concreta según el nombreEstado
-                    return materializarEstado(rs.getString("nombreEstado"), rs.getString("ambito"));
+                    return materializarEstado(rs.getString("nombreEstado"), rs.getString("ambitoEstado"));
                 }
             }
         }
@@ -33,7 +35,7 @@ public class EstadoDAO {
     }
 
     // --- Crear el tipo de estado concreto ---
-    private Estado materializarEstado(String nombreEstado, String ambito) throws SQLException {
+    private Estado materializarEstado(String nombreEstado, String ambitoEstado) throws SQLException {
         switch (nombreEstado) {
             case "AutoDetectado":
                 return new AutoDetectado(null, null, null);
@@ -55,6 +57,8 @@ public class EstadoDAO {
                 return new PendienteDeCierre(null, null, null);
             case "Cerrado":
                 return new Cerrado(null, null, null);
+            case "SinRevision":
+                return new SinRevision(null, null, null);
             default:
                 throw new SQLException("Estado desconocido o sin implementación: " + nombreEstado);
         }
@@ -63,7 +67,7 @@ public class EstadoDAO {
     // --- Insertar nuevo estado (si aplica en tabla de configuración, no dinámica)
     // ---
     public void insert(Estado estado) throws SQLException {
-        String sql = "INSERT INTO Estado (nombreEstado, ambito) VALUES (?, ?)";
+        String sql = "INSERT INTO Estado (nombreEstado, ambitoEstado) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, estado.getNombreEstado());
@@ -73,19 +77,29 @@ public class EstadoDAO {
     }
 
     // --- Listar todos los estados registrados ---
-    public void findAll() throws SQLException {
+    public List<Estado> findAll() throws SQLException {
+        List<Estado> estados = new ArrayList<>();
+
         String sql = "SELECT * FROM Estado";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                System.out.printf("Estado: %s | Ámbito: %s%n", rs.getString("nombreEstado"), rs.getString("ambito"));
+                String nombre = rs.getString("nombreEstado");
+                String ambito = rs.getString("ambitoEstado");
+
+                // reutiliza tu método existente de materialización
+                Estado e = materializarEstado(nombre, ambito);
+                estados.add(e);
             }
         }
+
+        return estados;
     }
 
     public Estado findByAmbitoAndNombre(String ambito, String nombreEstado) throws SQLException {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ambito = ? AND nombreEstado = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ambitoEsatdo = ? AND nombreEstado = ?";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -95,7 +109,7 @@ public class EstadoDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     // Se materializa el estado concreto según el nombre
-                    return materializarEstado(rs.getString("nombreEstado"), rs.getString("ambito"));
+                    return materializarEstado(rs.getString("nombreEstado"), rs.getString("ambitoEstado"));
                 }
             }
         }

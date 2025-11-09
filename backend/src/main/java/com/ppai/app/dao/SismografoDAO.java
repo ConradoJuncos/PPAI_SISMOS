@@ -14,23 +14,25 @@ public class SismografoDAO {
     private final CambioEstadoDAO cambioEstadoDAO = new CambioEstadoDAO();
     private final ReparacionDAO reparacionDAO = new ReparacionDAO(); // ← Asumimos que existe
 
-    /* --------------------------------------------------------------
-       INSERT – guarda datos principales + relaciones 1:N
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * INSERT – guarda datos principales + relaciones 1:N
+     * --------------------------------------------------------------
+     */
     public void insert(Sismografo s) throws SQLException {
         // La tabla Sismografo contiene las FKs a EstacionSismologica y ModeloSismografo
         String sql = "INSERT INTO Sismografo " +
-                     "(fechaAdquisicion, nroSerie, codigoEstacion, idModelo) " +
-                     "VALUES (?, ?, ?, ?)";
+                "(fechaAdquisicion, nroSerie, codigoEstacion, idModelo) " +
+                "VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setObject(1, s.getFechaAdquisicion());
-            ps.setLong  (2, s.getNroSerie());
+            ps.setLong(2, s.getNroSerie());
             // FK a EstacionSismologica
-            ps.setLong  (3, s.getEstacionSismologica().getCodigoEstacion());
+            ps.setLong(3, s.getEstacionSismologica().getCodigoEstacion());
             // FK a ModeloSismografo
-            ps.setLong  (4, s.getModelo().getIdModeloSismografo());
+            ps.setLong(4, s.getModelo().getIdModeloSismografo());
 
             ps.executeUpdate();
 
@@ -51,28 +53,30 @@ public class SismografoDAO {
         }
     }
 
-    /* --------------------------------------------------------------
-       UPDATE – actualiza todo (incluyendo relaciones)
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * UPDATE – actualiza todo (incluyendo relaciones)
+     * --------------------------------------------------------------
+     */
     public void update(Sismografo s) throws SQLException {
         String sql = "UPDATE Sismografo " +
-                     "SET fechaAdquisicion = ?, nroSerie = ?, codigoEstacion = ?, idModelo = ? " +
-                     "WHERE identificadorSismografo = ?";
+                "SET fechaAdquisicion = ?, nroSerie = ?, codigoEstacion = ?, idModelo = ? " +
+                "WHERE identificadorSismografo = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setObject(1, s.getFechaAdquisicion());
-            ps.setLong  (2, s.getNroSerie());
-            ps.setLong  (3, s.getEstacionSismologica().getCodigoEstacion());
-            ps.setLong  (4, s.getModelo().getIdModeloSismografo());
-            ps.setLong  (5, s.getIdentificadorSismografo());
+            ps.setLong(2, s.getNroSerie());
+            ps.setLong(3, s.getEstacionSismologica().getCodigoEstacion());
+            ps.setLong(4, s.getModelo().getIdModeloSismografo());
+            ps.setLong(5, s.getIdentificadorSismografo());
 
             ps.executeUpdate();
 
             // Actualizar relaciones 1:N (Estrategia de Delete-then-Insert)
             deleteCambioEstado(conn, s.getIdentificadorSismografo());
             deleteReparacion(conn, s.getIdentificadorSismografo());
-            
+
             if (s.getCambioEstado() != null && !s.getCambioEstado().isEmpty()) {
                 insertCambioEstado(conn, s.getIdentificadorSismografo(), s.getCambioEstado());
             }
@@ -82,9 +86,11 @@ public class SismografoDAO {
         }
     }
 
-    /* --------------------------------------------------------------
-       DELETE – elimina registro + relaciones
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * DELETE – elimina registro + relaciones
+     * --------------------------------------------------------------
+     */
     public void delete(long identificadorSismografo) throws SQLException {
         try (Connection conn = DatabaseConnection.getConnection()) {
             // 1. Eliminar referencias en las tablas intermedias
@@ -100,13 +106,15 @@ public class SismografoDAO {
         }
     }
 
-    /* --------------------------------------------------------------
-       FIND BY ID – carga todo: estación, modelo, cambios, reparaciones
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * FIND BY ID – carga todo: estación, modelo, cambios, reparaciones
+     * --------------------------------------------------------------
+     */
     public Sismografo findById(long identificadorSismografo) throws SQLException {
         String sql = "SELECT * FROM Sismografo WHERE identificadorSismografo = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, identificadorSismografo);
             try (ResultSet rs = ps.executeQuery()) {
@@ -118,16 +126,18 @@ public class SismografoDAO {
         return null;
     }
 
-    /* --------------------------------------------------------------
-       FIND ALL – lista completa con todas las relaciones
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * FIND ALL – lista completa con todas las relaciones
+     * --------------------------------------------------------------
+     */
     public List<Sismografo> findAll() throws SQLException {
         String sql = "SELECT * FROM Sismografo";
         List<Sismografo> list = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(mapResultSetToSismografo(rs, conn));
@@ -135,7 +145,7 @@ public class SismografoDAO {
         }
         return list;
     }
-    
+
     // ==============================================================
     // MÉTODOS AUXILIARES Y MAPEADORES
     // ==============================================================
@@ -176,22 +186,49 @@ public class SismografoDAO {
         return s;
     }
 
+    // SismografoDAO.java
+    // ==============================================================
+    // UTILIDAD: convertir valor de columna a LocalDateTime (maneja NULL)
+    // ==============================================================
     private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
-        Timestamp ts = rs.getTimestamp(column);
-        return ts != null ? ts.toLocalDateTime() : null;
+        // 1. Leer el valor como String (Texto)
+        String dateString = rs.getString(column);
+
+        if (dateString == null) {
+            return null;
+        }
+
+        // El formato en el error es "2024-11-02" (solo fecha)
+        try {
+            // Intenta parsear la fecha simple (YYYY-MM-DD) y le añade medianoche
+            // (atStartOfDay)
+            return java.time.LocalDate.parse(dateString).atStartOfDay();
+        } catch (java.time.format.DateTimeParseException e) {
+            // Si no es solo fecha, intenta parsear el formato completo de LocalDateTime
+            // (Asumiendo que otras inserciones usan 'YYYY-MM-DD HH:MM:SS' o similar)
+            try {
+                return LocalDateTime.parse(dateString); // El parser ISO 8601 suele ser robusto
+            } catch (java.time.format.DateTimeParseException e2) {
+                throw new SQLException("Error de formato de fecha en columna '" + column + "' con valor: " + dateString
+                        + ". Se esperaba formato 'YYYY-MM-DD' o 'YYYY-MM-DDTHH:MM:SS'.", e2);
+            }
+        }
     }
 
-    /* --------------------------------------------------------------
-       LÓGICA DE ESTADO ACTUAL (Atributo derivado)
-       -------------------------------------------------------------- */
+    /*
+     * --------------------------------------------------------------
+     * LÓGICA DE ESTADO ACTUAL (Atributo derivado)
+     * --------------------------------------------------------------
+     */
     private Estado findEstadoActual(Connection conn, long idSismografo) throws SQLException {
-        // Busca el último CambioEstado asociado al sismógrafo que no tiene fechaHoraFin (es decir, el actual).
+        // Busca el último CambioEstado asociado al sismógrafo que no tiene fechaHoraFin
+        // (es decir, el actual).
         String sql = """
-            SELECT ce.idCambioEstado FROM CambioEstado ce
-            JOIN CambioEstado_Sismografo ces ON ce.idCambioEstado = ces.idCambioEstado
-            WHERE ces.idSismografo = ? AND ce.fechaHoraFin IS NULL
-            ORDER BY ce.fechaHoraInicio DESC LIMIT 1
-            """;
+                SELECT ce.idCambioEstado FROM CambioEstado ce
+                JOIN CambioEstado_Sismografo ces ON ce.idCambioEstado = ces.idCambioEstado
+                WHERE ces.idSismografo = ? AND ce.fechaHoraFin IS NULL
+                ORDER BY ce.fechaHoraInicio DESC LIMIT 1
+                """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idSismografo);
             try (ResultSet rs = ps.executeQuery()) {
@@ -206,10 +243,13 @@ public class SismografoDAO {
         return null;
     }
 
-    /* --------------------------------------------------------------
-       LÓGICA DE RELACIÓN 1:N (a través de tablas intermedias)
-       -------------------------------------------------------------- */
-    private void insertCambioEstado(Connection conn, long idSismografo, List<CambioEstado> cambios) throws SQLException {
+    /*
+     * --------------------------------------------------------------
+     * LÓGICA DE RELACIÓN 1:N (a través de tablas intermedias)
+     * --------------------------------------------------------------
+     */
+    private void insertCambioEstado(Connection conn, long idSismografo, List<CambioEstado> cambios)
+            throws SQLException {
         // Enlaza el Sismografo con sus CambioEstado en la tabla intermedia
         String sql = "INSERT INTO CambioEstado_Sismografo (idSismografo, idCambioEstado) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -232,7 +272,8 @@ public class SismografoDAO {
         }
     }
 
-    private void insertReparacion(Connection conn, long idSismografo, List<Reparacion> reparaciones) throws SQLException {
+    private void insertReparacion(Connection conn, long idSismografo, List<Reparacion> reparaciones)
+            throws SQLException {
         // Enlaza el Sismografo con sus Reparacion en la tabla intermedia
         String sql = "INSERT INTO Reparacion_Sismografo (idSismografo, idReparacion) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -7,18 +7,24 @@ public class BloqueadoEnRevision extends Estado {
     // Hereda todos los métodos y atributos de la clase abstracta Estado
 
     // Método constructor con parametros
-    public BloqueadoEnRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-        
+    public BloqueadoEnRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual,
+            Usuario usuarioLogueado) {
+
         // Lamando al constructor de la clase padre Estado
         super("BloqueadoEnRevision", "EventoSismico");
-    
-        // Ejecutando el proceso de cambio de estado
-        registrarCambioDeEstado(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
+
+        // Si los parámetros no son nulos (Postible Materializacion)
+        if (seleccionEventoSismico != null && fechaHoraActual != null && usuarioLogueado != null) {
+
+            // Ejecutando el proceso de cambio de estado
+            registrarCambioDeEstado(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
+        }
     }
 
     @Override
-    protected void registrarCambioDeEstado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        
+    protected void registrarCambioDeEstado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual,
+            Usuario usuarioLogueado) {
+
         // Ejecutando la version del metodo de la clase padre (estado)
         super.registrarCambioDeEstado(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
 
@@ -37,5 +43,5 @@ public class BloqueadoEnRevision extends Estado {
         // Seteando el nuevo estado concreto al evento sismico seleccionado
         seleccionEventoSismico.setEstadoActual(this);
     }
-    
+
 }

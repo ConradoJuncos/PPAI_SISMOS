@@ -1,14 +1,12 @@
 package com.ppai.app;
 
-import com.ppai.app.controlador.ControladorPrincipal;
+import com.ppai.app.controlador.ControladorRevisionManual;
+import com.ppai.app.contexto.Contexto;
 import com.ppai.app.datos.DatabaseConnection;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import java.sql.SQLException; // Necesitas importar esto
+import java.sql.SQLException;
 
-/**
- * Clase principal que inicia el servidor HTTP del backend.
- */
 public class Main {
 
     private static final int PORT = 8080;
@@ -16,62 +14,67 @@ public class Main {
     public static void main(String[] args) {
 
         // #################################################
-        // PASO CLAVE: Inicialización de la Base de Datos
+        // 1. Inicialización de la Base de Datos
         // #################################################
         try {
-            System.out.println("Intentando inicializar la Base de Datos y las tablas...");
-            // Al llamar a getConnection(), si el archivo no existe, se crea y llama a initDatabase().
-            DatabaseConnection.getConnection(); 
-            System.out.println("Base de Datos (redSismica.sqlite3) inicializada exitosamente.");
+            System.out.println("Inicializando Base de Datos...");
+            DatabaseConnection.getConnection();
+            System.out.println("Base de Datos inicializada correctamente.");
         } catch (SQLException e) {
-            System.err.println("FATAL ERROR: No se pudo conectar/crear la base de datos.");
+            System.err.println("❌ ERROR FATAL: No se pudo conectar/crear la base de datos.");
             e.printStackTrace();
-            // Terminar la aplicación si el recurso esencial (la DB) falla.
-            return; 
+            return;
         }
 
-        // Crear el servidor Javalin
-        Javalin app = Javalin.create(config -> {
-            // Configurar CORS para permitir conexiones desde el frontend de escritorio
-            config.plugins.enableCors(cors -> {
-                cors.add(CorsPluginConfig::anyHost);
-            });
+        // #################################################
+        // 2. Inicialización del Contexto de dominio
+        // #################################################
+        System.out.println("Inicializando contexto de dominio...");
+        Contexto contexto = new Contexto();
+        System.out.println("Contexto cargado con éxito:");
+        System.out.println(" - Eventos: " + contexto.getEventosSismicos().size());
+        System.out.println(" - Usuarios: " + contexto.getUsuarios().size());
+        System.out.println(" - Sismógrafos: " + contexto.getSismografos().size());
 
-            // Configurar logging
+        // #################################################
+        // 3. Crear el servidor Javalin
+        // #################################################
+        Javalin app = Javalin.create(config -> {
+            config.plugins.enableCors(cors -> cors.add(CorsPluginConfig::anyHost));
             config.http.asyncTimeout = 10_000L;
         });
 
-        // Registrar el controlador principal del sistema
-        ControladorPrincipal controladorPrincipal = new ControladorPrincipal();
-        controladorPrincipal.registrarRutas(app);
+        // #################################################
+        // 4. Registrar controladores
+        // #################################################
+        ControladorRevisionManual controladorRevisionManual = new ControladorRevisionManual(contexto);
+        controladorRevisionManual.registrarRutas(app);
 
-        // Ruta de health check
+        // #################################################
+        // 5. Endpoints básicos de prueba
+        // #################################################
         app.get("/", ctx -> ctx.result("Backend funcionando correctamente"));
-
         app.get("/health", ctx -> ctx.json(java.util.Map.of(
                 "status", "UP",
                 "timestamp", java.time.LocalDateTime.now().toString()
         )));
 
-        // Iniciar el servidor
+        // #################################################
+        // 6. Iniciar servidor
+        // #################################################
         app.start(PORT);
+        System.out.println("\nServidor iniciado en http://localhost:" + PORT);
+        System.out.println("Endpoint de revisión manual:");
+        System.out.println("👉 GET /api/registrarResultadoRevisionManual?usuario=analista1");
 
-        System.out.println("╔═══════════════════════════════════════════════════════╗");
-        System.out.println("║   Backend - Servidor Iniciado                         ║");
-        System.out.println("║   Puerto: " + PORT + "                                        ║");
-        System.out.println("║   URL: http://localhost:" + PORT + "                          ║");
-        System.out.println("║   CORS: Habilitado                                    ║");
-        System.out.println("╚═══════════════════════════════════════════════════════╝");
-        System.out.println("\nPuedes probar la API en http://localhost:" + PORT);
-        System.out.println("Prueba el endpoint de ejemplo de sismos: http://localhost:" + PORT + "/api/eventos_sismicos");
-        System.out.println("Presiona Ctrl+C para detener el servidor\n");
-
-        // Hook para cerrar recursos al detener el servidor
+        // #################################################
+        // 7. Cierre controlado
+        // #################################################
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\nCerrando servidor...");
             app.stop();
             DatabaseConnection.cerrarConexion();
-            System.out.println("Servidor cerrado correctamente");
+            System.out.println("Servidor cerrado correctamente.");
         }));
     }
 }

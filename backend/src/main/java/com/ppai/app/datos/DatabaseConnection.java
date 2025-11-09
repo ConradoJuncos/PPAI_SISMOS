@@ -45,12 +45,21 @@ public class DatabaseConnection {
     private static void createTables(Connection conn) throws SQLException {
         List<String> tables = new ArrayList<>();
 
+        tables.add("CREATE TABLE IF NOT EXISTS Rol (\n" +
+                "    idRol INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    nombre TEXT NOT NULL UNIQUE,\n" +
+                "    descripcion TEXT\n" +
+                ");");
+
         tables.add("CREATE TABLE IF NOT EXISTS Empleado (\n" +
                 "    idEmpleado INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    nombre TEXT NOT NULL,\n" +
                 "    apellido TEXT NOT NULL,\n" +
                 "    email TEXT UNIQUE NOT NULL,\n" +
-                "    legajo TEXT UNIQUE NOT NULL\n" +
+                "    telefono TEXT,\n" +
+                "    legajo TEXT UNIQUE NOT NULL,\n" +
+                "    idRol INTEGER,\n" +
+                "    FOREIGN KEY (idRol) REFERENCES Rol(idRol)\n" +
                 ");");
 
         tables.add("CREATE TABLE IF NOT EXISTS Estado (\n" +
@@ -70,7 +79,10 @@ public class DatabaseConnection {
                 "    codigoEstacion INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    nombre TEXT NOT NULL,\n" +
                 "    latitud REAL NOT NULL,\n" +
-                "    longitud REAL NOT NULL\n" +
+                "    longitud REAL NOT NULL,\n" +
+                "    documentoCertificacionAdq TEXT,\n" +
+                "    fechaSolicitudCertificacion TEXT,\n" +
+                "    nroCertificacionAdquisicion INTEGER\n" +
                 ");");
 
         tables.add("CREATE TABLE IF NOT EXISTS Sismografo (\n" +
@@ -141,12 +153,15 @@ public class DatabaseConnection {
                 "    FOREIGN KEY (idApreciacionTipo) REFERENCES ApreciacionTipo(idApreciacionTipo)\n" +
                 ");");
 
-        tables.add("CREATE TABLE IF NOT EXISTS Usuario (\n" +
-                "    idUsuario INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    nombreUsuario TEXT NOT NULL UNIQUE,\n" +
-                "    password TEXT NOT NULL,\n" +
-                "    email TEXT UNIQUE NOT NULL\n" +
-                ");");
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Usuario (
+                        idUsuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nombreUsuario TEXT NOT NULL UNIQUE,
+                        contraseña TEXT NOT NULL,
+                        idEmpleado INTEGER NOT NULL,
+                        FOREIGN KEY (idEmpleado) REFERENCES Empleado(idEmpleado)
+                    );
+                """);
 
         tables.add("CREATE TABLE IF NOT EXISTS TipoDeDato (\n" +
                 "    idTipoDeDato INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
@@ -197,6 +212,62 @@ public class DatabaseConnection {
                 "    FOREIGN KEY (idTipoDeDato) REFERENCES TipoDeDato(idTipoDeDato)\n" +
                 ");");
 
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Suscripcion (
+                        idSuscripcion INTEGER PRIMARY KEY AUTOINCREMENT,
+                        fechaHoraInicioSuscripcion TEXT,
+                        fechaHoraFinSuscripcion TEXT
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Usuario_Suscripcion (
+                        idUsuario INTEGER NOT NULL,
+                        idSuscripcion INTEGER NOT NULL,
+                        PRIMARY KEY (idUsuario, idSuscripcion),
+                        FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+                        FOREIGN KEY (idSuscripcion) REFERENCES Suscripcion(idSuscripcion)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Permiso (
+                        idPermiso INTEGER NOT NULL,
+                        descripcion TEXT,
+                        nombre TEXT,
+                        PRIMARY KEY(idPermiso)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Perfil (
+                        idPerfil INTEGER NOT NULL,
+                        descripcion TEXT,
+                        nombre TEXT,
+                        PRIMARY KEY(idPerfil)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Perfil_Perimso (
+                        idPerfil INTEGER NOT NULL,
+                        idPermiso INTEGER NOT NULL,
+                        PRIMARY KEY (idPerfil, idPermiso),
+                        FOREIGN KEY (idPerfil) REFERENCES Perfil(idPerfil),
+                        FOREIGN KEY (idPermiso) REFERENCES Permiso(idPermiso)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Usuario_Perfil (
+                        idUsuario INTEGER NOT NULL,
+                        idPerfil INTEGER NOT NULL,
+                        PRIMARY KEY (idUsuario, idPerfil),
+                        FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+                        FOREIGN KEY (idPerfil) REFERENCES Perfil(idPerfil)
+                    );
+                """);
+
         try (Statement s = conn.createStatement()) {
             for (String tableSql : tables) {
                 s.execute(tableSql);
@@ -212,28 +283,35 @@ public class DatabaseConnection {
             stmt.executeUpdate("""
                         INSERT OR IGNORE INTO Estado (ambitoEstado, nombreEstado) VALUES
                         ('EventoSismico', 'AutoDetectado'),
-                        ('EventoSismico', 'PendienteRevision'),
-                        ('EventoSismico', 'BloqueadoRevision'),
-                        ('EventoSismico', 'Derivado'),
+                        ('EventoSismico', 'PendienteDeRevision'),
+                        ('EventoSismico', 'BloqueadoEnRevision'),
+                        ('EventoSismico', 'DerivadoAExperto'),
                         ('EventoSismico', 'Confirmado'),
                         ('EventoSismico', 'Rechazado'),
-                        ('EventoSismico', 'PendienteCierre'),
+                        ('EventoSismico', 'PendienteDeCierre'),
                         ('EventoSismico', 'Cerrado'),
                         ('EventoSismico', 'SinRevision');
                     """);
 
+            // ====== ROLES ======
+            stmt.executeUpdate("""
+                        INSERT OR IGNORE INTO Rol (nombre, descripcion) VALUES
+                        ('Analista de Sismos', 'Realiza revisión manual y análisis de eventos sísmicos'),
+                        ('Supervisor', 'Supervisa revisiones y valida eventos sísmicos');
+                    """);
+
             // ====== EMPLEADOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE INTO Empleado (nombre, apellido, email, legajo) VALUES
-                        ('Laura', 'Pérez', 'laura.perez@ccrs.gob.ar', 'E001'),
-                        ('Carlos', 'Domínguez', 'carlos.dominguez@ccrs.gob.ar', 'E002');
+                        INSERT OR IGNORE INTO Empleado (nombre, apellido, email, telefono, legajo, idRol) VALUES
+                        ('Laura', 'Pérez', 'laura.perez@ccrs.gob.ar', '+54 9 351 555-1001', 'E001', 1),
+                        ('Carlos', 'Domínguez', 'carlos.dominguez@ccrs.gob.ar', '+54 9 351 555-1002', 'E002', 2);
                     """);
 
             // ====== USUARIOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE INTO Usuario (nombreUsuario, password, email) VALUES
-                        ('analista1', 'analista123', 'analista1@ccrs.gob.ar'),
-                        ('supervisor1', 'supervisor123', 'supervisor1@ccrs.gob.ar');
+                        INSERT OR IGNORE INTO Usuario (nombreUsuario, contraseña, idEmpleado) VALUES
+                        ('Emanuel', 'ema123', 1),
+                        ('LucasSegundo', 'contra123', 2);
                     """);
 
             // ====== MODELOS ======
@@ -244,12 +322,13 @@ public class DatabaseConnection {
                     """);
 
             // ====== ESTACIONES ======
-            stmt.executeUpdate("""
-                        INSERT OR IGNORE INTO EstacionSismologica (nombre, latitud, longitud) VALUES
-                        ('Estación Córdoba', -31.4201, -64.1888),
-                        ('Estación San Juan', -31.5375, -68.5364),
-                        ('Estación Salta', -24.7859, -65.4117);
-                    """);
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO EstacionSismologica (nombre, latitud, longitud, documentoCertificacionAdq, fechaSolicitudCertificacion, nroCertificacionAdquisicion) VALUES
+                                ('Estación Córdoba', -31.4201, -64.1888, NULL, NULL, NULL),
+                                ('Estación San Juan', -31.5375, -68.5364, NULL, NULL, NULL),
+                                ('Estación Salta', -24.7859, -65.4117, NULL, NULL, NULL);
+                            """);
 
             // ====== SISMOGRAFOS ======
             stmt.executeUpdate("""
@@ -282,12 +361,12 @@ public class DatabaseConnection {
                                 ('2025-04-02 14:15:00', -31.25, -65.45, 25.0, 4.1, 'Intermedio', 'Sismo interplaca', 'Regional', 'EventoSismico', 'AutoDetectado'),
                                 ('2025-04-03 09:30:00', -31.40, -65.60, 30.0, 4.5, 'Intermedio', 'Sismo cortical', 'Regional', 'EventoSismico', 'AutoDetectado'),
                                 -- 5..6 PendienteRevision
-                                ('2025-04-05 12:10:00', -31.70, -65.90, 40.0, 5.0, 'Profundo', 'Sismo interplaca', 'Regional', 'EventoSismico', 'PendienteRevision'),
-                                ('2025-04-06 18:25:00', -31.85, -66.05, 45.0, 5.2, 'Profundo', 'Sismo cortical', 'Regional', 'EventoSismico', 'PendienteRevision'),
+                                ('2025-04-05 12:10:00', -31.70, -65.90, 40.0, 5.0, 'Profundo', 'Sismo interplaca', 'Regional', 'EventoSismico', 'PendienteDeRevision'),
+                                ('2025-04-06 18:25:00', -31.85, -66.05, 45.0, 5.2, 'Profundo', 'Sismo cortical', 'Regional', 'EventoSismico', 'PendienteDeRevision'),
                                 -- 7 BloqueadoRevision
-                                ('2025-04-07 03:00:00', -32.00, -66.20, 30.0, 4.3, 'Intermedio', 'Sismo cortical', 'Regional', 'EventoSismico', 'BloqueadoRevision'),
+                                ('2025-04-07 03:00:00', -32.00, -66.20, 30.0, 4.3, 'Intermedio', 'Sismo cortical', 'Regional', 'EventoSismico', 'BloqueadoEnRevision'),
                                 -- 8 Derivado
-                                ('2025-04-08 05:20:00', -32.15, -66.35, 25.0, 4.0, 'Intermedio', 'Sismo interplaca', 'Local', 'EventoSismico', 'Derivado'),
+                                ('2025-04-08 05:20:00', -32.15, -66.35, 25.0, 4.0, 'Intermedio', 'Sismo interplaca', 'Local', 'EventoSismico', 'DerivadoAExperto'),
                                 -- 9..10 Confirmado
                                 ('2025-04-09 21:40:00', -32.30, -66.50, 20.0, 4.6, 'Superficial', 'Sismo cortical', 'Regional', 'EventoSismico', 'Confirmado'),
                                 ('2025-04-11 08:00:00', -32.40, -66.55, 18.0, 4.9, 'Superficial', 'Sismo cortical', 'Regional', 'EventoSismico', 'Confirmado'),
@@ -305,10 +384,10 @@ public class DatabaseConnection {
                                 ('2025-04-01 10:02:00', NULL, 'EventoSismico', 'AutoDetectado', 1),
                                 ('2025-04-02 14:17:00', NULL, 'EventoSismico', 'AutoDetectado', 1),
                                 ('2025-04-03 09:32:00', NULL, 'EventoSismico', 'AutoDetectado', 1),
-                                ('2025-04-05 12:12:00', NULL, 'EventoSismico', 'PendienteRevision', 2),
-                                ('2025-04-06 18:27:00', NULL, 'EventoSismico', 'PendienteRevision', 2),
-                                ('2025-04-07 03:02:00', NULL, 'EventoSismico', 'BloqueadoRevision', 1),
-                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'Derivado', 1),
+                                ('2025-04-05 12:12:00', NULL, 'EventoSismico', 'PendienteDeRevision', 2),
+                                ('2025-04-06 18:27:00', NULL, 'EventoSismico', 'PendienteDeRevision', 2),
+                                ('2025-04-07 03:02:00', NULL, 'EventoSismico', 'BloqueadoEnRevision', 1),
+                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'DerivadoAExperto', 1),
                                 ('2025-04-09 21:42:00', NULL, 'EventoSismico', 'Confirmado', 2),
                                 ('2025-04-11 08:02:00', NULL, 'EventoSismico', 'Confirmado', 2),
                                 ('2025-03-08 13:06:00', NULL, 'EventoSismico', 'Rechazado', 2),
@@ -424,6 +503,8 @@ public class DatabaseConnection {
                         (69, '2025-04-10 11:55:00', 35), (70, '2025-04-10 12:00:00', 35),
                         (71, '2025-04-10 11:55:00', 36), (72, '2025-04-10 12:00:00', 36);
                     """);
+
+            // ======= Suscripciones =======
 
             // ====== DETALLES DE MUESTRA (3 por muestra) ======
             // idTipoDeDato: 1=Frecuencia, 2=Longitud, 3=Velocidad

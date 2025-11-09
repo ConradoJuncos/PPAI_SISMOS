@@ -11,6 +11,7 @@ com\ppai\app\entidad\Confirmado.class
 com\ppai\app\dao\MotivoTipoDAO.class
 com\ppai\app\entidad\AlcanceSismo.class
 com\ppai\app\dao\EstadoDAO.class
+com\ppai\app\contexto\Contexto.class
 com\ppai\app\dao\SismografoDAO.class
 com\ppai\app\dao\PerfilDAO.class
 com\ppai\app\entidad\Perfil.class
@@ -26,8 +27,8 @@ com\ppai\app\entidad\TipoTrabajo.class
 com\ppai\app\datos\DatabaseConnection.class
 com\ppai\app\entidad\ModeloSismografo.class
 com\ppai\app\entidad\DerivadoAExperto.class
+com\ppai\app\controlador\ControladorRevisionManual.class
 com\ppai\app\dto\MuestraSismicaDTO.class
-com\ppai\app\controlador\ControladorPrincipal.class
 com\ppai\app\dao\TipoTrabajoDAO.class
 com\ppai\app\entidad\Empleado.class
 com\ppai\app\entidad\SinRevision.class
@@ -53,7 +54,6 @@ com\ppai\app\entidad\TipoTareaInspeccion.class
 com\ppai\app\entidad\Usuario.class
 com\ppai\app\entidad\Rol.class
 com\ppai\app\entidad\AutoConfirmado.class
-com\ppai\app\controlador\ControladorPrincipal$EventoSismicoDTO.class
 com\ppai\app\dao\TareaAsignadaDAO.class
 com\ppai\app\entidad\Anulado.class
 com\ppai\app\dao\EstacionSismologicaDAO.class
