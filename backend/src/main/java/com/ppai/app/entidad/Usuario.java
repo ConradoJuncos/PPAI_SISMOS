@@ -13,6 +13,13 @@ public class Usuario {
     private List<Suscripcion> suscripcion = new ArrayList<Suscripcion>();
     private Empleado empleado;
 
+    // Metodo Constructor con parametros
+    public Usuario(long idUsuario, String contraseña, String nombre){
+        setIdUsuario(idUsuario);
+        setContraseña(contraseña);
+        setNombreUsuario(nombre);
+    }
+
     // Método Constructor sin parámetros
     public Usuario(){}
 
