@@ -5,7 +5,6 @@ import com.ppai.app.contexto.Contexto;
 import com.ppai.app.datos.DatabaseConnection;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import java.sql.SQLException;
 
 public class Main {
 
@@ -16,15 +15,9 @@ public class Main {
         // #################################################
         // 1. Inicialización de la Base de Datos
         // #################################################
-        try {
-            System.out.println("Inicializando Base de Datos...");
-            DatabaseConnection.getConnection();
-            System.out.println("Base de Datos inicializada correctamente.");
-        } catch (SQLException e) {
-            System.err.println("❌ ERROR FATAL: No se pudo conectar/crear la base de datos.");
-            e.printStackTrace();
-            return;
-        }
+        System.out.println("Inicializando Base de Datos...");
+        DatabaseConnection.initDatabase(); // ✅ crea tablas + carga datos
+        System.out.println("Base de Datos inicializada correctamente.");
 
         // #################################################
         // 2. Inicialización del Contexto de dominio
@@ -73,7 +66,6 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\nCerrando servidor...");
             app.stop();
-            DatabaseConnection.cerrarConexion();
             System.out.println("Servidor cerrado correctamente.");
         }));
     }

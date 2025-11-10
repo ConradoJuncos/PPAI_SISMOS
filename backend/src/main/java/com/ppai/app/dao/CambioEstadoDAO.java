@@ -120,8 +120,8 @@ public class CambioEstadoDAO {
     public List<CambioEstado> findBySismografoId(Connection conn, long idSismografo) throws SQLException {
         String sql = """
             SELECT ce.* FROM CambioEstado ce
-            JOIN CambioEstado_Sismografo ces ON ce.idCambioEstado = ces.idCambioEstado
-            WHERE ces.idSismografo = ?
+            JOIN Sismografo_CambioEstado ces ON ce.idCambioEstado = ces.idCambioEstado
+            WHERE ces.identificadorSismografo = ?
             ORDER BY ce.fechaHoraInicio ASC
             """;
         List<CambioEstado> cambios = new ArrayList<>();

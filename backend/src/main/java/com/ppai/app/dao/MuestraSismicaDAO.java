@@ -154,7 +154,7 @@ public class MuestraSismicaDAO {
     // ==============================================================
 
     private void insertDetalles(Connection conn, long idMuestra, List<Long> detalles) throws SQLException {
-        String sql = "INSERT INTO MuestraSismica_Detalle (idMuestraSismica, idDetalleMuestraSismica) VALUES (?, ?)";
+        String sql = "INSERT INTO MuestraSismica_DetalleMuestraSismica (idMuestraSismica, idDetalleMuestraSismica) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (Long idDetalle : detalles) {
                 ps.setLong(1, idMuestra);
@@ -166,7 +166,7 @@ public class MuestraSismicaDAO {
     }
 
     private void deleteDetalles(Connection conn, long idMuestra) throws SQLException {
-        String sql = "DELETE FROM MuestraSismica_Detalle WHERE idMuestraSismica = ?";
+        String sql = "DELETE FROM MuestraSismica_DetalleMuestraSismica WHERE idMuestraSismica = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idMuestra);
             ps.executeUpdate();
@@ -174,7 +174,7 @@ public class MuestraSismicaDAO {
     }
 
     private List<Long> findDetallesByMuestra(Connection conn, long idMuestra) throws SQLException {
-        String sql = "SELECT idDetalleMuestraSismica FROM MuestraSismica_Detalle WHERE idMuestraSismica = ?";
+        String sql = "SELECT idDetalleMuestraSismica FROM MuestraSismica_DetalleMuestraSismica WHERE idMuestraSismica = ?";
         List<Long> detalles = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idMuestra);

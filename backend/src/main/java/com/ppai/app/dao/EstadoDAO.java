@@ -59,6 +59,10 @@ public class EstadoDAO {
                 return new Cerrado(null, null, null);
             case "SinRevision":
                 return new SinRevision(null, null, null);
+            case "Activo":
+                return null; // no se trabaja con estados de series temporales para esta implementacion
+            case "Inactivo":
+                return null;
             default:
                 throw new SQLException("Estado desconocido o sin implementación: " + nombreEstado);
         }
@@ -99,7 +103,7 @@ public class EstadoDAO {
     }
 
     public Estado findByAmbitoAndNombre(String ambito, String nombreEstado) throws SQLException {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ambitoEsatdo = ? AND nombreEstado = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ambitoEstado = ? AND nombreEstado = ?";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 

@@ -124,8 +124,8 @@ public class ReparacionDAO {
     public List<Reparacion> findBySismografoId(Connection conn, long idSismografo) throws SQLException {
         String sql = """
             SELECT r.* FROM Reparacion r
-            JOIN Reparacion_Sismografo rs ON r.nroReparacion = rs.idReparacion
-            WHERE rs.idSismografo = ?
+            JOIN Reparacion_Sismografo rs ON r.nroReparacion = rs.nroReparacion
+            WHERE rs.identificadorSismografo = ?
             """;
         List<Reparacion> reparaciones = new ArrayList<>();
 

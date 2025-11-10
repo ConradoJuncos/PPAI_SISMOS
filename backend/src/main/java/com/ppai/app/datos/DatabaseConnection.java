@@ -1,55 +1,102 @@
 package com.ppai.app.datos;
 
-import java.io.File;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseConnection {
 
     private static final String DB_URL = "jdbc:sqlite:redSismica.sqlite3";
-    private static Connection connection;
 
-    public static Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            try {
-                Class.forName("org.sqlite.JDBC");
-            } catch (ClassNotFoundException e) {
-                throw new SQLException("Error: No se encontró el driver JDBC de SQLite.", e);
+    public static Connection getConnection() {
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL);
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("PRAGMA foreign_keys = ON;");
             }
-
-            File dbFile = new File("redSismica.sqlite3");
-            boolean dbExists = dbFile.exists();
-
-            connection = DriverManager.getConnection(DB_URL);
-
-            try (Statement s = connection.createStatement()) {
-                s.execute("PRAGMA foreign_keys = ON;");
-            }
-
-            if (!dbExists) {
-                initDatabase();
-            }
+            return conn;
+        } catch (SQLException e) {
+            System.err.println("Error al conectar con la base de datos: " + e.getMessage());
+            return null;
         }
-        return connection;
     }
 
-    private static void initDatabase() throws SQLException {
+    public static void initDatabase() {
+        System.out.println("Inicializando Base de Datos...");
         try (Connection conn = getConnection()) {
+            if (conn == null) {
+                System.err.println("No se pudo establecer conexión con la base de datos.");
+                return;
+            }
+
             createTables(conn);
             insertSampleData(conn);
+
             System.out.println("Base de datos creada y datos iniciales cargados.");
+            System.out.println("Base de Datos inicializada correctamente.");
+        } catch (SQLException e) {
+            System.err.println("Error inicializando la base de datos: " + e.getMessage());
         }
     }
 
     private static void createTables(Connection conn) throws SQLException {
         List<String> tables = new ArrayList<>();
 
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS ClasificacionSismo (
+                        idClasificacionSismo INTEGER NOT NULL,
+                        kmProfundidadDesde REAL,
+                        kmProfundidadHasta REAL,
+                        nombre TEXT,
+                        PRIMARY KEY (idClasificacionSismo)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS AlcanceSismo (
+                        idAlcanceSismo INTEGER NOT NULL,
+                        descripcion TEXT,
+                        nombre TEXT,
+                        PRIMARY KEY (idAlcanceSismo)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS OrigenDeGeneracion (
+                        idOrigenDeGeneracion INTEGER NOT NULL,
+                        descripcion TEXT,
+                        nombre TEXT,
+                        PRIMARY KEY (idOrigenDeGeneracion)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS MagnitudRichter (
+                        numero INTEGER NOT NULL,
+                        descripcion TEXT,
+                        PRIMARY KEY (numero)
+                    );
+                """);
+
         tables.add("CREATE TABLE IF NOT EXISTS Rol (\n" +
                 "    idRol INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    nombre TEXT NOT NULL UNIQUE,\n" +
                 "    descripcion TEXT\n" +
                 ");");
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Reparacion (
+                        nroReparacion INTEGER NOT NULL,
+                        comentarioReparacion TEXT,
+                        comentarioSolucion TEXT,
+                        fechaEnvioReparacion TEXT,
+                        fechaRespuestaReparacion TEXT,
+                        PRIMARY KEY (nroReparacion)
+                    );
+                """);
 
         tables.add("CREATE TABLE IF NOT EXISTS Empleado (\n" +
                 "    idEmpleado INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
@@ -68,12 +115,25 @@ public class DatabaseConnection {
                 "    PRIMARY KEY (ambitoEstado, nombreEstado)\n" +
                 ");");
 
-        tables.add("CREATE TABLE IF NOT EXISTS ModeloSismografo (\n" +
-                "    idModeloSismografo INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    nombre TEXT NOT NULL,\n" +
-                "    marca TEXT NOT NULL,\n" +
-                "    precisionGrados REAL\n" +
-                ");");
+        tables.add("""
+                        CREATE TABLE IF NOT EXISTS Fabricante (
+                            idFabricante INTEGER,
+                            nombre TEXT,
+                            razonSocial TEXT,
+                            PRIMARY KEY (idFabricante)
+
+                        );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS ModeloSismografo (
+                        idModeloSismografo INTEGER PRIMARY KEY AUTOINCREMENT,
+                        caracteristicas TEXT,
+                        nombreModelo TEXT NOT NULL,
+                        idFabricante INTEGER NOT NULL,
+                        FOREIGN KEY (idFabricante) REFERENCES Fabricante(idFabricante)
+                    );
+                """);
 
         tables.add("CREATE TABLE IF NOT EXISTS EstacionSismologica (\n" +
                 "    codigoEstacion INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
@@ -128,6 +188,16 @@ public class DatabaseConnection {
                 "    FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado)\n" +
                 ");");
 
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS Reparacion_Sismografo (
+                        nroReparacion INTEGER NOT NULL,
+                        identificadorSismografo INTEGER NOT NULL,
+                        PRIMARY KEY (nroReparacion, identificadorSismografo),
+                        FOREIGN KEY (nroReparacion) REFERENCES Reparacion(nroReparacion),
+                        FOREIGN KEY (identificadorSismografo) REFERENCES Sismografo(identificadorSismografo)
+                    );
+                """);
+
         tables.add("CREATE TABLE IF NOT EXISTS TareaAsignada (\n" +
                 "    idTareaAsignada INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    fechaHoraAsignacion DATETIME NOT NULL,\n" +
@@ -165,46 +235,54 @@ public class DatabaseConnection {
 
         tables.add("CREATE TABLE IF NOT EXISTS TipoDeDato (\n" +
                 "    idTipoDeDato INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    nombre TEXT NOT NULL,\n" +
-                "    unidadMedida TEXT NOT NULL,\n" +
-                "    umbralMaximo REAL\n" +
+                "    denominacion TEXT NOT NULL,\n" +
+                "    nombreUnidadMedida TEXT NOT NULL,\n" +
+                "    valorUmbral REAL\n" +
                 ");");
 
         tables.add("CREATE TABLE IF NOT EXISTS EventoSismico (\n" +
                 "    idEventoSismico INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    fechaHoraFin DATETIME NOT NULL,\n" +
                 "    fechaHoraOcurrencia DATETIME NOT NULL,\n" +
                 "    latitudEpicentro REAL NOT NULL,\n" +
                 "    longitudEpicentro REAL NOT NULL,\n" +
-                "    profundidadHipocentro REAL,\n" +
-                "    magnitudRichter REAL NOT NULL,\n" +
-                "    clasificacionSismo TEXT,\n" +
-                "    origenGeneracion TEXT,\n" +
-                "    alcanceSismo TEXT,\n" +
+                "    latitudHipocentro REAL,\n" +
+                "    longitudHipocentro REAL,\n" +
+                "    valorMagnitud REAL,\n" +
+                "    magnitudRichter INTEGER NOT NULL,\n" +
+                "    idClasificacionSismo INTEGER NOT NULL,\n" +
+                "    idOrigenGeneracionSismo INTEGER NOT NULL,\n" +
+                "    idAlcanceSismo INTEGER NOT NULL,\n" +
                 "    ambitoEstado TEXT NOT NULL,\n" +
                 "    nombreEstado TEXT NOT NULL,\n" +
+                "    idAnalistaSupervisor INTEGER,\n" +
+                "    FOREIGN KEY (idAnalistaSupervisor) REFERENCES Empleado(idEmpleado),\n" +
                 "    FOREIGN KEY (ambitoEstado, nombreEstado) REFERENCES Estado(ambitoEstado, nombreEstado)\n" +
                 ");");
 
         tables.add("CREATE TABLE IF NOT EXISTS SerieTemporal (\n" +
                 "    idSerieTemporal INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    fechaHoraInicio DATETIME NOT NULL,\n" +
-                "    frecuenciaMuestreoHz REAL NOT NULL,\n" +
-                "    alertaAlarma INTEGER DEFAULT 0,\n" +
+                "    fechaHoraRegistro DATETIME NOT NULL,\n" +
+                "    frecuenciaMuestreo REAL NOT NULL,\n" +
+                "    condicionAlarma TEXT,\n" +
+                "    nombreEstado TEXT NOT NULL,\n" +
+                "    ambitoEstado TEXT NOT NULL,\n" +
                 "    idEventoSismico INTEGER NOT NULL,\n" +
                 "    codigoEstacion INTEGER NOT NULL,\n" +
                 "    FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico),\n" +
-                "    FOREIGN KEY (codigoEstacion) REFERENCES EstacionSismologica(codigoEstacion)\n" +
+                "    FOREIGN KEY (codigoEstacion) REFERENCES EstacionSismologica(codigoEstacion),\n" +
+                "    FOREIGN KEY (nombreEstado, ambitoEstado) REFERENCES Estado(nombreEstado, ambitoEstado)\n" +
                 ");");
 
         tables.add("CREATE TABLE IF NOT EXISTS MuestraSismica (\n" +
                 "    idMuestraSismica INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    fechaHora DATETIME NOT NULL,\n" +
+                "    fechaHoraMuestraSismica DATETIME NOT NULL,\n" +
                 "    idSerieTemporal INTEGER NOT NULL,\n" +
                 "    FOREIGN KEY (idSerieTemporal) REFERENCES SerieTemporal(idSerieTemporal)\n" +
                 ");");
 
         tables.add("CREATE TABLE IF NOT EXISTS DetalleMuestraSismica (\n" +
-                "    idDetalleMuestra INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    idDetalleMuestraSismica INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    valor REAL NOT NULL,\n" +
                 "    idMuestraSismica INTEGER NOT NULL,\n" +
                 "    idTipoDeDato INTEGER NOT NULL,\n" +
@@ -268,6 +346,36 @@ public class DatabaseConnection {
                     );
                 """);
 
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS SerieTemporal_MuestraSismica (
+                        idSerieTemporal INTEGER NOT NULL,
+                        idMuestraSismica INTEGER NOT NULL,
+                        PRIMARY KEY (idSerieTemporal, idMuestraSismica),
+                        FOREIGN KEY (idSerieTemporal) REFERENCES SerieTemporal(idSerieTemporal),
+                        FOREIGN KEY (idMuestraSismica) REFERENCES MuestraSismica(idMuestraSismica)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS MuestraSismica_DetalleMuestraSismica (
+                        idMuestraSismica INTEGER NOT NULL,
+                        idDetalleMuestraSismica INTEGER NOT NULL,
+                        PRIMARY KEY (idMuestraSismica, idDetalleMuestraSismica),
+                        FOREIGN KEY (idMuestraSismica) REFERENCES MuestraSismica(idMuestraSismica),
+                        FOREIGN KEY (idDetalleMuestraSismica) REFERENCES DetalleMuestraSismica(idDetalleMuestraSismica)
+                    );
+                """);
+
+        tables.add("""
+                    CREATE TABLE IF NOT EXISTS EventoSismico_CambioEstado (
+                        idEventoSismico INTEGER NOT NULL,
+                        idCambioEstado INTEGER NOT NULL,
+                        PRIMARY KEY (idEventoSismico, idCambioEstado),
+                        FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico),
+                        FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado)
+                    );
+                """);
+
         try (Statement s = conn.createStatement()) {
             for (String tableSql : tables) {
                 s.execute(tableSql);
@@ -279,6 +387,42 @@ public class DatabaseConnection {
         Statement stmt = conn.createStatement();
 
         try {
+
+            // ====== CLASIFICACION SISMO (3) ======
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO ClasificacionSismo (idClasificacionSismo, kmProfundidadDesde, kmProfundidadHasta, nombre) VALUES
+                                (1, 0.0, 70.0, 'Superficial'),
+                                (2, 70.1, 300.0, 'Intermedio'),
+                                (3, 300.1, 700.0, 'Profundo');
+                            """);
+
+            // ====== ALCANCE SISMO (3) ======
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO AlcanceSismo (idAlcanceSismo, descripcion, nombre) VALUES
+                                (1, 'Sismo perceptible solo en el área inmediata al epicentro, con efectos muy localizados.', 'Local'),
+                                (2, 'Sismo perceptible en una región amplia (varios países o continentes) con efectos distribuidos.', 'Regional'),
+                                (3, 'Sismo con efectos limitados que no genera daños significativos y a menudo solo es registrado por instrumentación.', 'Instrumental');
+                            """);
+
+            // ====== ORIGEN DE GENERACIÓN (2) ======
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO OrigenDeGeneracion (idOrigenDeGeneracion, descripcion, nombre) VALUES
+                                (1, 'Movimiento en la zona de subducción entre placas tectónicas (principalmente en el plano de la placa subducida).', 'Sismo interplaca'),
+                                (2, 'Movimiento en las fallas dentro de una misma placa tectónica (generalmente en la corteza continental).', 'Sismo cortical');
+                            """);
+
+            // ====== MAGNITUD RICHTER (3) ======
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO MagnitudRichter (numero, descripcion) VALUES
+                                (3, 'Menor: Generalmente no se siente, pero es registrado. Daños muy leves o nulos.'),
+                                (4, 'Ligero: A menudo se siente, pero solo causa daños menores.'),
+                                (5, 'Moderado: Se siente ampliamente y puede causar daños mayores a edificios débiles o leves a resistentes.');
+                            """);
+
             // ====== ESTADOS ======
             stmt.executeUpdate("""
                         INSERT OR IGNORE INTO Estado (ambitoEstado, nombreEstado) VALUES
@@ -290,7 +434,9 @@ public class DatabaseConnection {
                         ('EventoSismico', 'Rechazado'),
                         ('EventoSismico', 'PendienteDeCierre'),
                         ('EventoSismico', 'Cerrado'),
-                        ('EventoSismico', 'SinRevision');
+                        ('EventoSismico', 'SinRevision'),
+                        ('SerieTemporal', 'Activo'),
+                        ('SerieTemporal', 'Inactivo');
                     """);
 
             // ====== ROLES ======
@@ -314,11 +460,20 @@ public class DatabaseConnection {
                         ('LucasSegundo', 'contra123', 2);
                     """);
 
+            // FABRICANTES
+            stmt.executeUpdate("""
+                        INSERT OR IGNORE INTO Fabricante (idFabricante, nombre, razonSocial) VALUES
+                        (1, 'ZETLAB', 'ZETLAB Universe'),
+                        (2, 'GeoTech', 'GeoTech SA'),
+                        (3, 'Kinemetrics', 'Kine metric SA');
+                    """);
+
             // ====== MODELOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE INTO ModeloSismografo (nombre, marca, precisionGrados) VALUES
-                        ('ZET 7152-N VER.3', 'ZETLAB', 0.01),
-                        ('GeoTech A500', 'GeoTech', 0.02);
+                        INSERT OR IGNORE INTO ModeloSismografo (caracteristicas, nombreModelo, idFabricante) VALUES
+                        ('Alta sensibilidad, 3 ejes, rango ±2g', 'ZET 7152-N VER.3', 1),
+                        ('Sensor de alta precisión para estaciones automáticas', 'GeoTech A500', 2),
+                        ('Modelo compacto para registro portátil', 'Kinemetrics Horizon', 3);
                     """);
 
             // ====== ESTACIONES ======
@@ -340,39 +495,58 @@ public class DatabaseConnection {
 
             // ====== TIPOS DE DATO ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE INTO TipoDeDato (nombre, unidadMedida, umbralMaximo) VALUES
+                        INSERT OR IGNORE INTO TipoDeDato (denominacion, nombreUnidadMedida, valorUmbral) VALUES
                         ('Frecuencia de onda', 'Hz', 15.0),
                         ('Longitud de onda', 'km/ciclo', 1.5),
                         ('Velocidad de onda', 'km/s', 8.0);
                     """);
 
-            // ====== EVENTOS SISMICOS (12) ======
+            // ====== EVENTOS SISMICOS (12) - CON IDs DE FK ACTUALIZADOS ======
             // IDs asignados implícitamente 1..12 por el orden de inserción
             stmt.executeUpdate(
                     """
                                 INSERT OR IGNORE INTO EventoSismico (
-                                    fechaHoraOcurrencia, latitudEpicentro, longitudEpicentro, profundidadHipocentro,
-                                    magnitudRichter, clasificacionSismo, origenGeneracion, alcanceSismo,
+                                    fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, longitudEpicentro, latitudHipocentro, longitudHipocentro,
+                                    valorMagnitud, magnitudRichter, idClasificacionSismo, idOrigenGeneracionSismo, idAlcanceSismo,
                                     ambitoEstado, nombreEstado
                                 ) VALUES
-                                -- 1..4 AutoDetectado
-                                ('2025-02-21 19:05:41', -31.52, -64.19, 45.0, 4.3, 'Intermedio', 'Sismo interplaca', 'Regional', 'EventoSismico', 'AutoDetectado'),
-                                ('2025-04-01 10:00:00', -31.10, -65.20, 20.0, 3.8, 'Superficial', 'Sismo cortical', 'Local', 'EventoSismico', 'AutoDetectado'),
-                                ('2025-04-02 14:15:00', -31.25, -65.45, 25.0, 4.1, 'Intermedio', 'Sismo interplaca', 'Regional', 'EventoSismico', 'AutoDetectado'),
-                                ('2025-04-03 09:30:00', -31.40, -65.60, 30.0, 4.5, 'Intermedio', 'Sismo cortical', 'Regional', 'EventoSismico', 'AutoDetectado'),
-                                -- 5..6 PendienteRevision
-                                ('2025-04-05 12:10:00', -31.70, -65.90, 40.0, 5.0, 'Profundo', 'Sismo interplaca', 'Regional', 'EventoSismico', 'PendienteDeRevision'),
-                                ('2025-04-06 18:25:00', -31.85, -66.05, 45.0, 5.2, 'Profundo', 'Sismo cortical', 'Regional', 'EventoSismico', 'PendienteDeRevision'),
-                                -- 7 BloqueadoRevision
-                                ('2025-04-07 03:00:00', -32.00, -66.20, 30.0, 4.3, 'Intermedio', 'Sismo cortical', 'Regional', 'EventoSismico', 'BloqueadoEnRevision'),
-                                -- 8 Derivado
-                                ('2025-04-08 05:20:00', -32.15, -66.35, 25.0, 4.0, 'Intermedio', 'Sismo interplaca', 'Local', 'EventoSismico', 'DerivadoAExperto'),
-                                -- 9..10 Confirmado
-                                ('2025-04-09 21:40:00', -32.30, -66.50, 20.0, 4.6, 'Superficial', 'Sismo cortical', 'Regional', 'EventoSismico', 'Confirmado'),
-                                ('2025-04-11 08:00:00', -32.40, -66.55, 18.0, 4.9, 'Superficial', 'Sismo cortical', 'Regional', 'EventoSismico', 'Confirmado'),
-                                -- 11..12 Rechazado
-                                ('2025-03-08 13:00:00', -32.15, -68.40, 35.0, 3.7, 'Superficial', 'Sismo cortical', 'Local', 'EventoSismico', 'Rechazado'),
-                                ('2025-04-10 11:55:00', -32.45, -66.65, 15.0, 3.9, 'Superficial', 'Sismo interplaca', 'Local', 'EventoSismico', 'Rechazado');
+                                -- (..., valorMagnitud (REAL), magnitudRichter (INT/FK), idClasificacion, idOrigenGeneracion, idAlcance, ...)
+
+                                -- 1 (AutoDetectado) | Mag: 4.3 (FK: 4) | Clasif: 2 | Origen: 1 | Alcance: 2
+                                ('2025-02-21 19:10:41', '2025-02-21 19:05:41', -31.52, -64.19, -31.52, -64.19, 4.3, 4, 2, 1, 2, 'EventoSismico', 'AutoDetectado'),
+
+                                -- 2 (AutoDetectado) | Mag: 3.8 (FK: 3) | Clasif: 1 | Origen: 2 | Alcance: 1
+                                ('2025-04-01 10:05:00', '2025-04-01 10:00:00', -31.10, -65.20, -31.10, -65.20, 3.8, 3, 1, 2, 1, 'EventoSismico', 'AutoDetectado'),
+
+                                -- 3 (AutoDetectado) | Mag: 4.1 (FK: 4) | Clasif: 2 | Origen: 1 | Alcance: 2
+                                ('2025-04-02 14:20:00', '2025-04-02 14:15:00', -31.25, -65.45, -31.25, -65.45, 4.1, 4, 2, 1, 2, 'EventoSismico', 'AutoDetectado'),
+
+                                -- 4 (AutoDetectado) | Mag: 4.5 (FK: 4) | Clasif: 2 | Origen: 2 | Alcance: 2
+                                ('2025-04-03 09:35:00', '2025-04-03 09:30:00', -31.40, -65.60, -31.40, -65.60, 4.5, 4, 2, 2, 2, 'EventoSismico', 'AutoDetectado'),
+
+                                -- 5 (PendienteRevision) | Mag: 5.0 (FK: 5) | Clasif: 3 | Origen: 1 | Alcance: 2
+                                ('2025-04-05 12:15:00', '2025-04-05 12:10:00', -31.70, -65.90, -31.70, -65.90, 5.0, 5, 3, 1, 2, 'EventoSismico', 'PendienteDeRevision'),
+
+                                -- 6 (PendienteRevision) | Mag: 5.2 (FK: 5) | Clasif: 3 | Origen: 2 | Alcance: 2
+                                ('2025-04-06 18:30:00', '2025-04-06 18:25:00', -31.85, -66.05, -31.85, -66.05, 5.2, 5, 3, 2, 2, 'EventoSismico', 'PendienteDeRevision'),
+
+                                -- 7 (BloqueadoRevision) | Mag: 4.3 (FK: 4) | Clasif: 2 | Origen: 2 | Alcance: 2
+                                ('2025-04-07 03:05:00', '2025-04-07 03:00:00', -32.00, -66.20, -32.00, -66.20, 4.3, 4, 2, 2, 2, 'EventoSismico', 'BloqueadoEnRevision'),
+
+                                -- 8 (Derivado) | Mag: 4.0 (FK: 4) | Clasif: 2 | Origen: 1 | Alcance: 1
+                                ('2025-04-08 05:25:00', '2025-04-08 05:20:00', -32.15, -66.35, -32.15, -66.35, 4.0, 4, 2, 1, 1, 'EventoSismico', 'DerivadoAExperto'),
+
+                                -- 9 (Confirmado) | Mag: 4.6 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
+                                ('2025-04-09 21:45:00', '2025-04-09 21:40:00', -32.30, -66.50, -32.30, -66.50, 4.6, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
+
+                                -- 10 (Confirmado) | Mag: 4.9 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
+                                ('2025-04-11 08:05:00', '2025-04-11 08:00:00', -32.40, -66.55, -32.40, -66.55, 4.9, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
+
+                                -- 11 (Rechazado) | Mag: 3.7 (FK: 3) | Clasif: 1 | Origen: 2 | Alcance: 1
+                                ('2025-03-08 13:05:00', '2025-03-08 13:00:00', -32.15, -68.40, -32.15, -68.40, 3.7, 3, 1, 2, 1, 'EventoSismico', 'Rechazado'),
+
+                                -- 12 (Rechazado) | Mag: 3.9 (FK: 3) | Clasif: 1 | Origen: 1 | Alcance: 1
+                                ('2025-04-10 12:00:00', '2025-04-10 11:55:00', -32.45, -66.65, -32.45, -66.65, 3.9, 3, 1, 1, 1, 'EventoSismico', 'Rechazado');
                             """);
 
             // ====== CAMBIOESTADO — registro simple por evento (estado actual) ======
@@ -399,110 +573,111 @@ public class DatabaseConnection {
             // idSerieTemporal = 1..36
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE INTO SerieTemporal (idSerieTemporal, fechaHoraInicio, frecuenciaMuestreoHz, alertaAlarma, idEventoSismico, codigoEstacion) VALUES
+                                INSERT OR IGNORE INTO SerieTemporal (idSerieTemporal, fechaHoraRegistro, frecuenciaMuestreo, condicionAlarma, nombreEstado, ambitoEstado, idEventoSismico, codigoEstacion) VALUES
                                 -- Evento 1 (idEventoSismico = 1) : series 1,2,3
-                                (1, '2025-02-21 19:05:41', 50.0, 0, 1, 1),
-                                (2, '2025-02-21 19:05:41', 50.0, 0, 1, 2),
-                                (3, '2025-02-21 19:05:41', 50.0, 0, 1, 3),
+                                (1, '2025-02-21 19:05:41', 50.0, 'condicion 1', 'Inactivo', 'SerieTemporal', 1, 1),
+                                (2, '2025-02-21 19:05:41', 50.0, 'condicion 2', 'Activo', 'SerieTemporal', 1, 2),
+                                (3, '2025-02-21 19:05:41', 50.0, 'condicion 1', 'Activo', 'SerieTemporal', 1, 3),
                                 -- Evento 2 (idEventoSismico = 2) : series 4,5,6
-                                (4, '2025-04-01 10:00:00', 50.0, 0, 2, 1),
-                                (5, '2025-04-01 10:00:00', 50.0, 0, 2, 2),
-                                (6, '2025-04-01 10:00:00', 50.0, 0, 2, 3),
+                                (4, '2025-04-01 10:00:00', 50.0, 'condicion 1', 'Inactivo', 'SerieTemporal', 2, 1),
+                                (5, '2025-04-01 10:00:00', 50.0, 'condicion 2', 'Activo', 'SerieTemporal', 2, 2),
+                                (6, '2025-04-01 10:00:00', 50.0, 'condicion 1', 'Inactivo', 'SerieTemporal', 2, 3),
                                 -- Evento 3 (idEventoSismico = 3) : series 7,8,9
-                                (7, '2025-04-02 14:15:00', 50.0, 0, 3, 1),
-                                (8, '2025-04-02 14:15:00', 50.0, 0, 3, 2),
-                                (9, '2025-04-02 14:15:00', 50.0, 0, 3, 3),
+                                (7, '2025-04-02 14:15:00', 50.0, 'condicion 1', 'Activo', 'SerieTemporal', 3, 1),
+                                (8, '2025-04-02 14:15:00', 50.0, 'condicion 2', 'Activo', 'SerieTemporal', 3, 2),
+                                (9, '2025-04-02 14:15:00', 50.0, 'condicion 1', 'Activo', 'SerieTemporal', 3, 3),
                                 -- Evento 4 (idEventoSismico = 4) : series 10,11,12
-                                (10, '2025-04-03 09:30:00', 50.0, 0, 4, 1),
-                                (11, '2025-04-03 09:30:00', 50.0, 0, 4, 2),
-                                (12, '2025-04-03 09:30:00', 50.0, 0, 4, 3),
+                                (10, '2025-04-03 09:30:00', 50.0, 'condicion 2', 'Inactivo', 'SerieTemporal', 4, 1),
+                                (11, '2025-04-03 09:30:00', 50.0, 'condicion 2', 'Inactivo', 'SerieTemporal', 4, 2),
+                                (12, '2025-04-03 09:30:00', 50.0, 'condicion 2', 'Inactivo', 'SerieTemporal', 4, 3),
                                 -- Evento 5 (idEventoSismico = 5) : series 13,14,15
-                                (13, '2025-04-05 12:10:00', 50.0, 0, 5, 1),
-                                (14, '2025-04-05 12:10:00', 50.0, 0, 5, 2),
-                                (15, '2025-04-05 12:10:00', 50.0, 0, 5, 3),
+                                (13, '2025-04-05 12:10:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 5, 1),
+                                (14, '2025-04-05 12:10:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 5, 2),
+                                (15, '2025-04-05 12:10:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 5, 3),
                                 -- Evento 6 (idEventoSismico = 6) : series 16,17,18
-                                (16, '2025-04-06 18:25:00', 50.0, 0, 6, 1),
-                                (17, '2025-04-06 18:25:00', 50.0, 0, 6, 2),
-                                (18, '2025-04-06 18:25:00', 50.0, 0, 6, 3),
+                                (16, '2025-04-06 18:25:00', 50.0, 'condicion 3', 'Activo', 'SerieTemporal', 6, 1),
+                                (17, '2025-04-06 18:25:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 6, 2),
+                                (18, '2025-04-06 18:25:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 6, 3),
                                 -- Evento 7 (idEventoSismico = 7) : series 19,20,21
-                                (19, '2025-04-07 03:00:00', 50.0, 0, 7, 1),
-                                (20, '2025-04-07 03:00:00', 50.0, 0, 7, 2),
-                                (21, '2025-04-07 03:00:00', 50.0, 0, 7, 3),
+                                (19, '2025-04-07 03:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 7, 1),
+                                (20, '2025-04-07 03:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 7, 2),
+                                (21, '2025-04-07 03:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 7, 3),
                                 -- Evento 8 (idEventoSismico = 8) : series 22,23,24
-                                (22, '2025-04-08 05:20:00', 50.0, 0, 8, 1),
-                                (23, '2025-04-08 05:20:00', 50.0, 0, 8, 2),
-                                (24, '2025-04-08 05:20:00', 50.0, 0, 8, 3),
+                                (22, '2025-04-08 05:20:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 8, 1),
+                                (23, '2025-04-08 05:20:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 8, 2),
+                                (24, '2025-04-08 05:20:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 8, 3),
                                 -- Evento 9 (idEventoSismico = 9) : series 25,26,27
-                                (25, '2025-04-09 21:40:00', 50.0, 0, 9, 1),
-                                (26, '2025-04-09 21:40:00', 50.0, 0, 9, 2),
-                                (27, '2025-04-09 21:40:00', 50.0, 0, 9, 3),
+                                (25, '2025-04-09 21:40:00', 50.0, 'condicion 2', 'Inactivo', 'SerieTemporal', 9, 1),
+                                (26, '2025-04-09 21:40:00', 50.0, 'condicion 3', 'Activo', 'SerieTemporal', 9, 2),
+                                (27, '2025-04-09 21:40:00', 50.0, 'condicion 1', 'Inactivo', 'SerieTemporal', 9, 3),
                                 -- Evento 10 (idEventoSismico = 10) : series 28,29,30
-                                (28, '2025-04-11 08:00:00', 50.0, 0, 10, 1),
-                                (29, '2025-04-11 08:00:00', 50.0, 0, 10, 2),
-                                (30, '2025-04-11 08:00:00', 50.0, 0, 10, 3),
+                                (28, '2025-04-11 08:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 10, 1),
+                                (29, '2025-04-11 08:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 10, 2),
+                                (30, '2025-04-11 08:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 10, 3),
                                 -- Evento 11 (idEventoSismico = 11) : series 31,32,33
-                                (31, '2025-03-08 13:00:00', 50.0, 0, 11, 1),
-                                (32, '2025-03-08 13:00:00', 50.0, 0, 11, 2),
-                                (33, '2025-03-08 13:00:00', 50.0, 0, 11, 3),
+                                (31, '2025-03-08 13:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 11, 1),
+                                (32, '2025-03-08 13:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 11, 2),
+                                (33, '2025-03-08 13:00:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 11, 3),
                                 -- Evento 12 (idEventoSismico = 12) : series 34,35,36
-                                (34, '2025-04-10 11:55:00', 50.0, 0, 12, 1),
-                                (35, '2025-04-10 11:55:00', 50.0, 0, 12, 2),
-                                (36, '2025-04-10 11:55:00', 50.0, 0, 12, 3);
+                                (34, '2025-04-10 11:55:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 12, 1),
+                                (35, '2025-04-10 11:55:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 12, 2),
+                                (36, '2025-04-10 11:55:00', 50.0, 'condicion 3', 'Inactivo', 'SerieTemporal', 12, 3);
                             """);
 
             // ====== MUESTRAS SISMICAS (2 por serie) ======
             // idMuestraSismica explícitos 1..72 (36 series * 2)
-            stmt.executeUpdate("""
-                        INSERT OR IGNORE INTO MuestraSismica (idMuestraSismica, fechaHora, idSerieTemporal) VALUES
-                        -- series 1..3 (evento1)
-                        (1, '2025-02-21 19:05:41', 1), (2, '2025-02-21 19:10:41', 1),
-                        (3, '2025-02-21 19:05:41', 2), (4, '2025-02-21 19:10:41', 2),
-                        (5, '2025-02-21 19:05:41', 3), (6, '2025-02-21 19:10:41', 3),
-                        -- series 4..6 (evento2)
-                        (7, '2025-04-01 10:00:00', 4), (8, '2025-04-01 10:05:00', 4),
-                        (9, '2025-04-01 10:00:00', 5), (10, '2025-04-01 10:05:00', 5),
-                        (11, '2025-04-01 10:00:00', 6), (12, '2025-04-01 10:05:00', 6),
-                        -- series 7..9 (evento3)
-                        (13, '2025-04-02 14:15:00', 7), (14, '2025-04-02 14:20:00', 7),
-                        (15, '2025-04-02 14:15:00', 8), (16, '2025-04-02 14:20:00', 8),
-                        (17, '2025-04-02 14:15:00', 9), (18, '2025-04-02 14:20:00', 9),
-                        -- series 10..12 (evento4)
-                        (19, '2025-04-03 09:30:00', 10), (20, '2025-04-03 09:35:00', 10),
-                        (21, '2025-04-03 09:30:00', 11), (22, '2025-04-03 09:35:00', 11),
-                        (23, '2025-04-03 09:30:00', 12), (24, '2025-04-03 09:35:00', 12),
-                        -- series 13..15 (evento5)
-                        (25, '2025-04-05 12:10:00', 13), (26, '2025-04-05 12:15:00', 13),
-                        (27, '2025-04-05 12:10:00', 14), (28, '2025-04-05 12:15:00', 14),
-                        (29, '2025-04-05 12:10:00', 15), (30, '2025-04-05 12:15:00', 15),
-                        -- series 16..18 (evento6)
-                        (31, '2025-04-06 18:25:00', 16), (32, '2025-04-06 18:30:00', 16),
-                        (33, '2025-04-06 18:25:00', 17), (34, '2025-04-06 18:30:00', 17),
-                        (35, '2025-04-06 18:25:00', 18), (36, '2025-04-06 18:30:00', 18),
-                        -- series 19..21 (evento7)
-                        (37, '2025-04-07 03:00:00', 19), (38, '2025-04-07 03:05:00', 19),
-                        (39, '2025-04-07 03:00:00', 20), (40, '2025-04-07 03:05:00', 20),
-                        (41, '2025-04-07 03:00:00', 21), (42, '2025-04-07 03:05:00', 21),
-                        -- series 22..24 (evento8)
-                        (43, '2025-04-08 05:20:00', 22), (44, '2025-04-08 05:25:00', 22),
-                        (45, '2025-04-08 05:20:00', 23), (46, '2025-04-08 05:25:00', 23),
-                        (47, '2025-04-08 05:20:00', 24), (48, '2025-04-08 05:25:00', 24),
-                        -- series 25..27 (evento9)
-                        (49, '2025-04-09 21:40:00', 25), (50, '2025-04-09 21:45:00', 25),
-                        (51, '2025-04-09 21:40:00', 26), (52, '2025-04-09 21:45:00', 26),
-                        (53, '2025-04-09 21:40:00', 27), (54, '2025-04-09 21:45:00', 27),
-                        -- series 28..30 (evento10)
-                        (55, '2025-04-11 08:00:00', 28), (56, '2025-04-11 08:05:00', 28),
-                        (57, '2025-04-11 08:00:00', 29), (58, '2025-04-11 08:05:00', 29),
-                        (59, '2025-04-11 08:00:00', 30), (60, '2025-04-11 08:05:00', 30),
-                        -- series 31..33 (evento11)
-                        (61, '2025-03-08 13:00:00', 31), (62, '2025-03-08 13:05:00', 31),
-                        (63, '2025-03-08 13:00:00', 32), (64, '2025-03-08 13:05:00', 32),
-                        (65, '2025-03-08 13:00:00', 33), (66, '2025-03-08 13:05:00', 33),
-                        -- series 34..36 (evento12)
-                        (67, '2025-04-10 11:55:00', 34), (68, '2025-04-10 12:00:00', 34),
-                        (69, '2025-04-10 11:55:00', 35), (70, '2025-04-10 12:00:00', 35),
-                        (71, '2025-04-10 11:55:00', 36), (72, '2025-04-10 12:00:00', 36);
-                    """);
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO MuestraSismica (idMuestraSismica, fechaHoraMuestraSismica, idSerieTemporal) VALUES
+                                -- series 1..3 (evento1)
+                                (1, '2025-02-21 19:05:41', 1), (2, '2025-02-21 19:10:41', 1),
+                                (3, '2025-02-21 19:05:41', 2), (4, '2025-02-21 19:10:41', 2),
+                                (5, '2025-02-21 19:05:41', 3), (6, '2025-02-21 19:10:41', 3),
+                                -- series 4..6 (evento2)
+                                (7, '2025-04-01 10:00:00', 4), (8, '2025-04-01 10:05:00', 4),
+                                (9, '2025-04-01 10:00:00', 5), (10, '2025-04-01 10:05:00', 5),
+                                (11, '2025-04-01 10:00:00', 6), (12, '2025-04-01 10:05:00', 6),
+                                -- series 7..9 (evento3)
+                                (13, '2025-04-02 14:15:00', 7), (14, '2025-04-02 14:20:00', 7),
+                                (15, '2025-04-02 14:15:00', 8), (16, '2025-04-02 14:20:00', 8),
+                                (17, '2025-04-02 14:15:00', 9), (18, '2025-04-02 14:20:00', 9),
+                                -- series 10..12 (evento4)
+                                (19, '2025-04-03 09:30:00', 10), (20, '2025-04-03 09:35:00', 10),
+                                (21, '2025-04-03 09:30:00', 11), (22, '2025-04-03 09:35:00', 11),
+                                (23, '2025-04-03 09:30:00', 12), (24, '2025-04-03 09:35:00', 12),
+                                -- series 13..15 (evento5)
+                                (25, '2025-04-05 12:10:00', 13), (26, '2025-04-05 12:15:00', 13),
+                                (27, '2025-04-05 12:10:00', 14), (28, '2025-04-05 12:15:00', 14),
+                                (29, '2025-04-05 12:10:00', 15), (30, '2025-04-05 12:15:00', 15),
+                                -- series 16..18 (evento6)
+                                (31, '2025-04-06 18:25:00', 16), (32, '2025-04-06 18:30:00', 16),
+                                (33, '2025-04-06 18:25:00', 17), (34, '2025-04-06 18:30:00', 17),
+                                (35, '2025-04-06 18:25:00', 18), (36, '2025-04-06 18:30:00', 18),
+                                -- series 19..21 (evento7)
+                                (37, '2025-04-07 03:00:00', 19), (38, '2025-04-07 03:05:00', 19),
+                                (39, '2025-04-07 03:00:00', 20), (40, '2025-04-07 03:05:00', 20),
+                                (41, '2025-04-07 03:00:00', 21), (42, '2025-04-07 03:05:00', 21),
+                                -- series 22..24 (evento8)
+                                (43, '2025-04-08 05:20:00', 22), (44, '2025-04-08 05:25:00', 22),
+                                (45, '2025-04-08 05:20:00', 23), (46, '2025-04-08 05:25:00', 23),
+                                (47, '2025-04-08 05:20:00', 24), (48, '2025-04-08 05:25:00', 24),
+                                -- series 25..27 (evento9)
+                                (49, '2025-04-09 21:40:00', 25), (50, '2025-04-09 21:45:00', 25),
+                                (51, '2025-04-09 21:40:00', 26), (52, '2025-04-09 21:45:00', 26),
+                                (53, '2025-04-09 21:40:00', 27), (54, '2025-04-09 21:45:00', 27),
+                                -- series 28..30 (evento10)
+                                (55, '2025-04-11 08:00:00', 28), (56, '2025-04-11 08:05:00', 28),
+                                (57, '2025-04-11 08:00:00', 29), (58, '2025-04-11 08:05:00', 29),
+                                (59, '2025-04-11 08:00:00', 30), (60, '2025-04-11 08:05:00', 30),
+                                -- series 31..33 (evento11)
+                                (61, '2025-03-08 13:00:00', 31), (62, '2025-03-08 13:05:00', 31),
+                                (63, '2025-03-08 13:00:00', 32), (64, '2025-03-08 13:05:00', 32),
+                                (65, '2025-03-08 13:00:00', 33), (66, '2025-03-08 13:05:00', 33),
+                                -- series 34..36 (evento12)
+                                (67, '2025-04-10 11:55:00', 34), (68, '2025-04-10 12:00:00', 34),
+                                (69, '2025-04-10 11:55:00', 35), (70, '2025-04-10 12:00:00', 35),
+                                (71, '2025-04-10 11:55:00', 36), (72, '2025-04-10 12:00:00', 36);
+                            """);
 
             // ======= Suscripciones =======
 
@@ -610,11 +785,11 @@ public class DatabaseConnection {
         }
     }
 
-    public static void cerrarConexion() {
+    public static void cerrarConexion(Connection conn) {
         try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-                System.out.println("Conexión cerrada");
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Conexión cerrada.");
             }
         } catch (SQLException e) {
             System.err.println("Error cerrando conexión: " + e.getMessage());

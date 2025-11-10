@@ -11,7 +11,7 @@ public class SerieTemporal {
     private String condicionAlarma;
     private LocalDateTime fechaHoraRegistro;
     private String frecuenciaMuestreo;
-    private long idEstado; 
+    private Estado estado; 
     private List<Long> idMuestraSismica = new ArrayList<>();
 
     // Constructor sin parámetros
@@ -36,8 +36,8 @@ public class SerieTemporal {
     public String getFrecuenciaMuestreo(){
         return this.frecuenciaMuestreo;
     }
-    public long getIdEstado(){
-        return this.idEstado;
+    public Estado getEstado(){
+        return this.estado;
     }
     public List<Long> getIdMuestraSismica(){
         return this.idMuestraSismica;
@@ -54,8 +54,8 @@ public class SerieTemporal {
     public void setFrecuenciaMuestreo(String frecuenciaMuestreo){
         this.frecuenciaMuestreo = frecuenciaMuestreo;
     }
-    public void setIdEstado(long idEstado){
-        this.idEstado = idEstado;
+    public void setEstado(Estado estado){
+        this.estado = estado;
     }
     public void setIdMuestraSismica(List<Long> idMuestraSismica) {
         this.idMuestraSismica = idMuestraSismica;

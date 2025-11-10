@@ -8,13 +8,16 @@ import java.util.*;
 
 public class SerieTemporalDAO {
 
+    // Dependencias
+    private final EstadoDAO estadoActualDAO = new EstadoDAO();
+
     /* --------------------------------------------------------------
        INSERT – guarda datos principales + relación N:N con muestras
        -------------------------------------------------------------- */
     public void insert(SerieTemporal s) throws SQLException {
         String sql = """
             INSERT INTO SerieTemporal 
-            (condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, idEstado) 
+            (condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, nombreEstado, ambitoEstado) 
             VALUES (?, ?, ?, ?)
             """;
         try (Connection conn = DatabaseConnection.getConnection();
@@ -23,7 +26,8 @@ public class SerieTemporalDAO {
             ps.setString(1, s.getCondicionAlarma());
             ps.setObject(2, s.getFechaHoraRegistro());
             ps.setString(3, s.getFrecuenciaMuestreo());
-            ps.setLong  (4, s.getIdEstado());
+            ps.setString(4, s.getEstado().getNombreEstado());
+            ps.setString(5, s.getEstado().getAmbito());
 
             ps.executeUpdate();
 
@@ -45,7 +49,7 @@ public class SerieTemporalDAO {
     public void update(SerieTemporal s) throws SQLException {
         String sql = """
             UPDATE SerieTemporal SET 
-            condicionAlarma = ?, fechaHoraRegistro = ?, frecuenciaMuestreo = ?, idEstado = ? 
+            condicionAlarma = ?, fechaHoraRegistro = ?, frecuenciaMuestreo = ?, nombreEstado = ?, ambitoEstado = ?, 
             WHERE idSerieTemporal = ?
             """;
         try (Connection conn = DatabaseConnection.getConnection();
@@ -54,8 +58,9 @@ public class SerieTemporalDAO {
             ps.setString(1, s.getCondicionAlarma());
             ps.setObject(2, s.getFechaHoraRegistro());
             ps.setString(3, s.getFrecuenciaMuestreo());
-            ps.setLong  (4, s.getIdEstado());
-            ps.setLong  (5, s.getIdSerieTemporal());
+            ps.setString(4, s.getEstado().getNombreEstado());
+            ps.setString(5, s.getEstado().getAmbito());
+            ps.setLong  (6, s.getIdSerieTemporal());
 
             ps.executeUpdate();
 
@@ -97,7 +102,10 @@ public class SerieTemporalDAO {
                     s.setCondicionAlarma(rs.getString("condicionAlarma"));
                     s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
                     s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-                    s.setIdEstado(rs.getLong("idEstado"));
+                    // Carga del Estado Actual (Directa)
+                    String ambito = rs.getString("ambitoEstado");
+                    String nombreEstado = rs.getString("nombreEstado");
+                    s.setEstado(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
                     // Cargar muestras sísmicas
                     List<Long> muestras = findMuestrasBySerieTemporal(conn, idSerieTemporal);
@@ -128,7 +136,10 @@ public class SerieTemporalDAO {
                 s.setCondicionAlarma(rs.getString("condicionAlarma"));
                 s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
                 s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-                s.setIdEstado(rs.getLong("idEstado"));
+                // Carga del Estado Actual (Directa)
+                String ambito = rs.getString("ambitoEstado");
+                String nombreEstado = rs.getString("nombreEstado");
+                s.setEstado(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
                 List<Long> muestras = findMuestrasBySerieTemporal(conn, s.getIdSerieTemporal());
                 s.setIdMuestraSismica(muestras);
@@ -160,7 +171,10 @@ public class SerieTemporalDAO {
                     s.setCondicionAlarma(rs.getString("condicionAlarma"));
                     s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
                     s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-                    s.setIdEstado(rs.getLong("idEstado"));
+                    // Carga del Estado Actual (Directa)
+                    String ambito = rs.getString("ambitoEstado");
+                    String nombreEstado = rs.getString("nombreEstado");
+                    s.setEstado(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
                     List<Long> muestras = findMuestrasBySerieTemporal(conn, s.getIdSerieTemporal());
                     s.setIdMuestraSismica(muestras);

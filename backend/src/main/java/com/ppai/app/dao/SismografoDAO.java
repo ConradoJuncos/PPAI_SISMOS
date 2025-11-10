@@ -225,8 +225,8 @@ public class SismografoDAO {
         // (es decir, el actual).
         String sql = """
                 SELECT ce.idCambioEstado FROM CambioEstado ce
-                JOIN CambioEstado_Sismografo ces ON ce.idCambioEstado = ces.idCambioEstado
-                WHERE ces.idSismografo = ? AND ce.fechaHoraFin IS NULL
+                JOIN Sismografo_CambioEstado ces ON ce.idCambioEstado = ces.idCambioEstado
+                WHERE ces.identificadorSismografo = ? AND ce.fechaHoraFin IS NULL
                 ORDER BY ce.fechaHoraInicio DESC LIMIT 1
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -251,7 +251,7 @@ public class SismografoDAO {
     private void insertCambioEstado(Connection conn, long idSismografo, List<CambioEstado> cambios)
             throws SQLException {
         // Enlaza el Sismografo con sus CambioEstado en la tabla intermedia
-        String sql = "INSERT INTO CambioEstado_Sismografo (idSismografo, idCambioEstado) VALUES (?, ?)";
+        String sql = "INSERT INTO Sismografo_CambioEstado (identificadorSismografo, idCambioEstado) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (CambioEstado ce : cambios) {
                 // Se asume que el ce ya fue insertado/tiene ID asignado
@@ -265,7 +265,7 @@ public class SismografoDAO {
 
     private void deleteCambioEstado(Connection conn, long idSismografo) throws SQLException {
         // Elimina el enlace entre Sismografo y CambioEstado
-        String sql = "DELETE FROM CambioEstado_Sismografo WHERE idSismografo = ?";
+        String sql = "DELETE FROM Sismografo_CambioEstado WHERE identificadorSismografo = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idSismografo);
             ps.executeUpdate();
@@ -275,7 +275,7 @@ public class SismografoDAO {
     private void insertReparacion(Connection conn, long idSismografo, List<Reparacion> reparaciones)
             throws SQLException {
         // Enlaza el Sismografo con sus Reparacion en la tabla intermedia
-        String sql = "INSERT INTO Reparacion_Sismografo (idSismografo, idReparacion) VALUES (?, ?)";
+        String sql = "INSERT INTO Reparacion_Sismografo (identificadorSismografo, nroReparacion) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (Reparacion r : reparaciones) {
                 // Se asume que la r ya fue insertada/tiene ID asignado
@@ -289,7 +289,7 @@ public class SismografoDAO {
 
     private void deleteReparacion(Connection conn, long idSismografo) throws SQLException {
         // Elimina el enlace entre Sismografo y Reparacion
-        String sql = "DELETE FROM Reparacion_Sismografo WHERE idSismografo = ?";
+        String sql = "DELETE FROM Reparacion_Sismografo WHERE identificadorSismografo = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idSismografo);
             ps.executeUpdate();

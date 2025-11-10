@@ -26,8 +26,8 @@ public class EventoSismicoDAO {
                 INSERT INTO EventoSismico (
                     fechaHoraOcurrencia, fechaHoraFin, latitudEpicentro, latitudHipocentro,
                     longitudEpicentro, longitudHipocentro, valorMagnitud,
-                    idClasificacionSismo, idMagnitudRichter, idOrigenGeneracion,
-                    idAlcanceSismo, idAnalistaSupervisor, ambitoEstadoActual, nombreEstadoActual
+                    idClasificacionSismo, magnitudRichter, idOrigenGeneracionSismo,
+                    idAlcanceSismo, idAnalistaSupervisor, ambitoEstado, nombreEstado
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) -- 14 placeholders
                 """;
         try (Connection conn = DatabaseConnection.getConnection();
@@ -77,9 +77,9 @@ public class EventoSismicoDAO {
                 UPDATE EventoSismico SET
                     fechaHoraOcurrencia = ?, fechaHoraFin = ?, latitudEpicentro = ?, latitudHipocentro = ?,
                     longitudEpicentro = ?, longitudHipocentro = ?, valorMagnitud = ?,
-                    idClasificacionSismo = ?, idMagnitudRichter = ?, idOrigenGeneracion = ?,
+                    idClasificacionSismo = ?, magnitudRichter = ?, idOrigenGeneracionSismo = ?,
                     idAlcanceSismo = ?, idAnalistaSupervisor = ?,
-                    ambitoEstadoActual = ?, nombreEstadoActual = ? -- CAMPOS NUEVOS
+                    ambitoEstado = ?, nombreEstado = ? -- CAMPOS NUEVOS
                 WHERE idEventoSismico = ?
                 """;
         try (Connection conn = DatabaseConnection.getConnection();
@@ -142,15 +142,21 @@ public class EventoSismicoDAO {
 
                     // Objetos relacionados
                     e.setClasificacionSismo(clasificacionDAO.findById(rs.getLong("idClasificacionSismo")));
-                    e.setMagnitudRichter(magnitudDAO.findByNumero(rs.getInt("idMagnitudRichter")));
-                    e.setOrigenDeGeneracion(origenDAO.findById(rs.getLong("idOrigenGeneracion")));
+                    e.setMagnitudRichter(magnitudDAO.findByNumero(rs.getInt("magnitudRichter")));
+                    e.setOrigenDeGeneracion(origenDAO.findById(rs.getLong("idOrigenGeneracionSismo")));
                     e.setAlcanceSismo(alcanceDAO.findById(rs.getLong("idAlcanceSismo")));
-                    Long idAnalista = rs.getObject("idAnalistaSupervisor", Long.class);
-                    e.setAnalistaSupervisor(idAnalista != null ? empleadoDAO.findById(idAnalista) : null);
+
+                    // Carga del Analista Supervisor (manejo de NULL recomendado)
+                    long idAnalista = rs.getLong("idAnalistaSupervisor");
+                    if (!rs.wasNull()) { // Verifica si el valor leído fue NULL en la DB
+                        e.setAnalistaSupervisor(empleadoDAO.findById(idAnalista));
+                    } else {
+                        e.setAnalistaSupervisor(null);
+                    }
 
                     // Carga del Estado Actual (Directa)
-                    String ambito = rs.getString("ambitoEstadoActual");
-                    String nombreEstado = rs.getString("nombreEstadoActual");
+                    String ambito = rs.getString("ambitoEstado");
+                    String nombreEstado = rs.getString("nombreEstado");
                     e.setEstadoActual(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
                     // Listas 1:N
