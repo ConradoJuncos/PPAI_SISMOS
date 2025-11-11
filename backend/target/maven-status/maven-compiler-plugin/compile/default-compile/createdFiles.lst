@@ -41,6 +41,7 @@ com\ppai\app\dao\EventoSismicoDAO.class
 com\ppai\app\dao\ReparacionDAO.class
 com\ppai\app\entidad\Estado.class
 com\ppai\app\gestor\GestorRevisionManual.class
+com\ppai\app\util\ConsolaSistema.class
 com\ppai\app\entidad\AutoDetectado.class
 com\ppai\app\entidad\MuestraSismica.class
 com\ppai\app\entidad\TareaAsignada.class
