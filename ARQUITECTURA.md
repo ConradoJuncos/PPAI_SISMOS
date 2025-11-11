@@ -1,424 +1,256 @@
-# Arquitectura del Sistema - PPAI Sismos
-
-## 🏗️ Estructura de Capas
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                    CLIENTE (Frontend)                    │
-│         Swing JFrame - Interfaz de Escritorio            │
-│  - MainFrame.java (GUI)                                  │
-│  - ApiService.java (Cliente HTTP)                        │
-└────────────────────────┬─────────────────────────────────┘
-                         │
-                    HTTP/JSON
-                         │
-                         ▼
-┌──────────────────────────────────────────────────────────┐
-│                   SERVIDOR (Backend)                     │
-│              Javalin 5.x - API REST                      │
-│                                                          │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  CAPA DE PRESENTACIÓN                           │   │
-│  │  ControladorEjemplo.java                        │   │
-│  │  - Recibe peticiones HTTP (POST, GET)           │   │
-│  │  - Parsea JSON a objetos                        │   │
-│  │  - Valida datos de entrada                      │   │
-│  │  - Retorna respuestas HTTP/JSON                 │   │
-│  └─────────────────────┬──────────────────────────┘   │
-│                        │                               │
-│  ┌──────────────────────▼──────────────────────────┐   │
-│  │  CAPA DE LÓGICA DE NEGOCIO                      │   │
-│  │  Gestor.java                                    │   │
-│  │  - Orquesta colaboraciones entre objetos        │   │
-│  │  - Implementa reglas de negocio                 │   │
-│  │  - Coordina operaciones complejas               │   │
-│  └─────────────────────┬──────────────────────────┘   │
-│                        │                               │
-│  ┌──────────────────────▼──────────────────────────┐   │
-│  │  CAPA DE PERSISTENCIA                           │   │
-│  │  DatabaseConnection.java                        │   │
-│  │  - Maneja conexiones SQL                        │   │
-│  │  - CRUD en BD                                   │   │
-│  │  - Inicializa BD automáticamente                │   │
-│  └─────────────────────┬──────────────────────────┘   │
-│                        │                               │
-│  ┌──────────────────────▼──────────────────────────┐   │
-│  │  CAPA DE DOMINIO                                │   │
-│  │  EntidadEjemplo.java                            │   │
-│  │  - POJOs (Plain Old Java Objects)               │   │
-│  │  - Propiedades: id, nombre, fecha_creacion      │   │
-│  └─────────────────────┬──────────────────────────┘   │
-│                        │                               │
-└────────────────────────┬───────────────────────────────┘
-                         │
-                         ▼
-┌──────────────────────────────────────────────────────────┐
-│              Base de Datos SQLite                        │
-│                  sismos.db                              │
-│                                                          │
-│  Tabla: entidad_ejemplo                                 │
-│  - id (INTEGER PRIMARY KEY AUTOINCREMENT)               │
-│  - nombre (TEXT NOT NULL)                               │
-│  - fecha_creacion (TIMESTAMP)                           │
-└──────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📦 Responsabilidades por Componente
-
-### 1️⃣ ControladorEjemplo (Capa de Presentación)
-
-**Ubicación:** `backend/src/main/java/com/ppai/app/controlador/ControladorEjemplo.java`
-
-**Responsabilidades:**
-- ✅ Registrar rutas HTTP (endpoints)
-- ✅ Recibir peticiones REST (POST, GET, PUT, DELETE)
-- ✅ Parsear JSON del request a objetos Java
-- ✅ Validar datos básicos de entrada
-- ✅ Llamar al Gestor para lógica de negocio
-- ✅ Manejar excepciones y retornar códigos HTTP apropiados
-- ✅ Serializar objetos a JSON para la respuesta
-
-**NO debe hacer:**
-- ❌ Lógica de negocio compleja
-- ❌ Acceder directamente a la base de datos
-- ❌ Transacciones complejas
-
-**Endpoints implementados:**
-```java
-POST /crear_entidad        → crearEntidad()
-GET  /obtener_entidades    → obtenerEntidades()
-GET  /obtener_entidad/{id} → obtenerEntidadPorId()
-```
-
----
-
-### 2️⃣ Gestor (Capa de Lógica de Negocio)
-
-**Ubicación:** `backend/src/main/java/com/ppai/app/gestor/Gestor.java`
-
-**Responsabilidades:**
-- ✅ Orquestar colaboraciones entre objetos
-- ✅ Implementar reglas de negocio
-- ✅ Coordinar operaciones complejas
-- ✅ Validaciones de negocio
-- ✅ Transacciones y flujos de trabajo
-
-**Patrón:** Aquí implementas tu patrón arquitectónico específico (Strategy, State, Observer, etc.)
-
-**NO debe hacer:**
-- ❌ Manejar HTTP
-- ❌ Acceder directamente a BD (delegar a DAO)
-
----
-
-### 3️⃣ DatabaseConnection (Capa de Persistencia)
-
-**Ubicación:** `backend/src/main/java/com/ppai/app/datos/DatabaseConnection.java`
-
-**Responsabilidades:**
-- ✅ Crear y mantener conexiones SQLite
-- ✅ Inicializar base de datos automáticamente
-- ✅ Crear tablas si no existen
-- ✅ Proporcionar métodos para obtener conexiones
-- ✅ Cerrar conexiones correctamente
-
-**Métodos públicos:**
-```java
-public static Connection getConnection() throws SQLException
-public static void inicializarDB()
-public static void cerrarConexion()
-```
-
-**Características SQLite:**
-- Base de datos de archivo embebido (no necesita servidor)
-- Ubicación: `sismos.db` en la raíz del proyecto
-- Inicialización automática en `Main.java`
-
----
-
-### 4️⃣ EntidadEjemplo (Capa de Dominio)
-
-**Ubicación:** `backend/src/main/java/com/ppai/app/entidad/EntidadEjemplo.java`
-
-**Responsabilidades:**
-- ✅ Representar modelo de datos
-- ✅ Proporcionar getters/setters
-- ✅ Mapear a/desde JSON
-- ✅ Ser serializable
-
-**Propiedades:**
-```java
-Long id                  // ID único, autogenerado
-String nombre            // Nombre de la entidad
-```
-
----
-
-## 🔄 Flujo de una Solicitud
-
-```
-1. Cliente (Frontend)
-   │
-   └──> HTTP POST /crear_entidad
-        Body: {"nombre": "Mi Entidad"}
-        
-2. ControladorEjemplo.crearEntidad()
-   │
-   ├──> Parsea JSON → EntidadEjemplo
-   ├──> Valida datos (nombre no vacío)
-   └──> Llama gestor.crear(entidad)
-   
-3. Gestor.crear()
-   │
-   ├──> Aplica lógica de negocio
-   └──> Llamaa DatabaseConnection.insert()
-   
-4. DatabaseConnection
-   │
-   ├──> INSERT INTO entidad_ejemplo (nombre) VALUES (?)
-   ├──> SELECT last_insert_rowid() → id
-   └──> Retorna EntidadEjemplo con ID
-   
-5. Controlador retorna respuesta
-   │
-   ├──> Status 201 (Created)
-   └──> Body: {"mensaje": "...", "entidad": {...}}
-   
-6. Cliente recibe respuesta
-   │
-   └──> Muestra en área de texto (JSON formateado)
-```
-
----
-
-## 📡 Flujo Frontend-Backend
-
-```
-┌──────────────────────┐
-│   Interfaz Swing     │
-│   (MainFrame.java)   │
-└──────────┬───────────┘
-           │
-           │ User Click
-           ▼
-┌──────────────────────┐
-│ Event Handler        │
-│ crearEntidad()       │
-│ obtenerEntidades()   │
-└──────────┬───────────┘
-           │
-           │ Crea JsonObject
-           ▼
-┌──────────────────────┐
-│ ApiService           │
-│ .crearEntidad(json)  │
-│ .obtenerEntidades()  │
-└──────────┬───────────┘
-           │
-           │ HTTP Request
-           │ (POST/GET)
-           ▼
-     [NETWORK]
-           │
-           │ HTTP Response
-           ▼
-┌──────────────────────┐
-│ Backend API          │
-│ (Javalin)            │
-└──────────┬───────────┘
-           │
-           │ Retorna JSON
-           ▼
-┌──────────────────────┐
-│ ApiService parses    │
-│ & returns String     │
-└──────────┬───────────┘
-           │
-           │ Actualiza UI
-           ▼
-┌──────────────────────┐
-│ txtResultados        │
-│ (JTextArea)          │
-│ Muestra resultado    │
-└──────────────────────┘
-```
-
----
-
-## 🎯 Patrones y Principios
-
-### SOLID Principles
-- **S (Single Responsibility):** Cada clase tiene una responsabilidad
-- **O (Open/Closed):** Abierto para extensión, cerrado para modificación
-- **L (Liskov Substitution):** Las entidades pueden reemplazarse sin problemas
-- **I (Interface Segregation):** Interfaces específicas, no genéricas
-- **D (Dependency Inversion):** Depender de abstracciones, no implementaciones
-
-### Arquitectura de Capas
-- Cada capa tiene responsabilidades claras
-- Las capas superiores dependen de las inferiores
-- Las capas pueden reutilizarse independientemente
-
----
-
-## 🔧 Extensibilidad
-
-### Agregar Nueva Entidad
-
-1. **Crear clase entidad:**
-   ```java
-   // entidad/MiEntidad.java
-   public class MiEntidad {
-       private Long id;
-       private String propiedad1;
-       // getters/setters
-   }
-   ```
-
-2. **Crear tabla en DatabaseConnection:**
-   ```java
-   // En inicializarDB()
-   String sqlMiTabla = "CREATE TABLE IF NOT EXISTS mi_tabla (...)";
-   stmt.execute(sqlMiTabla);
-   ```
-
-3. **Agregar métodos en Gestor:**
-   ```java
-   public MiEntidad crearMiEntidad(MiEntidad obj) { ... }
-   public List<MiEntidad> obtenerMiEntidades() { ... }
-   ```
-
-4. **Agregar endpoints en Controlador:**
-   ```java
-   app.post("/mi_entidad", this::crearMiEntidad);
-   app.get("/mis_entidades", this::obtenerMisEntidades);
-   ```
-
-5. **Agregar métodos en ApiService (Frontend):**
-   ```java
-   public String crearMiEntidad(String json) throws IOException { ... }
-   public String obtenerMisEntidades() throws IOException { ... }
-   ```
-
----
-
-## 📊 Tecnologías por Capa
-
-| Capa | Tecnología | Versión |
-|------|-----------|---------|
-| Presentación Backend | Javalin | 5.6.3 |
-| Presentación Frontend | Swing/AWT | JDK 17 |
-| Serialización | Gson/Jackson | 2.10.1/2.15.0 |
-| HTTP Cliente | Apache HttpClient5 | 5.2.1 |
-| Base de Datos | SQLite | - |
-| Driver JDBC | sqlite-jdbc | 3.43.0.0 |
-| Logging | SLF4J | 2.0.9 |
-
----
-
-## 🔒 Consideraciones de Seguridad
-
-### Actualmente Implementado
-- ✅ Validación de entrada (nombre no vacío)
-- ✅ Manejo de excepciones
-- ✅ CORS habilitado
-
-### Recomendaciones para Producción
-- 🔲 Agregar autenticación/autorización
-- 🔲 Validar y sanitizar todas las entradas
-- 🔲 Usar HTTPS en lugar de HTTP
-- 🔲 Implementar rate limiting
-- 🔲 Agregar logging de seguridad
-- 🔲 Validar tipos de datos en base de datos
-
----
-
-## 📈 Escalabilidad
-
-### Limitaciones Actuales
-- SQLite es de archivo, no ideal para aplicaciones concurrentes
-- No hay caché
-- No hay índices en BD
-
-### Mejoras Futuras
-- Migrar a PostgreSQL/MySQL para producción
-- Agregar caché (Redis)
-- Implementar índices en BD
-- Agregar paginación en endpoints GET
-- Implementar async/await para operaciones I/O
-
----
-
-## 📚 Documentación Adicional
-
-- **README.md** - Visión general del proyecto
-- **INICIO_RAPIDO.md** - Cómo empezar rápidamente
-- **GUIA_IMPLEMENTACION.md** - Guía técnica detallada
-
-
-- ✅ Validar datos de negocio
-- ✅ Coordinar colaboraciones entre objetos
-- ✅ Aplicar reglas de negocio
-- ✅ Delegar persistencia al DAO
-- ❌ NO sabe de HTTP/JSON
-- ❌ NO ejecuta SQL directamente
-
-**Archivo**: `backend/src/main/java/com/ppai/app/gestor/Gestor.java`
-
-### 3. DAO (Data Access Object)
-- ✅ Ejecutar consultas SQL
-- ✅ Mapear ResultSet a objetos
-- ✅ CRUD básico
-- ✅ Gestionar conexiones
-- ❌ NO tiene validaciones de negocio
-- ❌ NO sabe de HTTP
-
-**Archivo**: `backend/src/main/java/com/ppai/app/datos/`
-
-### 4. Entidad
-- ✅ Contener datos
-- ✅ Getters/Setters
-- ✅ Métodos de utilidad simples
-- ❌ NO tiene lógica de negocio compleja
-- ❌ NO accede a la BD
-
-**Archivo**: `backend/src/main/java/com/ppai/app/entidad/`
-
-## Flujo de Trabajo Típico
-
-1. **Cliente (Frontend)** hace una petición HTTP
-2. **Controlador** recibe la petición, parsea el JSON
-3. **Gestor** aplica lógica de negocio (aquí usas tu patrón)
-4. **DAO** persiste/consulta en la base de datos
-5. **Controlador** retorna la respuesta en JSON
-6. **Cliente** muestra los datos en la interfaz
-
-## Comunicación Frontend-Backend
-
-```
-┌──────────────┐                 ┌──────────────┐
-│   Frontend   │   HTTP/JSON     │   Backend    │
-│   (JFrame)   │ ◄─────────────► │  (Javalin)   │
-│              │                 │              │
-│  MainFrame   │                 │  Controller  │
-│      │       │                 │      │       │
-│      ▼       │                 │      ▼       │
-│  ApiService  │                 │    Gestor    │
-└──────────────┘                 │      │       │
-                                 │      ▼       │
-                                 │     DAO      │
-                                 │      │       │
-                                 │      ▼       │
-                                 │   SQLite     │
-                                 └──────────────┘
-```
-
-## Archivos Clave para Modificar
-
-- `backend/src/main/java/com/ppai/app/gestor/Gestor.java` - **Implementa aquí tu patrón**
-- `backend/src/main/java/com/ppai/app/entidad/` - Define tus entidades de dominio
-- `backend/src/main/java/com/ppai/app/datos/` - Crea tus DAOs
-- `backend/src/main/java/com/ppai/app/controlador/` - Define tus endpoints REST
-- `frontend/src/main/java/com/ppai/app/frontend/gui/MainFrame.java` - Diseña tu interfaz
+# 🏗️ Arquitectura del Sistema - PPAI Red Sísmica
+
+## ⚙️ Descripción General
+
+El sistema **PPAI Red Sísmica** es una aplicación **de escritorio
+local** desarrollada en **Java (Swing)**, que permite la **revisión
+manual de eventos sísmicos** detectados automáticamente por la red de
+estaciones.
+
+Toda la lógica (persistencia, dominio y presentación) se ejecuta **en un
+mismo proceso local**, sin necesidad de servidor HTTP.\
+El flujo principal se inicia desde `Main.java`, que: 1. Inicializa la
+base de datos SQLite embebida.\
+2. Carga el contexto de dominio (`Contexto`).\
+3. Inicia la interfaz gráfica (`PantallaRevisionManual`).
+
+------------------------------------------------------------------------
+
+## 🧩 Arquitectura en Capas
+
+    ┌────────────────────────────────────────────────────────────┐
+    │               CAPA DE PRESENTACIÓN (FRONTEND)              │
+    │             Swing - Interfaz de Escritorio (GUI)           │
+    │                                                            │
+    │  - PantallaRevisionManual.java                             │
+    │  - Interfaces gráficas e interacción con el usuario         │
+    │  - Comunicación directa con GestorRevisionManual            │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │
+                                  ▼
+    ┌────────────────────────────────────────────────────────────┐
+    │               CAPA DE LÓGICA DE NEGOCIO                    │
+    │                                                            │
+    │  - GestorRevisionManual.java                               │
+    │  - Orquesta la interacción entre la pantalla y el dominio  │
+    │  - Implementa el flujo del caso de uso “CU23 - Revisión    │
+    │    Manual de Eventos Sísmicos”                             │
+    │  - Aplica reglas de negocio y valida datos                 │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │
+                                  ▼
+    ┌────────────────────────────────────────────────────────────┐
+    │               CAPA DE PERSISTENCIA (DATOS)                 │
+    │                                                            │
+    │  - DatabaseConnection.java                                 │
+    │  - Clases DAO (Data Access Object)                         │
+    │  - Gestión de conexión SQLite                              │
+    │  - Inserción de datos iniciales y creación automática de   │
+    │    tablas al iniciar el sistema                            │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │
+                                  ▼
+    ┌────────────────────────────────────────────────────────────┐
+    │                 CAPA DE DOMINIO (MODELO)                   │
+    │                                                            │
+    │  - EventoSismico.java                                      │
+    │  - Usuario.java                                            │
+    │  - Sismografo.java                                         │
+    │  - TipoDeDato.java                                         │
+    │  - SerieTemporal.java                                      │
+    │  - Estado y subclases (Detectado, Confirmado, etc.)        │
+    │                                                            │
+    │  Representa los objetos del dominio y su comportamiento.   │
+    └────────────────────────────────────────────────────────────┘
+
+------------------------------------------------------------------------
+
+## 🧠 Flujo Principal del Sistema
+
+    Main.java
+       │
+       ├──▶ DatabaseConnection.inicializarDB()
+       │       └── Crea tablas e inserta datos iniciales
+       │
+       ├──▶ Contexto()
+       │       └── Carga objetos de dominio (usuarios, eventos, etc.)
+       │
+       └──▶ PantallaRevisionManual(contexto)
+               └──▶ Crea GestorRevisionManual(this, eventos, usuario)
+                       └──▶ Ejecuta flujo de revisión manual
+
+------------------------------------------------------------------------
+
+## 🖥️ Interfaz Gráfica (Swing)
+
+**Clase principal:** `PantallaRevisionManual`
+
+Responsabilidades: - Mostrar los eventos sísmicos no revisados.\
+- Permitir seleccionar un evento para revisión.\
+- Interactuar con el `GestorRevisionManual` para ejecutar la revisión.\
+- Mostrar los resultados dentro de la propia ventana (tabla).
+
+**Ejemplo visual (interfaz actual mejorada):**
+
+    ┌──────────────────────────────────────────────┐
+    │ CU23 - Revisión Manual de Eventos Sísmicos   │
+    ├──────────────────────────────────────────────┤
+    │ [Ejecutar Caso de Uso]                       │
+    ├──────────────────────────────────────────────┤
+    │ Fecha/Hora         | Latitud | Longitud | ... │
+    │──────────────────────────────────────────────│
+    │ 2025-04-01 10:00   | -31.1   | -65.2    | ... │
+    │ 2025-04-02 11:15   | -31.3   | -65.4    | ... │
+    │ 2025-04-03 09:30   | -31.4   | -65.6    | ... │
+    └──────────────────────────────────────────────┘
+
+------------------------------------------------------------------------
+
+## 🧩 Detalle por Componente
+
+### 1️⃣ `Main.java`
+
+-   Punto de entrada del sistema.\
+-   Inicializa la base de datos y el contexto.\
+-   Lanza la interfaz Swing.
+
+### 2️⃣ `DatabaseConnection.java`
+
+-   Gestiona la conexión SQLite (`sismos.db`).\
+-   Crea tablas automáticamente si no existen.\
+-   Inserta datos iniciales (estados, usuarios, eventos).\
+-   Ofrece métodos para obtener `Connection` y ejecutar scripts SQL.
+
+### 3️⃣ `Contexto.java`
+
+-   Carga los datos del dominio desde la base de datos.\
+-   Mantiene referencias globales a listas de entidades
+    (`eventosSismicos`, `usuarios`, etc.).\
+-   Se pasa como dependencia a la pantalla principal.
+
+### 4️⃣ `PantallaRevisionManual.java`
+
+-   Ventana Swing (`JFrame`) principal del caso de uso CU23.\
+-   Contiene un botón principal **"Ejecutar Caso de Uso"**.\
+-   Al presionarlo, solicita al `GestorRevisionManual` que ejecute la
+    revisión.\
+-   Muestra los eventos en una **tabla integrada**, evitando pop-ups.
+
+### 5️⃣ `GestorRevisionManual.java`
+
+-   Controla el flujo de revisión de eventos no revisados.\
+-   Interactúa con la `PantallaRevisionManual` para mostrar resultados.\
+-   Aplica validaciones y delega al dominio las operaciones
+    específicas.\
+-   Puede acceder a DAOs para actualizar estados.
+
+### 6️⃣ Entidades de Dominio
+
+-   `EventoSismico` → datos del evento (fecha, ubicación, magnitud,
+    estado).\
+-   `Usuario` → usuario autenticado o actual.\
+-   `Sismografo`, `SerieTemporal`, `MuestraSismica` → entidades técnicas
+    del dominio.\
+-   `Estado` → patrón State para representar fases de revisión
+    (Detectado, Confirmado, Rechazado, etc.).
+
+------------------------------------------------------------------------
+
+## 📦 Responsabilidades por Capa
+
+  --------------------------------------------------------------------------------
+  Capa           Responsabilidad Principal              Clases Destacadas
+  -------------- -------------------------------------- --------------------------
+  Presentación   Mostrar interfaz, recibir acciones del `PantallaRevisionManual`
+                 usuario                                
+
+  Lógica de      Implementar flujo del caso de uso      `GestorRevisionManual`
+  Negocio                                               
+
+  Persistencia   Acceso a BD, creación y carga de datos `DatabaseConnection`, DAOs
+
+  Dominio        Representación de entidades y          `EventoSismico`,
+                 comportamiento                         `Usuario`, `Estado`, etc.
+  --------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 🧮 Diagrama Simplificado de Colaboración
+
+    ┌──────────────────────────────────────┐
+    │          PantallaRevisionManual      │
+    │   (Interfaz Swing)                   │
+    └──────────────┬───────────────────────┘
+                   │
+                   ▼
+    ┌──────────────────────────────────────┐
+    │        GestorRevisionManual          │
+    │   (Lógica del Caso de Uso)           │
+    └──────────────┬───────────────────────┘
+                   │
+                   ▼
+    ┌──────────────────────────────────────┐
+    │             Contexto                 │
+    │   (Repositorio en memoria)           │
+    └──────────────┬───────────────────────┘
+                   │
+                   ▼
+    ┌──────────────────────────────────────┐
+    │         DatabaseConnection           │
+    │     (Acceso y carga SQLite)          │
+    └──────────────────────────────────────┘
+
+------------------------------------------------------------------------
+
+## 🎯 Principios de Diseño Aplicados
+
+-   **SRP (Single Responsibility):** cada clase tiene una función
+    única.\
+-   **Bajo acoplamiento:** las capas se comunican por interfaces o
+    servicios.\
+-   **Alta cohesión:** cada capa agrupa responsabilidades afines.\
+-   **Separación de Concerns:** GUI, lógica y persistencia están
+    desacopladas.\
+-   **Inversión de Dependencias:** el gestor depende de interfaces
+    (`IPantallaRevisionManual`) y no de implementaciones concretas.
+
+------------------------------------------------------------------------
+
+## 🧱 Extensibilidad
+
+Para agregar un nuevo caso de uso:
+
+1.  Crear una nueva **Pantalla** (`PantallaNuevoCasoUso`).\
+2.  Crear un **Gestor** asociado (`GestorNuevoCasoUso`).\
+3.  Reutilizar el `Contexto` y los DAOs para acceder a datos.\
+4.  Añadir la inicialización en `Main.java`.
+
+------------------------------------------------------------------------
+
+## 🪄 Tecnologías Utilizadas
+
+  -----------------------------------------------------------------------
+  Componente              Tecnología              Descripción
+  ----------------------- ----------------------- -----------------------
+  GUI                     Java Swing              Interfaz de escritorio
+                                                  local
+
+  Persistencia            SQLite                  Base de datos embebida
+
+  ORM manual              JDBC                    Acceso a BD mediante
+                                                  DAOs
+
+  Dominio                 Java puro               POJOs y patrón State
+
+  Logging/Consola         ANSI + System.out       Colores y estructura
+                                                  con `ConsolaSistema`
+  -----------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 🔒 Consideraciones
+
+-   El sistema es **local**, sin servidor ni cliente web.\
+-   Puede ejecutarse directamente con `run-sistema.bat`.\
+-   Los datos se regeneran automáticamente al iniciar.\
+-   El flujo principal se centra en el caso de uso **CU23 - Registrar Resultado de Revision Manual**.
