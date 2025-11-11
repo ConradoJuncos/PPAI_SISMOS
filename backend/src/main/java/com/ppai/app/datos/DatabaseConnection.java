@@ -435,6 +435,8 @@ public class DatabaseConnection {
                         ('EventoSismico', 'PendienteDeCierre'),
                         ('EventoSismico', 'Cerrado'),
                         ('EventoSismico', 'SinRevision'),
+                        ('EventoSismico', 'AutoConfirmado'),
+                        ('EventoSismico', 'Anulado'),
                         ('SerieTemporal', 'Activo'),
                         ('SerieTemporal', 'Inactivo');
                     """);
@@ -567,6 +569,103 @@ public class DatabaseConnection {
                                 ('2025-03-08 13:06:00', NULL, 'EventoSismico', 'Rechazado', 2),
                                 ('2025-04-10 11:57:00', NULL, 'EventoSismico', 'Rechazado', 2);
                             """);
+
+            // ====== HISTORIAL DE CAMBIOS DE ESTADO (por evento) ======
+            stmt.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion) VALUES
+                                -- Evento 1: AutoDetectado (sin evolución)
+                                ('2025-02-21 19:05:00', '2025-02-21 19:10:00', 'EventoSismico', 'AutoDetectado', 1),
+
+                                -- Evento 2: AutoDetectado → AutoConfirmado → Confirmado
+                                ('2025-04-01 10:00:00', '2025-04-01 10:01:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-01 10:01:00', '2025-04-01 10:03:00', 'EventoSismico', 'AutoConfirmado', 1),
+                                ('2025-04-01 10:03:00', NULL, 'EventoSismico', 'Confirmado', 2),
+
+                                -- Evento 3: AutoDetectado → PendienteDeRevision → Confirmado
+                                ('2025-04-02 14:15:00', '2025-04-02 14:16:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-02 14:16:00', '2025-04-02 14:18:00', 'EventoSismico', 'PendienteDeRevision', 1),
+                                ('2025-04-02 14:18:00', NULL, 'EventoSismico', 'Confirmado', 2),
+
+                                -- Evento 4: AutoDetectado → PendienteDeRevision → DerivadoAExperto
+                                ('2025-04-03 09:30:00', '2025-04-03 09:31:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-03 09:31:00', '2025-04-03 09:33:00', 'EventoSismico', 'PendienteDeRevision', 1),
+                                ('2025-04-03 09:33:00', NULL, 'EventoSismico', 'DerivadoAExperto', 2),
+
+                                -- Evento 5: AutoDetectado → AutoConfirmado → PendienteDeRevision
+                                ('2025-04-05 12:10:00', '2025-04-05 12:11:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-05 12:11:00', '2025-04-05 12:12:00', 'EventoSismico', 'AutoConfirmado', 1),
+                                ('2025-04-05 12:12:00', NULL, 'EventoSismico', 'PendienteDeRevision', 2),
+
+                                -- Evento 6: AutoDetectado → PendienteDeRevision → BloqueadoEnRevision
+                                ('2025-04-06 18:25:00', '2025-04-06 18:26:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-06 18:26:00', '2025-04-06 18:27:00', 'EventoSismico', 'PendienteDeRevision', 2),
+                                ('2025-04-06 18:27:00', NULL, 'EventoSismico', 'BloqueadoEnRevision', 2),
+
+                                -- Evento 7: AutoDetectado → BloqueadoEnRevision → Confirmado → PendienteDeCierre
+                                ('2025-04-07 03:00:00', '2025-04-07 03:01:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-07 03:01:00', '2025-04-07 03:02:00', 'EventoSismico', 'BloqueadoEnRevision', 2),
+                                ('2025-04-07 03:02:00', '2025-04-07 03:03:00', 'EventoSismico', 'Confirmado', 2),
+                                ('2025-04-07 03:03:00', NULL, 'EventoSismico', 'PendienteDeCierre', 2),
+
+                                -- Evento 8: AutoDetectado → PendienteDeRevision → DerivadoAExperto
+                                ('2025-04-08 05:20:00', '2025-04-08 05:21:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-08 05:21:00', '2025-04-08 05:22:00', 'EventoSismico', 'PendienteDeRevision', 2),
+                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'DerivadoAExperto', 2),
+
+                                -- Evento 9: AutoDetectado → AutoConfirmado → Confirmado → Cerrado
+                                ('2025-04-09 21:40:00', '2025-04-09 21:41:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-09 21:41:00', '2025-04-09 21:42:00', 'EventoSismico', 'AutoConfirmado', 1),
+                                ('2025-04-09 21:42:00', '2025-04-09 21:44:00', 'EventoSismico', 'Confirmado', 2),
+                                ('2025-04-09 21:44:00', NULL, 'EventoSismico', 'Cerrado', 2),
+
+                                -- Evento 10: AutoDetectado → AutoConfirmado → Confirmado
+                                ('2025-04-11 08:00:00', '2025-04-11 08:01:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-11 08:01:00', '2025-04-11 08:02:00', 'EventoSismico', 'AutoConfirmado', 1),
+                                ('2025-04-11 08:02:00', NULL, 'EventoSismico', 'Confirmado', 2),
+
+                                -- Evento 11: AutoDetectado → PendienteDeRevision → Rechazado
+                                ('2025-03-08 13:00:00', '2025-03-08 13:01:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-03-08 13:01:00', '2025-03-08 13:02:00', 'EventoSismico', 'PendienteDeRevision', 2),
+                                ('2025-03-08 13:02:00', NULL, 'EventoSismico', 'Rechazado', 2),
+
+                                -- Evento 12: AutoDetectado → AutoConfirmado → Rechazado
+                                ('2025-04-10 11:55:00', '2025-04-10 11:56:00', 'EventoSismico', 'AutoDetectado', 1),
+                                ('2025-04-10 11:56:00', '2025-04-10 11:57:00', 'EventoSismico', 'AutoConfirmado', 1),
+                                ('2025-04-10 11:57:00', NULL, 'EventoSismico', 'Rechazado', 2);
+                            """);
+
+            // ====== RELACIÓN EVENTO ↔ CAMBIOESTADO ======
+            // Se asume que los nuevos CambioEstado siguen IDs consecutivos después de los
+            // 12 iniciales (id 13..)
+            // Por tanto, se vinculan ordenadamente:
+            stmt.executeUpdate("""
+                        INSERT OR IGNORE INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES
+                        -- Evento 1
+                        (1, 13),
+                        -- Evento 2
+                        (2, 14), (2, 15), (2, 16),
+                        -- Evento 3
+                        (3, 17), (3, 18), (3, 19),
+                        -- Evento 4
+                        (4, 20), (4, 21), (4, 22),
+                        -- Evento 5
+                        (5, 23), (5, 24), (5, 25),
+                        -- Evento 6
+                        (6, 26), (6, 27), (6, 28),
+                        -- Evento 7
+                        (7, 29), (7, 30), (7, 31), (7, 32),
+                        -- Evento 8
+                        (8, 33), (8, 34), (8, 35),
+                        -- Evento 9
+                        (9, 36), (9, 37), (9, 38), (9, 39),
+                        -- Evento 10
+                        (10, 40), (10, 41), (10, 42),
+                        -- Evento 11
+                        (11, 43), (11, 44), (11, 45),
+                        -- Evento 12
+                        (12, 46), (12, 47), (12, 48);
+                    """);
 
             // ====== SERIES TEMPORALES (3 por evento) ====
             // Para evitar dependencia en autoincrement, ponemos explicitamente

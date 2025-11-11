@@ -48,15 +48,10 @@ public class EventoSismico {
     // Verificar si el evento sismico 
     public boolean esAutoDetectado(){ 
 
-        // Consultar al cambioDeEstado si esEstadoActual(): boolean si es actual, reiteradamente, si se encuentra, retornar el evento simsico
-        for (CambioEstado historialEstado : cambioEstado){
+        // Consultar al estadoActual si es Auto Detectado
+        if (this.estadoActual.sosAutoDetectado()) {
 
-            // Verficar si el cambio estado es actual
-            if (historialEstado.esEstadoActual()) {
-
-                // Si es actual, evento sismico se retorna a si mismo
-                return true;
-            }
+            return true;
         }
 
         return false;

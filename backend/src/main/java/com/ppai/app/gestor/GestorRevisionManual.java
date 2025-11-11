@@ -1,6 +1,7 @@
 package com.ppai.app.gestor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,29 @@ public class GestorRevisionManual {
     public GestorRevisionManual(List<EventoSismico> eventosSismicos, Usuario usuarioLogueado) {
         this.eventosSismicos = eventosSismicos;
         this.usuarioLogueado = usuarioLogueado;
+
+        // Para debug
+        System.out.println("Gestor Revision Manual creado, con estos eventos sismicos: ");
+        System.out.println(this.eventosSismicos);
+
+        // EJECUTANDO EL METODO PRIMERO
+        buscarEventosSismicosAutoDetectadosNoRevisados();
     }
 
-    // Buscar todos los eventos sismicos con estado auto detectado y que no tengan analista asignado (no revisado)
+    // Buscar todos los eventos sismicos con estado auto detectado y que no tengan
+    // analista asignado (no revisado)
     private void buscarEventosSismicosAutoDetectadosNoRevisados() {
 
-        // Recorriendo todos los eventos sismicos y agregadolos al listado de no revisados
+        // mensaje para debugeo
+        System.out.println("Buscando eventos sismicos auto detectados no revisados....");
+
+        // Recorriendo todos los eventos sismicos y agregadolos al listado de no
+        // revisados
         for (EventoSismico eventoSismico : eventosSismicos) {
+
+            // Para debug
+            System.out.println("estado actual del evento sismico recorrido: ");
+            System.out.println(eventoSismico.getEstadoActual().getNombreEstado());
 
             // Verificar si el evento es auto detecado, y obtenerlo
             if (eventoSismico.esAutoDetectado() && eventoSismico.sosNoRevisado()) {
@@ -45,17 +62,27 @@ public class GestorRevisionManual {
 
         }
 
-        // Ordenando los eventos sismicos auto detectados no revisados por fecha de ocurrencia
+        // Ordenando los eventos sismicos auto detectados no revisados por fecha de
+        // ocurrencia
         ordenarPorFechaHoraOcurrencia();
 
-        // Mostrando los datos principales de los eventos sismicos auto detectados y no revisados ordenados por fecha de ocurrencia
-        // pantalla.mostrarEventosSismicosYSolicitarSeleccion(this.datosPrincipalesEventosSismicosNoRevisados); 
+        // Mostrando los datos principales de los eventos sismicos auto detectados y no
+        // revisados ordenados por fecha de ocurrencia
+        // pantalla.mostrarEventosSismicosYSolicitarSeleccion(this.datosPrincipalesEventosSismicosNoRevisados);
+        System.out.println(datosPrincipalesEventosSismicosNoRevisados);
+        System.out.println("SE HAN MOSTRADO LOS DATOS PRINCIPALES!!!");
+
     }
 
-
-    // Ordenar los eventos sismicos autodetectados no revisados por fecha y hora de ocurrencia
+    // Ordenar los eventos sismicos autodetectados no revisados por fecha y hora de
+    // ocurrencia
     private void ordenarPorFechaHoraOcurrencia() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        System.out.println("Ordenando los eventos sísmicos obtenidos por fecha de ocurrencia...");
+
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd'T'HH:mm")
+                .optionalStart().appendPattern(":ss").optionalEnd()
+                .toFormatter();
 
         datosPrincipalesEventosSismicosNoRevisados.sort((s1, s2) -> {
             String fechaHoraStr1 = s1.split(",")[0].trim();
@@ -71,32 +98,33 @@ public class GestorRevisionManual {
     // Tomar los datos del evento sismico seleccionado por el analista de sismos
     public void tomarSeleccionEventoSismico(String datosPrincipales) {
 
-        // Identificar y obtener al evento sismico seleccionado por el analista a partir de sus datos principales
-        // Y comenzar el proceso de bloqueo del evento más la obtención y muestreo de sus datos.
+        // Identificar y obtener al evento sismico seleccionado por el analista a partir
+        // de sus datos principales
+        // Y comenzar el proceso de bloqueo del evento más la obtención y muestreo de
+        // sus datos.
         obtenerEventoSismicoSeleccionado(datosPrincipales);
-        
+
     }
 
     // Obtener el evento sismico seleccionado por el analista de sismos
     private void obtenerEventoSismicoSeleccionado(String datosPrincipales) {
 
         // Buscar el evento sismico a partir de los datos principales
-        for (EventoSismico eventoSismico : eventosSismicos){
-            
+        for (EventoSismico eventoSismico : eventosSismicos) {
+
             // Comprobando si los datos principales son del evento sismico iterado
-            if (eventoSismico.sonMisDatosPrincipales(datosPrincipales) != null){
+            if (eventoSismico.sonMisDatosPrincipales(datosPrincipales) != null) {
 
                 // Se asigna el evento sismico seleccioando por el analista
                 this.seleccionEventoSismico = eventoSismico.sonMisDatosPrincipales(datosPrincipales);
             }
         }
-        
-        // Cambiar el estado del evento sismico seleccionado a bloqueado en revision (Bloquear el evento sismico)
 
+        // Cambiar el estado del evento sismico seleccionado a bloqueado en revision
+        // (Bloquear el evento sismico)
 
         // 3. Llamar al metodo obtenerYMostrarDatosEventoSeleccionado():void
         // Por ahora mostrando en terminal
-        System.out.println(datosPrincipales);
 
     }
 
@@ -106,8 +134,10 @@ public class GestorRevisionManual {
         // Obtener la fecha y hora actual del sistema
         this.fechaHoraActual = getFechaHoraActual();
 
-        // Bloquear el evento sismico seleccionado por en analista con motivo de revision
-        this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
+        // Bloquear el evento sismico seleccionado por en analista con motivo de
+        // revision
+        this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual,
+                this.usuarioLogueado);
 
     }
 
@@ -160,14 +190,14 @@ public class GestorRevisionManual {
     }
 
     // Obtener fecha y hora actual del sistema
-    private LocalDateTime getFechaHoraActual(){
+    private LocalDateTime getFechaHoraActual() {
 
         // Se retorna la fecha y hora actualizada del sistema
         return actualizarFechaHoraActual();
     }
 
     // Obtener la fecha y hora actualizada
-    private LocalDateTime actualizarFechaHoraActual(){
+    private LocalDateTime actualizarFechaHoraActual() {
         return LocalDateTime.now();
     }
 }
