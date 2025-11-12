@@ -13,6 +13,7 @@ public class SismografoDAO {
     private final ModeloSismografoDAO modeloDAO = new ModeloSismografoDAO();
     private final CambioEstadoDAO cambioEstadoDAO = new CambioEstadoDAO();
     private final ReparacionDAO reparacionDAO = new ReparacionDAO(); // ← Asumimos que existe
+    private final SerieTemporalDAO serieTemporalDAO = new SerieTemporalDAO();
 
     /*
      * --------------------------------------------------------------
@@ -179,11 +180,38 @@ public class SismografoDAO {
         List<Reparacion> reparaciones = reparacionDAO.findBySismografoId(conn, identificadorSismografo);
         s.setReparacion(reparaciones);
 
-        // 3. Atributo derivado: Estado actual
+        // 3. Cargar series temporales asociadas por idSismografo
+        List<SerieTemporal> seriesTemporales = findSeriesTemporalesBySismografo(conn, identificadorSismografo);
+        s.setSerieTemporal(seriesTemporales);
+
+        // 4. Atributo derivado: Estado actual
         Estado estadoActual = findEstadoActual(conn, identificadorSismografo);
         s.setEstadoActual(estadoActual);
 
         return s;
+    }
+
+    /**
+     * Busca todas las series temporales asociadas a un sismografo.
+     * La relación se establece directamente a través de idSismografo en la tabla SerieTemporal.
+     */
+    private List<SerieTemporal> findSeriesTemporalesBySismografo(Connection conn, long idSismografo) throws SQLException {
+        String sql = "SELECT idSerieTemporal FROM SerieTemporal WHERE idSismografo = ?";
+        List<SerieTemporal> series = new ArrayList<>();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idSismografo);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long idSerie = rs.getLong("idSerieTemporal");
+                    // Cargar la serie completa usando el DAO especializado
+                    SerieTemporal s = serieTemporalDAO.findById(idSerie);
+                    if (s != null)
+                        series.add(s);
+                }
+            }
+        }
+        return series;
     }
 
     // SismografoDAO.java

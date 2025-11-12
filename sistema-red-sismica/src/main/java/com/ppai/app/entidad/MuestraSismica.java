@@ -48,6 +48,9 @@ public class MuestraSismica {
                     frecuenciaOnda = detalle.getValor();
                 } else if (detalle.sosDenominacionTipoDeDatoLongitudOnda()) {
                     longitudOnda = detalle.getValor();
+                } else {
+                    System.out.println("DENOMINACION: " + detalle.getTipoDeDato().getDenominacion());
+                    System.out.println(detalle.sosDenominacionTipoDeDatoLongitudOnda());
                 }
             }
         }

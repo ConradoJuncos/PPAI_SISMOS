@@ -148,6 +148,7 @@ public class EventoSismico {
         System.out.println("Información sísmica extraída: " + informacionSismica);
         return informacionSismica;
     }
+
     // Métodos Getter y Setter
     public long getIdEventoSismico(){
         return this.idEventoSismico;
