@@ -265,19 +265,52 @@ public class PantallaRevisionManual extends JFrame {
 
         if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
             lblEstado.setText("Abriendo mapa de eventos sísmicos y estaciones sismológicas...");
-            // Aquí se implementaría la lógica para abrir un mapa
-            // Por ahora solo mostramos un mensaje
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Funcionalidad de mapa en desarrollo.\n" +
-                            "Se mostraría:\n" +
-                            "- Ubicación del evento sísmico (epicentro e hipocentro)\n" +
-                            "- Estaciones sismológicas involucradas\n" +
-                            "- Magnitud y alcance del evento",
-                    "Visualizar Mapa",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("no se supone que apretes este :'v 67");
         } else {
             lblEstado.setText("Visualización de mapa cancelada.");
+            gestor.tomarNoVisualizacion();
+        }
+    }
+
+	public void solicitarModificaciónDatosSismicos() {
+		int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "¿Desea modificar los datos sísmicos?",
+                "Confirmar Modificación de Datos Sísmicos",
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
+        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+            lblEstado.setText("Modificación de datos sísmicos iniciada.");
+        } else {
+            lblEstado.setText("Modificación de datos sísmicos cancelada.");
+            gestor.tomarRechazoModificacion();
+        }
+	}
+
+    public void solicitarOpcAccionEvento() {
+        Object[] options = {
+        "Aceptar",  // Option 0
+        "TODO",   // Option 1
+        "Rechazar" // Option 2
+        };
+        int respuesta = javax.swing.JOptionPane.showOptionDialog(
+            this, // Parent component
+            "¿Desea modificar los datos sísmicos?", // Message
+            "Confirmar Modificación de Datos Sísmicos", // Title
+            javax.swing.JOptionPane.YES_NO_CANCEL_OPTION, // Option type (or DEFAULT_OPTION)
+            javax.swing.JOptionPane.QUESTION_MESSAGE, // Message type (for the icon)
+            null, // Icon (null to use default based on message type)
+            options, // The custom array of buttons
+            options[0] // The button to be initially focused
+        );
+
+        if (respuesta == 0) {
+            lblEstado.setText("Modificación de datos sísmicos aceptada.");
+        } else if (respuesta == 1) {
+            lblEstado.setText("Modificación de datos sísmicos TODO seleccionada.");
+        } else if (respuesta == 2) {
+            gestor.rechazarEventoSismicoSeleccionado();
+            lblEstado.setText("Evento sísmico rechazado.");
         }
     }
 }

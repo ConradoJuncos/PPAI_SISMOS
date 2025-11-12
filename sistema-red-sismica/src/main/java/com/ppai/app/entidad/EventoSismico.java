@@ -234,4 +234,9 @@ public class EventoSismico {
     public void setAnalistaSupervisor(Empleado analistaSupervisor){
         this.analistaSupervisor = analistaSupervisor;
     }
+
+    public void rechazar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        this.estadoActual.rechazar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
+        System.out.println(estadoActual);
+    }
 }

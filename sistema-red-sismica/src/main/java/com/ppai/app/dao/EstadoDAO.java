@@ -50,7 +50,7 @@ public class EstadoDAO {
             case "AutoConfirmado":
                 return new AutoConfirmado(null, null, null);
             case "Rechazado":
-                return new Rechazado(null, null, null);
+                return new Rechazado();
             case "Anulado":
                 return new Anulado(null, null, null);
             case "PendienteDeCierre":

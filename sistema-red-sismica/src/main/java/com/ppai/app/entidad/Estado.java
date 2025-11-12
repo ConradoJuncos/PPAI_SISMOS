@@ -74,7 +74,7 @@ public abstract class Estado {
     public void confirmarEvento(){}
 
     // revisar parámetros y retorno
-    public void rechazarEvento(){}
+    public void rechazar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){}
 
     // revisar parámetros y retorno
     public void expirarVentanaTemporal(){}

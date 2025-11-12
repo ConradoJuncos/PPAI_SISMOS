@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ppai.app.entidad.Empleado;
 import com.ppai.app.entidad.EventoSismico;
 import com.ppai.app.entidad.Usuario;
 import com.ppai.app.frontend.PantallaRevisionManual;
@@ -197,25 +198,35 @@ public class GestorRevisionManual {
 
     // Tomar opcion no visualizacion de sismograma por estacion sismlogica
     public void tomarNoVisualizacion() {
-
-        // ejectuar el metodo de soliciatar modificacion datos simsicos de la pantalla
-
+        pantalla.solicitarModificaciónDatosSismicos();
     }
 
     public void tomarRechazoModificacion() {
-
-        // LLamar al metodo solicitarOpcAccionEvento() de la pantalla
+        pantalla.solicitarOpcAccionEvento();
     }
 
     // Rechazar el evento sismico anteriormente seleccioando por el usuario
     public void rechazarEventoSismicoSeleccionado() {
 
         // 1. Validar los datos sismicos si hubieran sido modificados
+        this.validarDatosSismicos();
 
-        // 2. rechazar el evento sismico llamando al metodo
-        // recharEventoSismicoSeleccioando(): void
+        this.actualizarEventoSismicoARechazado();
 
         // 3. llamar a fin caso de uso finCU()
+        this.finCU();
+    }
+
+    private void finCU() {
+        System.out.println("NO FUNCIONA TODAVIA");
+    }
+
+    private void validarDatosSismicos() {
+        System.out.println("metodo no implementado validardatosismiscos");
+    }
+
+    private void actualizarEventoSismicoARechazado() {
+        this.seleccionEventoSismico.rechazar(fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener fecha y hora actual del sistema

@@ -1,6 +1,7 @@
 package com.ppai.app.entidad;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class BloqueadoEnRevision extends Estado {
 
@@ -13,25 +14,27 @@ public class BloqueadoEnRevision extends Estado {
         super("BloqueadoEnRevision", "EventoSismico");
     }
 
-//    protected void registrarCambioDeEstado() {
-//
-//        // Ejecutando la version del metodo de la clase padre (estado)
-//        super.registrarCambioDeEstado();
-//
-//        // Buscar al cambio de estado actual a traves del evento sismico seleccionado
-//        CambioEstado cambioEstadoActual = seleccionEventoSismico.obtenerCambioEstadoActual();
-//
-//        // Colocando la fecha actual como fecha fin del cambio de estado actual
-//        cambioEstadoActual.setFechaHoraFin(fechaHoraActual);
-//
-//        // Obteniendo el empleado responsable de revision a través del usuario logueado
-//        Empleado responsableInspeccion = obtenerResponsableDeInspeccion(usuarioLogueado);
-//
-//        // Creando el nuevo cambio de estado
-//        CambioEstado nuevoCambioEstado = new CambioEstado(fechaHoraActual, this, responsableInspeccion);
-//
-//        // Seteando el nuevo estado concreto al evento sismico seleccionado
-//        seleccionEventoSismico.setEstadoActual(this);
-//    }
+    @Override
+    public void rechazar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        Rechazado estadoCreadoRechazado = new Rechazado();
+        Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
+        registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoRechazado);
+        eventoSismicoSeleccionado.setEstadoActual(estadoCreadoRechazado);
+    }
+
+    public void registrarCambioDeEstado(ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Empleado empleado, Estado nuevoEstado) {
+        for (CambioEstado cambioEstado : cambiosEstado) {
+            if (cambioEstado.esEstadoActual()) {
+                cambioEstado.setFechaHoraFin(fechaHoraActual);
+            }
+        }
+        CambioEstado nuevoCambioEstado = new CambioEstado(fechaHoraActual, nuevoEstado, empleado);
+        cambiosEstado.add(nuevoCambioEstado);
+    }
+
+    @Override
+    public Empleado obtenerResponsableDeInspeccion(Usuario usuarioLogueado) {
+        return usuarioLogueado.getEmpleado();
+    }
 
 }
