@@ -167,8 +167,6 @@ public class GestorRevisionManual {
     private List<ArrayList<String>> clasificarPorEstacionSismologica() {
         List<ArrayList<String>> informacionClasificada = new ArrayList<>();
 
-        System.out.println("INFOPOO" + informacionSismicaEventoSeleccionado);
-
         for (ArrayList<String> datosSerie : informacionSismicaEventoSeleccionado) {
             long idSerieTemporal = Long.parseLong(datosSerie.get(0));
 
@@ -186,12 +184,16 @@ public class GestorRevisionManual {
                 ArrayList<String> datosSerieCompletos = new ArrayList<>();
                 datosSerieCompletos.add(datosEstacion.get(0).toString());
                 datosSerieCompletos.add(datosEstacion.get(1).toString());
-                datosSerieCompletos.add(datosSerie.toString());
+                for (String datoSerie : datosSerie) {
+                    datosSerieCompletos.add(datoSerie);
+                };
                 informacionClasificada.add(datosSerieCompletos);
             } else {
                 System.out.println("ROTO NO SE ENCONTRO SISMOGRAFO AAAAAAAAAAAAA");
             }
         }
+
+        System.out.println(informacionClasificada);
 
         return informacionClasificada;
     }
