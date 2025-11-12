@@ -583,37 +583,37 @@ public class DatabaseConnection {
                                 ('2025-02-21 19:10:41', '2025-02-21 19:05:41', -31.52, -64.19, -31.52, -64.19, 4.3, 4, 2, 1, 2, 'EventoSismico', 'AutoDetectado'),
 
                                 -- 2 (AutoDetectado) | Mag: 3.8 (FK: 3) | Clasif: 1 | Origen: 2 | Alcance: 1
-                                ('2025-04-01 10:05:00', '2025-04-01 10:00:00', -31.10, -65.20, -31.10, -65.20, 3.8, 3, 1, 2, 1, 'EventoSismico', 'AutoDetectado'),
+                                ('2025-04-01 10:05:00', '2025-04-01 10:00:10', -31.10, -65.20, -31.10, -65.20, 3.8, 3, 1, 2, 1, 'EventoSismico', 'AutoDetectado'),
 
                                 -- 3 (AutoDetectado) | Mag: 4.1 (FK: 4) | Clasif: 2 | Origen: 1 | Alcance: 2
-                                ('2025-04-02 14:20:00', '2025-04-02 14:15:00', -31.25, -65.45, -31.25, -65.45, 4.1, 4, 2, 1, 2, 'EventoSismico', 'AutoDetectado'),
+                                ('2025-04-02 14:20:00', '2025-04-02 14:15:02', -31.25, -65.45, -31.25, -65.45, 4.1, 4, 2, 1, 2, 'EventoSismico', 'AutoDetectado'),
 
                                 -- 4 (AutoDetectado) | Mag: 4.5 (FK: 4) | Clasif: 2 | Origen: 2 | Alcance: 2
-                                ('2025-04-03 09:35:00', '2025-04-03 09:30:00', -31.40, -65.60, -31.40, -65.60, 4.5, 4, 2, 2, 2, 'EventoSismico', 'AutoDetectado'),
+                                ('2025-04-03 09:35:00', '2025-04-03 09:30:06', -31.40, -65.60, -31.40, -65.60, 4.5, 4, 2, 2, 2, 'EventoSismico', 'AutoDetectado'),
 
                                 -- 5 (PendienteRevision) | Mag: 5.0 (FK: 5) | Clasif: 3 | Origen: 1 | Alcance: 2
-                                ('2025-04-05 12:15:00', '2025-04-05 12:10:00', -31.70, -65.90, -31.70, -65.90, 5.0, 5, 3, 1, 2, 'EventoSismico', 'PendienteDeRevision'),
+                                ('2025-04-05 12:15:00', '2025-04-05 12:10:35', -31.70, -65.90, -31.70, -65.90, 5.0, 5, 3, 1, 2, 'EventoSismico', 'PendienteDeRevision'),
 
                                 -- 6 (PendienteRevision) | Mag: 5.2 (FK: 5) | Clasif: 3 | Origen: 2 | Alcance: 2
-                                ('2025-04-06 18:30:00', '2025-04-06 18:25:00', -31.85, -66.05, -31.85, -66.05, 5.2, 5, 3, 2, 2, 'EventoSismico', 'PendienteDeRevision'),
+                                ('2025-04-06 18:30:00', '2025-04-06 18:25:50', -31.85, -66.05, -31.85, -66.05, 5.2, 5, 3, 2, 2, 'EventoSismico', 'PendienteDeRevision'),
 
                                 -- 7 (BloqueadoRevision) | Mag: 4.3 (FK: 4) | Clasif: 2 | Origen: 2 | Alcance: 2
-                                ('2025-04-07 03:05:00', '2025-04-07 03:00:00', -32.00, -66.20, -32.00, -66.20, 4.3, 4, 2, 2, 2, 'EventoSismico', 'BloqueadoEnRevision'),
+                                ('2025-04-07 03:05:00', '2025-04-07 03:00:03', -32.00, -66.20, -32.00, -66.20, 4.3, 4, 2, 2, 2, 'EventoSismico', 'BloqueadoEnRevision'),
 
                                 -- 8 (Derivado) | Mag: 4.0 (FK: 4) | Clasif: 2 | Origen: 1 | Alcance: 1
-                                ('2025-04-08 05:25:00', '2025-04-08 05:20:00', -32.15, -66.35, -32.15, -66.35, 4.0, 4, 2, 1, 1, 'EventoSismico', 'DerivadoAExperto'),
+                                ('2025-04-08 05:25:00', '2025-04-08 05:20:07', -32.15, -66.35, -32.15, -66.35, 4.0, 4, 2, 1, 1, 'EventoSismico', 'DerivadoAExperto'),
 
                                 -- 9 (Confirmado) | Mag: 4.6 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
-                                ('2025-04-09 21:45:00', '2025-04-09 21:40:00', -32.30, -66.50, -32.30, -66.50, 4.6, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
+                                ('2025-04-09 21:45:00', '2025-04-09 21:40:28', -32.30, -66.50, -32.30, -66.50, 4.6, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
 
                                 -- 10 (Confirmado) | Mag: 4.9 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
-                                ('2025-04-11 08:05:00', '2025-04-11 08:00:00', -32.40, -66.55, -32.40, -66.55, 4.9, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
+                                ('2025-04-11 08:05:00', '2025-04-11 08:00:30', -32.40, -66.55, -32.40, -66.55, 4.9, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
 
                                 -- 11 (Rechazado) | Mag: 3.7 (FK: 3) | Clasif: 1 | Origen: 2 | Alcance: 1
-                                ('2025-03-08 13:05:00', '2025-03-08 13:00:00', -32.15, -68.40, -32.15, -68.40, 3.7, 3, 1, 2, 1, 'EventoSismico', 'Rechazado'),
+                                ('2025-03-08 13:05:00', '2025-03-08 13:00:20', -32.15, -68.40, -32.15, -68.40, 3.7, 3, 1, 2, 1, 'EventoSismico', 'Rechazado'),
 
                                 -- 12 (Rechazado) | Mag: 3.9 (FK: 3) | Clasif: 1 | Origen: 1 | Alcance: 1
-                                ('2025-04-10 12:00:00', '2025-04-10 11:55:00', -32.45, -66.65, -32.45, -66.65, 3.9, 3, 1, 1, 1, 'EventoSismico', 'Rechazado');
+                                ('2025-04-10 12:00:00', '2025-04-10 11:55:02', -32.45, -66.65, -32.45, -66.65, 3.9, 3, 1, 1, 1, 'EventoSismico', 'Rechazado');
                             """);
 
             // ====== CAMBIOESTADO — registro simple por evento (estado actual) ======
