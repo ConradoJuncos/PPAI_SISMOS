@@ -40,7 +40,7 @@ public class PantallaRevisionManual extends JFrame {
 
     // Paneles para mostrar información adicional
     private JPanel panelDatosSismicos;
-    private JScrollPane scrollDatosSismicos; // ScrollPane para hacer visible
+        private JScrollPane scrollDatosSismicos; // ScrollPane para hacer visible
     private JLabel lblAlcance;
     private JLabel lblClasificacion;
     private JLabel lblOrigen;
@@ -57,7 +57,7 @@ public class PantallaRevisionManual extends JFrame {
     private void inicializarComponentes() {
         setTitle("CU23 - Revisión Manual de Eventos Sísmicos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1400, 900);
+        setSize(1200, 950);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
