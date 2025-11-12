@@ -3,6 +3,7 @@ package com.ppai.app.entidad;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.ppai.app.entidad.MuestraSismica;
 
 public class SerieTemporal {
     
@@ -12,15 +13,15 @@ public class SerieTemporal {
     private LocalDateTime fechaHoraRegistro;
     private String frecuenciaMuestreo;
     private Estado estado; 
-    private List<Long> idMuestraSismica = new ArrayList<>();
+    private List<MuestraSismica> muestrasSismicas = new ArrayList<>();
 
     // Constructor sin parámetros
     public SerieTemporal(){}
 
     // Comportamiento
-    public String getDatos(){
         // Implementar la lógica de este método
         return "El método para obtener los datos de la Serie Temporal aun no ha sido implementado.";
+        return datos.toString();
     }
 
     // Métodos Getter y Setter
@@ -39,8 +40,8 @@ public class SerieTemporal {
     public Estado getEstado(){
         return this.estado;
     }
-    public List<Long> getIdMuestraSismica(){
-        return this.idMuestraSismica;
+    public List<MuestraSismica> getMuestrasSismicas(){
+        return this.muestrasSismicas;
     }
     public void setIdSerieTemporal(long idSerieTemporal){
         this.idSerieTemporal = idSerieTemporal;
@@ -57,7 +58,7 @@ public class SerieTemporal {
     public void setEstado(Estado estado){
         this.estado = estado;
     }
-    public void setIdMuestraSismica(List<Long> idMuestraSismica) {
-        this.idMuestraSismica = idMuestraSismica;
+    public void setMuestrasSismicas(List<MuestraSismica> muestrasSismicas) {
+        this.muestrasSismicas = muestrasSismicas;
     }
 }

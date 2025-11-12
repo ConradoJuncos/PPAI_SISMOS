@@ -1,7 +1,7 @@
 package com.ppai.app.dao;
 
 import com.ppai.app.datos.DatabaseConnection;
-import com.ppai.app.entidad.SerieTemporal;
+import com.ppai.app.entidad.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -9,7 +9,8 @@ import java.util.*;
 public class SerieTemporalDAO {
 
     // Dependencias
-    private final EstadoDAO estadoActualDAO = new EstadoDAO();
+    private final EstadoDAO estadoDAO = new EstadoDAO();
+    private final MuestraSismicaDAO muestraSismicaDAO = new MuestraSismicaDAO();
 
     /* --------------------------------------------------------------
        INSERT – guarda datos principales + relación N:N con muestras
@@ -18,8 +19,9 @@ public class SerieTemporalDAO {
         String sql = """
             INSERT INTO SerieTemporal 
             (condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, nombreEstado, ambitoEstado) 
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
             """;
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -36,8 +38,8 @@ public class SerieTemporalDAO {
                     long idSerie = rs.getLong(1);
                     s.setIdSerieTemporal(idSerie);
 
-                    // Persistir relación N:N con muestras sísmicas
-                    insertMuestras(conn, idSerie, s.getIdMuestraSismica());
+                    // Guardar relación con muestras sísmicas
+                    insertMuestras(conn, idSerie, s.getMuestrasSismicas());
                 }
             }
         }
@@ -49,9 +51,14 @@ public class SerieTemporalDAO {
     public void update(SerieTemporal s) throws SQLException {
         String sql = """
             UPDATE SerieTemporal SET 
-            condicionAlarma = ?, fechaHoraRegistro = ?, frecuenciaMuestreo = ?, nombreEstado = ?, ambitoEstado = ?, 
+                condicionAlarma = ?, 
+                fechaHoraRegistro = ?, 
+                frecuenciaMuestreo = ?, 
+                nombreEstado = ?, 
+                ambitoEstado = ?
             WHERE idSerieTemporal = ?
             """;
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -60,13 +67,13 @@ public class SerieTemporalDAO {
             ps.setString(3, s.getFrecuenciaMuestreo());
             ps.setString(4, s.getEstado().getNombreEstado());
             ps.setString(5, s.getEstado().getAmbito());
-            ps.setLong  (6, s.getIdSerieTemporal());
+            ps.setLong(6, s.getIdSerieTemporal());
 
             ps.executeUpdate();
 
             // Actualizar relación N:N
             deleteMuestras(conn, s.getIdSerieTemporal());
-            insertMuestras(conn, s.getIdSerieTemporal(), s.getIdMuestraSismica());
+            insertMuestras(conn, s.getIdSerieTemporal(), s.getMuestrasSismicas());
         }
     }
 
@@ -90,10 +97,12 @@ public class SerieTemporalDAO {
        -------------------------------------------------------------- */
     public SerieTemporal findById(long idSerieTemporal) throws SQLException {
         String sql = "SELECT * FROM SerieTemporal WHERE idSerieTemporal = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, idSerieTemporal);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     SerieTemporal s = new SerieTemporal();
@@ -102,14 +111,16 @@ public class SerieTemporalDAO {
                     s.setCondicionAlarma(rs.getString("condicionAlarma"));
                     s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
                     s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-                    // Carga del Estado Actual (Directa)
+
+                    // Estado actual (referencia completa)
                     String ambito = rs.getString("ambitoEstado");
                     String nombreEstado = rs.getString("nombreEstado");
-                    s.setEstado(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
+                    Estado estado = estadoDAO.findByAmbitoAndNombre(ambito, nombreEstado);
+                    s.setEstado(estado);
 
-                    // Cargar muestras sísmicas
-                    List<Long> muestras = findMuestrasBySerieTemporal(conn, idSerieTemporal);
-                    s.setIdMuestraSismica(muestras);
+                    // Cargar muestras sísmicas asociadas (objetos)
+                    List<MuestraSismica> muestras = findMuestrasBySerieTemporal(conn, idSerieTemporal);
+                    s.setMuestrasSismicas(muestras);
 
                     return s;
                 }
@@ -122,7 +133,7 @@ public class SerieTemporalDAO {
        FIND ALL – lista completa
        -------------------------------------------------------------- */
     public List<SerieTemporal> findAll() throws SQLException {
-        String sql = "SELECT * FROM SerieTemporal";
+        String sql = "SELECT idSerieTemporal FROM SerieTemporal";
         List<SerieTemporal> list = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -130,56 +141,36 @@ public class SerieTemporalDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                SerieTemporal s = new SerieTemporal();
-
-                s.setIdSerieTemporal(rs.getLong("idSerieTemporal"));
-                s.setCondicionAlarma(rs.getString("condicionAlarma"));
-                s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
-                s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-                // Carga del Estado Actual (Directa)
-                String ambito = rs.getString("ambitoEstado");
-                String nombreEstado = rs.getString("nombreEstado");
-                s.setEstado(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
-
-                List<Long> muestras = findMuestrasBySerieTemporal(conn, s.getIdSerieTemporal());
-                s.setIdMuestraSismica(muestras);
-
-                list.add(s);
+                long id = rs.getLong("idSerieTemporal");
+                SerieTemporal s = findById(id);
+                if (s != null) list.add(s);
             }
         }
         return list;
     }
 
     /* --------------------------------------------------------------
-       NUEVO: Buscar Series Temporales por Evento Sísmico (para EventoSismicoDAO)
+       NUEVO: Buscar Series Temporales por Evento Sísmico
        -------------------------------------------------------------- */
     public List<SerieTemporal> findByEventoSismicoId(Connection conn, long idEventoSismico) throws SQLException {
         String sql = """
-            SELECT st.* FROM SerieTemporal st
-            JOIN EventoSismico_SerieTemporal est ON st.idSerieTemporal = est.idSerieTemporal
+            SELECT st.idSerieTemporal 
+            FROM SerieTemporal st
+            JOIN EventoSismico_SerieTemporal est 
+              ON st.idSerieTemporal = est.idSerieTemporal
             WHERE est.idEventoSismico = ?
             """;
+
         List<SerieTemporal> series = new ArrayList<>();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idEventoSismico);
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    SerieTemporal s = new SerieTemporal();
-
-                    s.setIdSerieTemporal(rs.getLong("idSerieTemporal"));
-                    s.setCondicionAlarma(rs.getString("condicionAlarma"));
-                    s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
-                    s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-                    // Carga del Estado Actual (Directa)
-                    String ambito = rs.getString("ambitoEstado");
-                    String nombreEstado = rs.getString("nombreEstado");
-                    s.setEstado(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
-
-                    List<Long> muestras = findMuestrasBySerieTemporal(conn, s.getIdSerieTemporal());
-                    s.setIdMuestraSismica(muestras);
-
-                    series.add(s);
+                    long idSerie = rs.getLong("idSerieTemporal");
+                    SerieTemporal s = findById(idSerie);
+                    if (s != null) series.add(s);
                 }
             }
         }
@@ -190,12 +181,15 @@ public class SerieTemporalDAO {
     // MÉTODOS AUXILIARES PARA RELACIÓN N:N CON MUESTRAS SÍSMICAS
     // ==============================================================
 
-    private void insertMuestras(Connection conn, long idSerie, List<Long> muestras) throws SQLException {
-        String sql = "INSERT INTO SerieTemporal_MuestraSismica (idSerieTemporal, idMuestraSismica) VALUES (?, ?)";
+    private void insertMuestras(Connection conn, long idSerie, List<MuestraSismica> muestras) throws SQLException {
+        String sql = """
+            INSERT INTO SerieTemporal_MuestraSismica (idSerieTemporal, idMuestraSismica) 
+            VALUES (?, ?)
+            """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (Long idMuestra : muestras) {
+            for (MuestraSismica m : muestras) {
                 ps.setLong(1, idSerie);
-                ps.setLong(2, idMuestra);
+                ps.setLong(2, m.getIdMuestraSismica());
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -210,23 +204,23 @@ public class SerieTemporalDAO {
         }
     }
 
-    private List<Long> findMuestrasBySerieTemporal(Connection conn, long idSerie) throws SQLException {
+    private List<MuestraSismica> findMuestrasBySerieTemporal(Connection conn, long idSerie) throws SQLException {
         String sql = "SELECT idMuestraSismica FROM SerieTemporal_MuestraSismica WHERE idSerieTemporal = ?";
-        List<Long> muestras = new ArrayList<>();
+        List<MuestraSismica> muestras = new ArrayList<>();
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idSerie);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    muestras.add(rs.getLong("idMuestraSismica"));
+                    long idMuestra = rs.getLong("idMuestraSismica");
+                    MuestraSismica m = muestraSismicaDAO.findById(idMuestra);
+                    if (m != null) muestras.add(m);
                 }
             }
         }
         return muestras;
     }
 
-    // ==============================================================
-    // UTILIDAD: convertir Timestamp a LocalDateTime
-    // ==============================================================
     private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
         Timestamp ts = rs.getTimestamp(column);
         return ts != null ? ts.toLocalDateTime() : null;

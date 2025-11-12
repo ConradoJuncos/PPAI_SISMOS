@@ -41,7 +41,7 @@ public class PantallaRevisionManual extends JFrame {
     private JLabel lblAlcance;
     private JLabel lblClasificacion;
     private JLabel lblOrigen;
-    private JLabel lblInfoSismica;
+    private JTextArea txtInfoSismica;
 
     public PantallaRevisionManual(Contexto contexto) {
         this.contexto = contexto;
@@ -147,14 +147,20 @@ public class PantallaRevisionManual extends JFrame {
         lblOrigen.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblOrigen.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        lblInfoSismica = new JLabel("Información Sísmica: -");
-        lblInfoSismica.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblInfoSismica.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        // JTextArea para información sísmica (reemplaza JLabel para mejor formato)
+        txtInfoSismica = new JTextArea(10, 50);
+        txtInfoSismica.setFont(new Font("Consolas", Font.PLAIN, 12));
+        txtInfoSismica.setEditable(false);
+        txtInfoSismica.setText("Información Sísmica: -");
+        txtInfoSismica.setLineWrap(true);
+        txtInfoSismica.setWrapStyleWord(true);
+        JScrollPane scrollInfoSismica = new JScrollPane(txtInfoSismica);
+        scrollInfoSismica.setBorder(BorderFactory.createTitledBorder("Información Sísmica"));
 
         panelDatosSismicos.add(lblAlcance);
         panelDatosSismicos.add(lblClasificacion);
         panelDatosSismicos.add(lblOrigen);
-        panelDatosSismicos.add(lblInfoSismica);
+        panelDatosSismicos.add(scrollInfoSismica);
 
         panelCentral.add(panelDatosSismicos, BorderLayout.SOUTH);
         add(panelCentral, BorderLayout.CENTER);
@@ -209,15 +215,19 @@ public class PantallaRevisionManual extends JFrame {
             lblOrigen.setText("Origen de Generación: " + metadatos.get(2).toString());
         }
 
-        // Mostrar información sísmica
+        // Mostrar información sísmica en el JTextArea
         if (informacionSismica != null && !informacionSismica.isEmpty()) {
-            StringBuilder infoText = new StringBuilder("Información Sísmica: ");
+            StringBuilder infoText = new StringBuilder();
+            int serieNumero = 1;
             for (Object info : informacionSismica) {
-                infoText.append(info.toString()).append("; ");
+                infoText.append("=== Serie Temporal ").append(serieNumero).append(" ===\n");
+                infoText.append(info.toString()).append("\n");
+                serieNumero++;
             }
-            lblInfoSismica.setText(infoText.toString());
+            txtInfoSismica.setText(infoText.toString());
+            txtInfoSismica.setCaretPosition(0); // Scroll al inicio
         } else {
-            lblInfoSismica.setText("Información Sísmica: No hay datos disponibles");
+            txtInfoSismica.setText("Información Sísmica: No hay datos disponibles");
         }
 
         // Hacer visible el panel de datos sísmicos
@@ -242,18 +252,31 @@ public class PantallaRevisionManual extends JFrame {
 
     // Acción al presionar el botón de visualizar mapa
     private void visualizarMapa() {
-        lblEstado.setText("Abriendo mapa de eventos sísmicos y estaciones sismológicas...");
-        // Aquí se implementaría la lógica para abrir un mapa
-        // Por ahora solo mostramos un mensaje
-        javax.swing.JOptionPane.showMessageDialog(
+        // Mostrar popup de confirmación
+        int respuesta = javax.swing.JOptionPane.showConfirmDialog(
             this,
-            "Funcionalidad de mapa en desarrollo.\n" +
-            "Se mostraría:\n" +
-            "- Ubicación del evento sísmico (epicentro e hipocentro)\n" +
-            "- Estaciones sismológicas involucradas\n" +
-            "- Magnitud y alcance del evento",
-            "Visualizar Mapa",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE
+            "¿Desea visualizar el mapa del evento sísmico y las estaciones sismológicas involucradas?",
+            "Confirmar Visualización de Mapa",
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.QUESTION_MESSAGE
         );
+
+        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+            lblEstado.setText("Abriendo mapa de eventos sísmicos y estaciones sismológicas...");
+            // Aquí se implementaría la lógica para abrir un mapa
+            // Por ahora solo mostramos un mensaje
+            javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Funcionalidad de mapa en desarrollo.\n" +
+                "Se mostraría:\n" +
+                "- Ubicación del evento sísmico (epicentro e hipocentro)\n" +
+                "- Estaciones sismológicas involucradas\n" +
+                "- Magnitud y alcance del evento",
+                "Visualizar Mapa",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+        } else {
+            lblEstado.setText("Visualización de mapa cancelada.");
+        }
     }
 }

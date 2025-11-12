@@ -9,7 +9,7 @@ public class MuestraSismica {
     // Atributos
     private long idMuestraSismica;
     private LocalDateTime fechaHoraMuestraSismica;
-    private List<Long> idDetalleMuestraSismica = new ArrayList<>();
+    private List<DetalleMuestraSismica> detalleMuestrasSismicas = new ArrayList<>();
 
     // Constructor sin parámetros
     public MuestraSismica(){}
@@ -30,8 +30,8 @@ public class MuestraSismica {
     public LocalDateTime getFechaHoraMuestraSismica(){
         return this.fechaHoraMuestraSismica;
     }
-    public List<Long> getIdDetalleMuestraSismica(){
-        return this.idDetalleMuestraSismica;
+    public List<DetalleMuestraSismica> getDetalleMuestrasSismicas(){
+        return this.detalleMuestrasSismicas;
     }
     public void setIdMuestraSismica(long idMuestraSismica) {
         this.idMuestraSismica = idMuestraSismica;
@@ -39,7 +39,7 @@ public class MuestraSismica {
     public void setFechaHoraMuestraSismica(LocalDateTime fechaHoraMuestraSismica){
         this.fechaHoraMuestraSismica = fechaHoraMuestraSismica;
     }
-    public void setIdDetalleMuestraSismica(List<Long> idDetalleMuestraSismica){
-        this.idDetalleMuestraSismica = idDetalleMuestraSismica;
+    public void setDetalleMuestrasSismicas(List<DetalleMuestraSismica> detalleMuestrasSismicas){
+        this.detalleMuestrasSismicas = detalleMuestrasSismicas;
     }
 }

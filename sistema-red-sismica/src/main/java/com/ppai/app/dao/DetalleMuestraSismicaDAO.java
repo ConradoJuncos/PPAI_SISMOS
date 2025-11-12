@@ -1,25 +1,26 @@
 package com.ppai.app.dao;
 
 import com.ppai.app.datos.DatabaseConnection;
-import com.ppai.app.entidad.DetalleMuestraSismica;
+import com.ppai.app.entidad.*;
 import java.sql.*;
 import java.util.*;
 
 public class DetalleMuestraSismicaDAO {
 
+    // Dependencia para cargar el TipoDeDato asociado
     private final TipoDeDatoDAO tipoDeDatoDAO = new TipoDeDatoDAO();
 
     /* --------------------------------------------------------------
-       INSERT – guarda todos los campos
+       INSERT – guarda todos los campos con referencia al TipoDeDato
        -------------------------------------------------------------- */
     public void insert(DetalleMuestraSismica d) throws SQLException {
         String sql = "INSERT INTO DetalleMuestraSismica (idTipoDeDato, valor) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setLong  (1, d.getIdTipoDeDato());
+            // Se obtiene el id del tipo de dato referenciado
+            ps.setLong(1, d.getTipoDeDato().getIdTipoDeDato());
             ps.setDouble(2, d.getValor());
-
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -34,14 +35,17 @@ public class DetalleMuestraSismicaDAO {
        UPDATE – actualiza todo
        -------------------------------------------------------------- */
     public void update(DetalleMuestraSismica d) throws SQLException {
-        String sql = "UPDATE DetalleMuestraSismica SET idTipoDeDato = ?, valor = ? WHERE idDetalleMuestraSismica = ?";
+        String sql = """
+            UPDATE DetalleMuestraSismica 
+            SET idTipoDeDato = ?, valor = ? 
+            WHERE idDetalleMuestraSismica = ?
+            """;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong  (1, d.getIdTipoDeDato());
+            ps.setLong(1, d.getTipoDeDato().getIdTipoDeDato());
             ps.setDouble(2, d.getValor());
-            ps.setLong  (3, d.getIdDetalleMuestraSismica());
-
+            ps.setLong(3, d.getIdDetalleMuestraSismica());
             ps.executeUpdate();
         }
     }
@@ -59,7 +63,7 @@ public class DetalleMuestraSismicaDAO {
     }
 
     /* --------------------------------------------------------------
-       FIND BY ID – carga completo (incluyendo TipoDeDato si es necesario)
+       FIND BY ID – carga completo (incluyendo TipoDeDato asociado)
        -------------------------------------------------------------- */
     public DetalleMuestraSismica findById(long idDetalleMuestraSismica) throws SQLException {
         String sql = "SELECT * FROM DetalleMuestraSismica WHERE idDetalleMuestraSismica = ?";
@@ -72,7 +76,8 @@ public class DetalleMuestraSismicaDAO {
                     DetalleMuestraSismica d = new DetalleMuestraSismica();
 
                     d.setIdDetalleMuestraSismica(rs.getLong("idDetalleMuestraSismica"));
-                    d.setIdTipoDeDato(rs.getLong("idTipoDeDato"));
+                    long idTipo = rs.getLong("idTipoDeDato");
+                    d.setTipoDeDato(tipoDeDatoDAO.findById(idTipo));
                     d.setValor(rs.getDouble("valor"));
 
                     return d;
@@ -86,7 +91,7 @@ public class DetalleMuestraSismicaDAO {
        FIND ALL – lista completa
        -------------------------------------------------------------- */
     public List<DetalleMuestraSismica> findAll() throws SQLException {
-        String sql = "SELECT * FROM DetalleMuestraSismica";
+        String sql = "SELECT idDetalleMuestraSismica FROM DetalleMuestraSismica";
         List<DetalleMuestraSismica> list = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -94,13 +99,9 @@ public class DetalleMuestraSismicaDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                DetalleMuestraSismica d = new DetalleMuestraSismica();
-
-                d.setIdDetalleMuestraSismica(rs.getLong("idDetalleMuestraSismica"));
-                d.setIdTipoDeDato(rs.getLong("idTipoDeDato"));
-                d.setValor(rs.getDouble("valor"));
-
-                list.add(d);
+                long id = rs.getLong("idDetalleMuestraSismica");
+                DetalleMuestraSismica d = findById(id);
+                if (d != null) list.add(d);
             }
         }
         return list;
@@ -111,8 +112,10 @@ public class DetalleMuestraSismicaDAO {
        -------------------------------------------------------------- */
     public List<DetalleMuestraSismica> findByMuestraSismicaId(Connection conn, long idMuestraSismica) throws SQLException {
         String sql = """
-            SELECT dms.* FROM DetalleMuestraSismica dms
-            JOIN MuestraSismica_Detalle msd ON dms.idDetalleMuestraSismica = msd.idDetalleMuestraSismica
+            SELECT dms.idDetalleMuestraSismica 
+            FROM DetalleMuestraSismica dms
+            JOIN MuestraSismica_DetalleMuestraSismica msd 
+              ON dms.idDetalleMuestraSismica = msd.idDetalleMuestraSismica
             WHERE msd.idMuestraSismica = ?
             """;
         List<DetalleMuestraSismica> detalles = new ArrayList<>();
@@ -121,13 +124,9 @@ public class DetalleMuestraSismicaDAO {
             ps.setLong(1, idMuestraSismica);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    DetalleMuestraSismica d = new DetalleMuestraSismica();
-
-                    d.setIdDetalleMuestraSismica(rs.getLong("idDetalleMuestraSismica"));
-                    d.setIdTipoDeDato(rs.getLong("idTipoDeDato"));
-                    d.setValor(rs.getDouble("valor"));
-
-                    detalles.add(d);
+                    long idDetalle = rs.getLong("idDetalleMuestraSismica");
+                    DetalleMuestraSismica d = findById(idDetalle);
+                    if (d != null) detalles.add(d);
                 }
             }
         }

@@ -1,10 +1,12 @@
 package com.ppai.app.entidad;
 
+import com.ppai.app.entidad.TipoDeDato;
+
 public class DetalleMuestraSismica {
  
     // Atributos
     private long idDetalleMuestraSismica;
-    private long idTipoDeDato;
+    private TipoDeDato tipoDeDato;
     private double valor;
 
     // Constructor sin parametros
@@ -20,8 +22,8 @@ public class DetalleMuestraSismica {
     public long getIdDetalleMuestraSismica(){
         return this.idDetalleMuestraSismica;
     }
-    public long getIdTipoDeDato(){
-        return this.idTipoDeDato;
+    public TipoDeDato getTipoDeDato(){
+        return this.tipoDeDato;
     } 
     public double getValor(){
         return this.valor;
@@ -29,8 +31,8 @@ public class DetalleMuestraSismica {
     public void setIdDetalleMuestraSismica(long idDetalleMuestraSismica) {
         this.idDetalleMuestraSismica = idDetalleMuestraSismica;
     }
-    public void setIdTipoDeDato(long idTipoDeDato) {
-        this.idTipoDeDato = idTipoDeDato;
+    public void setTipoDeDato(TipoDeDato tipoDeDato) {
+        this.tipoDeDato = tipoDeDato;
     }
     public void setValor(double valor){
         this.valor = valor;

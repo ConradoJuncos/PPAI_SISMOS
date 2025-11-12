@@ -12,7 +12,7 @@ public class TipoDeDatoDAO {
        -------------------------------------------------------------- */
     public void insert(TipoDeDato t) throws SQLException {
         String sql = "INSERT INTO TipoDeDato (denominacion, nombreUnidadMedida, valorUmbral) " +
-                     "VALUES (?, ?, ?)";
+                "VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -35,8 +35,8 @@ public class TipoDeDatoDAO {
        -------------------------------------------------------------- */
     public void update(TipoDeDato t) throws SQLException {
         String sql = "UPDATE TipoDeDato " +
-                     "SET denominacion = ?, nombreUnidadMedida = ?, valorUmbral = ? " +
-                     "WHERE idTipoDeDato = ?";
+                "SET denominacion = ?, nombreUnidadMedida = ?, valorUmbral = ? " +
+                "WHERE idTipoDeDato = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

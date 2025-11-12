@@ -19,7 +19,7 @@ public class EventoSismico {
     private MagnitudRichter magnitudRichter;
     private OrigenDeGeneracion origenGeneracion;
     private AlcanceSismo alcanceSismo;
-    private ArrayList<SerieTemporal> serieTemporal = new ArrayList<SerieTemporal>();
+    private ArrayList<SerieTemporal> seriesTemporales = new ArrayList<SerieTemporal>();
     private Estado estadoActual; 
     private ArrayList<CambioEstado> cambiosEstado = new ArrayList<CambioEstado>();
     private Empleado analistaSupervisor; 
@@ -40,7 +40,7 @@ public class EventoSismico {
             this.magnitudRichter = magnitudRichter;
             this.origenGeneracion = origenGeneracion;
             this.alcanceSismo = alcanceSismo;
-            this.serieTemporal = serieTemporal;
+            this.seriesTemporales = serieTemporal;
             this.cambiosEstado = cambiosEstado;
     }
 
@@ -129,7 +129,7 @@ public class EventoSismico {
         List<Object> informacionSismica = new ArrayList<>();
 
         // Recorrer las series temporales asociadas al evento
-        for (SerieTemporal serie : serieTemporal) {
+        for (SerieTemporal serie : seriesTemporales) {
             // Obtener los datos de cada serie temporal
             informacionSismica.add(serie.getDatos());
         }
@@ -137,7 +137,6 @@ public class EventoSismico {
         System.out.println("Información sísmica extraída: " + informacionSismica);
         return informacionSismica;
     }
-
     // Métodos Getter y Setter
     public long getIdEventoSismico(){
         return this.idEventoSismico;
@@ -175,8 +174,8 @@ public class EventoSismico {
     public AlcanceSismo getAlcanceSismo(){
         return this.alcanceSismo;
     }
-    public List<SerieTemporal> getSerieTemporal(){
-        return this.serieTemporal;
+    public List<SerieTemporal> getSeriesTemporales(){
+        return this.seriesTemporales;
     }
     public Estado getEstadoActual(){
         return this.estadoActual;
@@ -223,8 +222,8 @@ public class EventoSismico {
     public void setAlcanceSismo(AlcanceSismo alcanceSismo){
         this.alcanceSismo = alcanceSismo;
     }
-    public void setSerieTemporal(ArrayList<SerieTemporal> serieTemporal){
-        this.serieTemporal = serieTemporal;
+    public void setSeriesTemporales(ArrayList<SerieTemporal> serieTemporal){
+        this.seriesTemporales = serieTemporal;
     }
     public void setEstadoActual(Estado estadoActual){
         this.estadoActual = estadoActual;

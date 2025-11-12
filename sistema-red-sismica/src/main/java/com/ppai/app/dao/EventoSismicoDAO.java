@@ -70,7 +70,7 @@ public class EventoSismicoDAO {
                     e.setIdEventoSismico(idEvento);
 
                     // Persistir relaciones 1:N
-                    insertSerieTemporal(conn, idEvento, e.getSerieTemporal());
+                    insertSerieTemporal(conn, idEvento, e.getSeriesTemporales());
                     insertCambioEstado(conn, idEvento, e.getCambiosEstado());
                 }
             }
@@ -119,7 +119,7 @@ public class EventoSismicoDAO {
             // ... (Resto de la lógica de UPDATE: manejar SerieTemporal y CambioEstado) ...
             deleteSerieTemporal(conn, e.getIdEventoSismico());
             deleteCambioEstado(conn, e.getIdEventoSismico());
-            insertSerieTemporal(conn, e.getIdEventoSismico(), e.getSerieTemporal());
+            insertSerieTemporal(conn, e.getIdEventoSismico(), e.getSeriesTemporales());
             insertCambioEstado(conn, e.getIdEventoSismico(), e.getCambiosEstado());
         }
     }
