@@ -44,10 +44,13 @@ public class MuestraSismica {
             for (DetalleMuestraSismica detalle : this.detalleMuestrasSismicas) {
                 if (detalle.sosDenominacionTipoDeDatoVelocidadOnda()) {
                     velocidadOnda = detalle.getValor();
+                    System.out.println(velocidadOnda);
                 } else if (detalle.sosDenominacionTipoDeDatoFrecuenciaOnda()) {
                     frecuenciaOnda = detalle.getValor();
+                    System.out.println(frecuenciaOnda);
                 } else if (detalle.sosDenominacionTipoDeDatoLongitudOnda()) {
                     longitudOnda = detalle.getValor();
+                    System.out.println(longitudOnda);
                 } else {
                     System.out.println("DENOMINACION: " + detalle.getTipoDeDato().getDenominacion());
                     System.out.println(detalle.sosDenominacionTipoDeDatoLongitudOnda());

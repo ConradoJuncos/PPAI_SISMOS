@@ -227,7 +227,8 @@ public class PantallaRevisionManual extends JFrame {
     }
 
     // Mostrar los datos sísmicos registrados del evento seleccionado
-    public void mostrarDatosSismicosRegistrados(String alcanceSismo, String clasificacionSismo, String origenGeneracion, List<ArrayList<String>> informacionSismica, List<ArrayList<String>> informacionEstaciones) {
+    // El datosClasificados ya viene procesado en formato: [[idSerie, nombreEstacion, codigoEstacion, fechaInicio, frecuencia, muestras...], ...]
+    public void mostrarDatosSismicosRegistrados(String alcanceSismo, String clasificacionSismo, String origenGeneracion, String datosClasificados) {
         lblAlcance.setText("Alcance: " + alcanceSismo);
         lblClasificacion.setText("Clasificación: " + clasificacionSismo);
         lblOrigen.setText("Origen de Generación: " + origenGeneracion);
@@ -235,14 +236,40 @@ public class PantallaRevisionManual extends JFrame {
         // Limpiar panel de información sísmica
         panelInfoSismica.removeAll();
 
-        if (true) {
-            int estacionNumero = 1;
-            for (ArrayList<String> estacion : informacionEstaciones) {
-                JPanel panelEstacion = crearPanelEstacion(estacion.get(0), estacion.get(1), estacion.get(2));
-                panelInfoSismica.add(panelEstacion);
-                panelInfoSismica.add(javax.swing.Box.createVerticalStrut(15)); // Espaciado entre estaciones
+        // Parsear el string de datos clasificados
+        String contenidoLimpio = datosClasificados.replaceAll("^\\[\\[|\\]\\]$", "").trim();
+        String[] estaciones = contenidoLimpio.split("\\], \\[");
 
-                estacionNumero++;
+        if (estaciones.length > 0 && !estaciones[0].isEmpty()) {
+            for (String estacion : estaciones) {
+                // Remover corchetes residuales
+                estacion = estacion.replaceAll("^\\[|\\]$", "");
+
+                // Parsear componentes: idSerie, nombreEstacion, codigoEstacion, fechaInicio, frecuencia, muestras...
+                String[] componentes = estacion.split(", ");
+
+                if (componentes.length >= 5) {
+                    String idSerie = componentes[0].trim();
+                    String nombreEstacion = componentes[1].trim();
+                    String codigoEstacion = componentes[2].trim();
+                    String fechaInicio = componentes[3].trim();
+                    String frecuencia = componentes[4].trim();
+
+                    // Compilar todas las muestras (a partir del índice 5)
+                    StringBuilder muestrasBuilder = new StringBuilder();
+                    for (int i = 5; i < componentes.length; i++) {
+                        if (i > 5) muestrasBuilder.append(", ");
+                        muestrasBuilder.append(componentes[i].trim());
+                    }
+
+                    // Crear panel para esta estación
+                    JPanel panelEstacion = crearPanelEstacionConMuestras(
+                        nombreEstacion, codigoEstacion, idSerie,
+                        fechaInicio, frecuencia, muestrasBuilder.toString()
+                    );
+                    panelInfoSismica.add(panelEstacion);
+                    panelInfoSismica.add(javax.swing.Box.createVerticalStrut(20)); // Espaciado entre estaciones
+                }
             }
 
             // Panel final de confirmación
@@ -279,6 +306,102 @@ public class PantallaRevisionManual extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    /**
+     * Crea un panel visual completo para una estación sismológica con sus muestras sísmicas.
+     */
+    private JPanel crearPanelEstacionConMuestras(String nombreEstacion, String codigoEstacion,
+                                                  String idSerie, String fechaInicio, String frecuencia,
+                                                  String muestrasString) {
+        JPanel panelEstacion = new JPanel();
+        panelEstacion.setLayout(new BoxLayout(panelEstacion, BoxLayout.Y_AXIS));
+        panelEstacion.setBackground(new Color(240, 248, 255));
+        panelEstacion.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+
+        // Encabezado de la estación
+        JPanel panelEncabezado = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        panelEncabezado.setBackground(new Color(70, 130, 180));
+        JLabel lblEstacion = new JLabel("🏢 " + nombreEstacion + " (Código: " + codigoEstacion + ")");
+        lblEstacion.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblEstacion.setForeground(Color.WHITE);
+        panelEncabezado.add(lblEstacion);
+        panelEstacion.add(panelEncabezado);
+        panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
+
+        // Información de la serie temporal
+        JLabel lblInfoSerie = new JLabel("Serie Temporal #" + idSerie);
+        lblInfoSerie.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblInfoSerie.setForeground(new Color(70, 130, 180));
+        panelEstacion.add(lblInfoSerie);
+
+        JLabel lblFechaInicio = new JLabel("📅 Fecha/Hora Inicio: " + fechaInicio);
+        lblFechaInicio.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblFechaInicio.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 5));
+        panelEstacion.add(lblFechaInicio);
+
+        JLabel lblFrecuencia = new JLabel("📡 Frecuencia de Muestreo: " + frecuencia + " Hz");
+        lblFrecuencia.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblFrecuencia.setBorder(BorderFactory.createEmptyBorder(5, 20, 10, 5));
+        panelEstacion.add(lblFrecuencia);
+
+        // Separador
+        javax.swing.JSeparator sep = new javax.swing.JSeparator();
+        sep.setForeground(new Color(176, 196, 222));
+        panelEstacion.add(sep);
+        panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
+
+        // Procesar y mostrar muestras
+        if (!muestrasString.isEmpty()) {
+            String[] muestras = muestrasString.split(", ");
+            int numeroMuestra = 1;
+
+            for (String muestra : muestras) {
+                // Parsear muestra: fechaHora|velocidad|frecuencia|longitud
+                String[] datosMuestra = muestra.split("\\|");
+                if (datosMuestra.length == 4) {
+                    String fechaHoraMuestra = datosMuestra[0];
+                    String velocidad = datosMuestra[1];
+                    String frecuenciaOnda = datosMuestra[2];
+                    String longitud = datosMuestra[3];
+
+                    JPanel panelMuestra = new JPanel();
+                    panelMuestra.setLayout(new BoxLayout(panelMuestra, BoxLayout.Y_AXIS));
+                    panelMuestra.setBackground(Color.WHITE);
+                    panelMuestra.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(200, 220, 240), 1),
+                        BorderFactory.createEmptyBorder(10, 12, 10, 12)
+                    ));
+
+                    JLabel lblNumeroMuestra = new JLabel("⚡ Muestra #" + numeroMuestra + " - " + fechaHoraMuestra);
+                    lblNumeroMuestra.setFont(new Font("Segoe UI", Font.BOLD, 11));
+                    lblNumeroMuestra.setForeground(new Color(70, 130, 180));
+                    panelMuestra.add(lblNumeroMuestra);
+
+                    JLabel lblVelocidad = new JLabel("  🌊 Velocidad de Onda: " + velocidad + " km/seg");
+                    lblVelocidad.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+                    panelMuestra.add(lblVelocidad);
+
+                    JLabel lblFrecuenciaOnda = new JLabel("  📡 Frecuencia de Onda: " + frecuenciaOnda + " Hz");
+                    lblFrecuenciaOnda.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+                    panelMuestra.add(lblFrecuenciaOnda);
+
+                    JLabel lblLongitudOnda = new JLabel("  📏 Longitud de Onda: " + longitud + " km/ciclo");
+                    lblLongitudOnda.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+                    panelMuestra.add(lblLongitudOnda);
+
+                    panelEstacion.add(panelMuestra);
+                    panelEstacion.add(javax.swing.Box.createVerticalStrut(8)); // Espaciado entre muestras
+
+                    numeroMuestra++;
+                }
+            }
+        }
+
+        return panelEstacion;
     }
 
     /**

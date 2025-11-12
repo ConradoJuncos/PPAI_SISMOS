@@ -210,22 +210,49 @@ public class GestorRevisionManual {
 
     /**
      * Muestra los datos sísmicos registrados en la pantalla.
-     * Prepara los datos en formato adecuado para la interfaz.
+     * Convierte los datos clasificados a formato string para la pantalla.
      */
     private void mostrarDatosSismicosRegistrados(List<ArrayList<String>> informacionEstaciones) {
         System.out.println("Mostrando datos sísmicos registrados en pantalla...");
 
-        // Los datos ya están en formato ArrayList<String>
-        List<ArrayList<String>> datosSismicos = this.informacionSismicaEventoSeleccionado;
+        // Convertir la información clasificada a formato string: [[id, nombre, codigo, fecha, frecuencia, muestras...], ...]
+        String datosClasificadosString = convertirDatosAString(informacionEstaciones);
 
-        // Mostrar en pantalla
+        // Mostrar en pantalla con el nuevo método que espera 4 parámetros
         pantalla.mostrarDatosSismicosRegistrados(
-            metadatosEventoSismicoSeleccionado.get(0),
-            metadatosEventoSismicoSeleccionado.get(1),
-            metadatosEventoSismicoSeleccionado.get(2),
-            datosSismicos,
-            informacionEstaciones
+            metadatosEventoSismicoSeleccionado.get(0),  // alcance
+            metadatosEventoSismicoSeleccionado.get(1),  // clasificación
+            metadatosEventoSismicoSeleccionado.get(2),  // origen
+            datosClasificadosString                      // datos clasificados en formato string
         );
+    }
+
+    /**
+     * Convierte la información clasificada a formato string para la pantalla.
+     */
+    private String convertirDatosAString(List<ArrayList<String>> informacionEstaciones) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (int i = 0; i < informacionEstaciones.size(); i++) {
+            ArrayList<String> estacion = informacionEstaciones.get(i);
+            sb.append("[");
+
+            for (int j = 0; j < estacion.size(); j++) {
+                sb.append(estacion.get(j));
+                if (j < estacion.size() - 1) {
+                    sb.append(", ");
+                }
+            }
+
+            sb.append("]");
+            if (i < informacionEstaciones.size() - 1) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("]");
+        return sb.toString();
     }
 
     /**
