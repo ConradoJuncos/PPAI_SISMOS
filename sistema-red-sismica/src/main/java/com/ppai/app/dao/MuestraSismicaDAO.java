@@ -74,9 +74,8 @@ public class MuestraSismicaDAO {
     }
 
     /*
-     * --------------------------------------------------------------
-     * FIND BY ID – carga todo (incluyendo detalles)
-     * --------------------------------------------------------------
+     * Busca una muestra sísmica por su ID.
+     * Carga automáticamente todos sus detalles sísmicos asociados.
      */
     public MuestraSismica findById(long idMuestraSismica) throws SQLException {
         String sql = "SELECT * FROM MuestraSismica WHERE idMuestraSismica = ?";
@@ -86,20 +85,49 @@ public class MuestraSismicaDAO {
             ps.setLong(1, idMuestraSismica);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    MuestraSismica m = new MuestraSismica();
-
-                    m.setIdMuestraSismica(rs.getLong("idMuestraSismica"));
-                    m.setFechaHoraMuestraSismica(getLocalDateTime(rs, "fechaHoraMuestraSismica"));
-
-                    // Cargar objetos DetalleMuestraSismica asociados
-                    List<DetalleMuestraSismica> detalles = findDetallesByMuestra(conn, idMuestraSismica);
-                    m.setDetalleMuestrasSismicas(detalles);
-
-                    return m;
+                    return mapResultSetToMuestraSismica(rs, conn, idMuestraSismica);
                 }
             }
         }
         return null;
+    }
+
+    /*
+     * Carga una muestra sísmica completa usando una conexión existente.
+     * Este método es utilizado internamente para evitar abrir múltiples conexiones
+     * y mantener la coherencia transaccional.
+     */
+    private MuestraSismica findByIdWithConnection(Connection conn, long idMuestraSismica) throws SQLException {
+        String sql = "SELECT * FROM MuestraSismica WHERE idMuestraSismica = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idMuestraSismica);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToMuestraSismica(rs, conn, idMuestraSismica);
+                }
+            }
+        }
+        return null;
+    }
+
+    /*
+     * Mapea un ResultSet a un objeto MuestraSismica y carga sus detalles asociados.
+     * Este método centraliza la lógica de construcción del objeto para mayor cohesión.
+     */
+    private MuestraSismica mapResultSetToMuestraSismica(ResultSet rs, Connection conn, long idMuestraSismica)
+            throws SQLException {
+        MuestraSismica m = new MuestraSismica();
+
+        m.setIdMuestraSismica(rs.getLong("idMuestraSismica"));
+        m.setFechaHoraMuestraSismica(getLocalDateTime(rs, "fechaHoraMuestraSismica"));
+
+        // Cargar detalles sísmicos usando la conexión existente
+        List<DetalleMuestraSismica> detalles = findDetallesByMuestra(conn, idMuestraSismica);
+        m.setDetalleMuestrasSismicas(detalles);
+
+        return m;
     }
 
     /*
@@ -124,10 +152,15 @@ public class MuestraSismicaDAO {
         return list;
     }
 
-    /*
-     * --------------------------------------------------------------
-     * NUEVO: Buscar Muestras por Serie Temporal (para SerieTemporalDAO)
-     * --------------------------------------------------------------
+    /**
+     * Busca todas las muestras sísmicas asociadas a una serie temporal.
+     * Utiliza la conexión proporcionada para mantener coherencia transaccional
+     * y garantizar que los detalles se carguen correctamente.
+     *
+     * @param conn Conexión existente a reutilizar
+     * @param idSerieTemporal ID de la serie temporal
+     * @return Lista de muestras sísmicas asociadas
+     * @throws SQLException Si ocurre un error en la consulta
      */
     public List<MuestraSismica> findBySerieTemporalId(Connection conn, long idSerieTemporal) throws SQLException {
         String sql = """
@@ -142,7 +175,9 @@ public class MuestraSismicaDAO {
             ps.setLong(1, idSerieTemporal);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    MuestraSismica m = findById(rs.getLong("idMuestraSismica"));
+                    long idMuestra = rs.getLong("idMuestraSismica");
+                    // Usar la conexión existente para evitar múltiples conexiones
+                    MuestraSismica m = findByIdWithConnection(conn, idMuestra);
                     if (m != null)
                         muestras.add(m);
                 }

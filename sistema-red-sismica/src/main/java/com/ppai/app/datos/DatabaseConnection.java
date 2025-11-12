@@ -930,6 +930,236 @@ public class DatabaseConnection {
                         (10.02, 72, 1), (0.70, 72, 2), (7.02, 72, 3);
                     """);
 
+            // ====== RELACIONES SERIE TEMPORAL ↔ MUESTRA SISMICA (N:N) ======
+            // Vinculan cada muestra símica con su serie temporal
+            // 2 muestras por serie, 36 series = 72 muestras totales
+            stmt.executeUpdate("""
+                        INSERT OR IGNORE INTO SerieTemporal_MuestraSismica (idSerieTemporal, idMuestraSismica) VALUES
+                        -- Serie 1: muestras 1,2
+                        (1, 1), (1, 2),
+                        -- Serie 2: muestras 3,4
+                        (2, 3), (2, 4),
+                        -- Serie 3: muestras 5,6
+                        (3, 5), (3, 6),
+                        -- Serie 4: muestras 7,8
+                        (4, 7), (4, 8),
+                        -- Serie 5: muestras 9,10
+                        (5, 9), (5, 10),
+                        -- Serie 6: muestras 11,12
+                        (6, 11), (6, 12),
+                        -- Serie 7: muestras 13,14
+                        (7, 13), (7, 14),
+                        -- Serie 8: muestras 15,16
+                        (8, 15), (8, 16),
+                        -- Serie 9: muestras 17,18
+                        (9, 17), (9, 18),
+                        -- Serie 10: muestras 19,20
+                        (10, 19), (10, 20),
+                        -- Serie 11: muestras 21,22
+                        (11, 21), (11, 22),
+                        -- Serie 12: muestras 23,24
+                        (12, 23), (12, 24),
+                        -- Serie 13: muestras 25,26
+                        (13, 25), (13, 26),
+                        -- Serie 14: muestras 27,28
+                        (14, 27), (14, 28),
+                        -- Serie 15: muestras 29,30
+                        (15, 29), (15, 30),
+                        -- Serie 16: muestras 31,32
+                        (16, 31), (16, 32),
+                        -- Serie 17: muestras 33,34
+                        (17, 33), (17, 34),
+                        -- Serie 18: muestras 35,36
+                        (18, 35), (18, 36),
+                        -- Serie 19: muestras 37,38
+                        (19, 37), (19, 38),
+                        -- Serie 20: muestras 39,40
+                        (20, 39), (20, 40),
+                        -- Serie 21: muestras 41,42
+                        (21, 41), (21, 42),
+                        -- Serie 22: muestras 43,44
+                        (22, 43), (22, 44),
+                        -- Serie 23: muestras 45,46
+                        (23, 45), (23, 46),
+                        -- Serie 24: muestras 47,48
+                        (24, 47), (24, 48),
+                        -- Serie 25: muestras 49,50
+                        (25, 49), (25, 50),
+                        -- Serie 26: muestras 51,52
+                        (26, 51), (26, 52),
+                        -- Serie 27: muestras 53,54
+                        (27, 53), (27, 54),
+                        -- Serie 28: muestras 55,56
+                        (28, 55), (28, 56),
+                        -- Serie 29: muestras 57,58
+                        (29, 57), (29, 58),
+                        -- Serie 30: muestras 59,60
+                        (30, 59), (30, 60),
+                        -- Serie 31: muestras 61,62
+                        (31, 61), (31, 62),
+                        -- Serie 32: muestras 63,64
+                        (32, 63), (32, 64),
+                        -- Serie 33: muestras 65,66
+                        (33, 65), (33, 66),
+                        -- Serie 34: muestras 67,68
+                        (34, 67), (34, 68),
+                        -- Serie 35: muestras 69,70
+                        (35, 69), (35, 70),
+                        -- Serie 36: muestras 71,72
+                        (36, 71), (36, 72);
+                    """);
+
+            // ====== RELACIONES MUESTRA SISMICA ↔ DETALLE MUESTRA SISMICA (N:N) ======
+            // Vinculan cada muestra síismica con sus 3 detalles (Frecuencia, Longitud, Velocidad)
+            // 72 muestras * 3 detalles = 216 detalles totales
+            stmt.executeUpdate("""
+                        INSERT OR IGNORE INTO MuestraSismica_DetalleMuestraSismica (idMuestraSismica, idDetalleMuestraSismica) VALUES
+                        -- Muestra 1: detalles 1,2,3
+                        (1, 1), (1, 2), (1, 3),
+                        -- Muestra 2: detalles 4,5,6
+                        (2, 4), (2, 5), (2, 6),
+                        -- Muestra 3: detalles 7,8,9
+                        (3, 7), (3, 8), (3, 9),
+                        -- Muestra 4: detalles 10,11,12
+                        (4, 10), (4, 11), (4, 12),
+                        -- Muestra 5: detalles 13,14,15
+                        (5, 13), (5, 14), (5, 15),
+                        -- Muestra 6: detalles 16,17,18
+                        (6, 16), (6, 17), (6, 18),
+                        -- Muestra 7: detalles 19,20,21
+                        (7, 19), (7, 20), (7, 21),
+                        -- Muestra 8: detalles 22,23,24
+                        (8, 22), (8, 23), (8, 24),
+                        -- Muestra 9: detalles 25,26,27
+                        (9, 25), (9, 26), (9, 27),
+                        -- Muestra 10: detalles 28,29,30
+                        (10, 28), (10, 29), (10, 30),
+                        -- Muestra 11: detalles 31,32,33
+                        (11, 31), (11, 32), (11, 33),
+                        -- Muestra 12: detalles 34,35,36
+                        (12, 34), (12, 35), (12, 36),
+                        -- Muestra 13: detalles 37,38,39
+                        (13, 37), (13, 38), (13, 39),
+                        -- Muestra 14: detalles 40,41,42
+                        (14, 40), (14, 41), (14, 42),
+                        -- Muestra 15: detalles 43,44,45
+                        (15, 43), (15, 44), (15, 45),
+                        -- Muestra 16: detalles 46,47,48
+                        (16, 46), (16, 47), (16, 48),
+                        -- Muestra 17: detalles 49,50,51
+                        (17, 49), (17, 50), (17, 51),
+                        -- Muestra 18: detalles 52,53,54
+                        (18, 52), (18, 53), (18, 54),
+                        -- Muestra 19: detalles 55,56,57
+                        (19, 55), (19, 56), (19, 57),
+                        -- Muestra 20: detalles 58,59,60
+                        (20, 58), (20, 59), (20, 60),
+                        -- Muestra 21: detalles 61,62,63
+                        (21, 61), (21, 62), (21, 63),
+                        -- Muestra 22: detalles 64,65,66
+                        (22, 64), (22, 65), (22, 66),
+                        -- Muestra 23: detalles 67,68,69
+                        (23, 67), (23, 68), (23, 69),
+                        -- Muestra 24: detalles 70,71,72
+                        (24, 70), (24, 71), (24, 72),
+                        -- Muestra 25: detalles 73,74,75
+                        (25, 73), (25, 74), (25, 75),
+                        -- Muestra 26: detalles 76,77,78
+                        (26, 76), (26, 77), (26, 78),
+                        -- Muestra 27: detalles 79,80,81
+                        (27, 79), (27, 80), (27, 81),
+                        -- Muestra 28: detalles 82,83,84
+                        (28, 82), (28, 83), (28, 84),
+                        -- Muestra 29: detalles 85,86,87
+                        (29, 85), (29, 86), (29, 87),
+                        -- Muestra 30: detalles 88,89,90
+                        (30, 88), (30, 89), (30, 90),
+                        -- Muestra 31: detalles 91,92,93
+                        (31, 91), (31, 92), (31, 93),
+                        -- Muestra 32: detalles 94,95,96
+                        (32, 94), (32, 95), (32, 96),
+                        -- Muestra 33: detalles 97,98,99
+                        (33, 97), (33, 98), (33, 99),
+                        -- Muestra 34: detalles 100,101,102
+                        (34, 100), (34, 101), (34, 102),
+                        -- Muestra 35: detalles 103,104,105
+                        (35, 103), (35, 104), (35, 105),
+                        -- Muestra 36: detalles 106,107,108
+                        (36, 106), (36, 107), (36, 108),
+                        -- Muestra 37: detalles 109,110,111
+                        (37, 109), (37, 110), (37, 111),
+                        -- Muestra 38: detalles 112,113,114
+                        (38, 112), (38, 113), (38, 114),
+                        -- Muestra 39: detalles 115,116,117
+                        (39, 115), (39, 116), (39, 117),
+                        -- Muestra 40: detalles 118,119,120
+                        (40, 118), (40, 119), (40, 120),
+                        -- Muestra 41: detalles 121,122,123
+                        (41, 121), (41, 122), (41, 123),
+                        -- Muestra 42: detalles 124,125,126
+                        (42, 124), (42, 125), (42, 126),
+                        -- Muestra 43: detalles 127,128,129
+                        (43, 127), (43, 128), (43, 129),
+                        -- Muestra 44: detalles 130,131,132
+                        (44, 130), (44, 131), (44, 132),
+                        -- Muestra 45: detalles 133,134,135
+                        (45, 133), (45, 134), (45, 135),
+                        -- Muestra 46: detalles 136,137,138
+                        (46, 136), (46, 137), (46, 138),
+                        -- Muestra 47: detalles 139,140,141
+                        (47, 139), (47, 140), (47, 141),
+                        -- Muestra 48: detalles 142,143,144
+                        (48, 142), (48, 143), (48, 144),
+                        -- Muestra 49: detalles 145,146,147
+                        (49, 145), (49, 146), (49, 147),
+                        -- Muestra 50: detalles 148,149,150
+                        (50, 148), (50, 149), (50, 150),
+                        -- Muestra 51: detalles 151,152,153
+                        (51, 151), (51, 152), (51, 153),
+                        -- Muestra 52: detalles 154,155,156
+                        (52, 154), (52, 155), (52, 156),
+                        -- Muestra 53: detalles 157,158,159
+                        (53, 157), (53, 158), (53, 159),
+                        -- Muestra 54: detalles 160,161,162
+                        (54, 160), (54, 161), (54, 162),
+                        -- Muestra 55: detalles 163,164,165
+                        (55, 163), (55, 164), (55, 165),
+                        -- Muestra 56: detalles 166,167,168
+                        (56, 166), (56, 167), (56, 168),
+                        -- Muestra 57: detalles 169,170,171
+                        (57, 169), (57, 170), (57, 171),
+                        -- Muestra 58: detalles 172,173,174
+                        (58, 172), (58, 173), (58, 174),
+                        -- Muestra 59: detalles 175,176,177
+                        (59, 175), (59, 176), (59, 177),
+                        -- Muestra 60: detalles 178,179,180
+                        (60, 178), (60, 179), (60, 180),
+                        -- Muestra 61: detalles 181,182,183
+                        (61, 181), (61, 182), (61, 183),
+                        -- Muestra 62: detalles 184,185,186
+                        (62, 184), (62, 185), (62, 186),
+                        -- Muestra 63: detalles 187,188,189
+                        (63, 187), (63, 188), (63, 189),
+                        -- Muestra 64: detalles 190,191,192
+                        (64, 190), (64, 191), (64, 192),
+                        -- Muestra 65: detalles 193,194,195
+                        (65, 193), (65, 194), (65, 195),
+                        -- Muestra 66: detalles 196,197,198
+                        (66, 196), (66, 197), (66, 198),
+                        -- Muestra 67: detalles 199,200,201
+                        (67, 199), (67, 200), (67, 201),
+                        -- Muestra 68: detalles 202,203,204
+                        (68, 202), (68, 203), (68, 204),
+                        -- Muestra 69: detalles 205,206,207
+                        (69, 205), (69, 206), (69, 207),
+                        -- Muestra 70: detalles 208,209,210
+                        (70, 208), (70, 209), (70, 210),
+                        -- Muestra 71: detalles 211,212,213
+                        (71, 211), (71, 212), (71, 213),
+                        -- Muestra 72: detalles 214,215,216
+                        (72, 214), (72, 215), (72, 216);
+                    """);
+
             System.out.println("Datos iniciales insertados correctamente (tablas llenas).");
         } catch (SQLException e) {
             System.err.println("Error insertando datos: " + e.getMessage());

@@ -99,9 +99,8 @@ public class SerieTemporalDAO {
     }
 
     /*
-     * --------------------------------------------------------------
-     * FIND BY ID – carga todo (incluyendo muestras)
-     * --------------------------------------------------------------
+     * Busca una serie temporal por su ID.
+     * Carga automáticamente todas sus muestras sísmicas asociadas.
      */
     public SerieTemporal findById(long idSerieTemporal) throws SQLException {
         String sql = "SELECT * FROM SerieTemporal WHERE idSerieTemporal = ?";
@@ -113,24 +112,7 @@ public class SerieTemporalDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    SerieTemporal s = new SerieTemporal();
-
-                    s.setIdSerieTemporal(rs.getLong("idSerieTemporal"));
-                    s.setCondicionAlarma(rs.getString("condicionAlarma"));
-                    s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
-                    s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
-
-                    // Estado actual (referencia completa)
-                    String ambito = rs.getString("ambitoEstado");
-                    String nombreEstado = rs.getString("nombreEstado");
-                    Estado estado = estadoDAO.findByAmbitoAndNombre(ambito, nombreEstado);
-                    s.setEstado(estado);
-
-                    // Cargar muestras sísmicas asociadas (objetos)
-                    List<MuestraSismica> muestras = findMuestrasBySerieTemporal(conn, idSerieTemporal);
-                    s.setMuestrasSismicas(muestras);
-
-                    return s;
+                    return mapResultSetToSerieTemporal(rs, conn, idSerieTemporal);
                 }
             }
         }
@@ -161,9 +143,9 @@ public class SerieTemporalDAO {
     }
 
     /*
-     * --------------------------------------------------------------
-     * NUEVO: Buscar Series Temporales por Evento Sísmico
-     * --------------------------------------------------------------
+     * Busca todas las series temporales asociadas a un evento sísmico.
+     * Utiliza la conexión proporcionada para mantener coherencia transaccional
+     * y garantizar que las muestras sísmicas se carguen correctamente.
      */
     public List<SerieTemporal> findByEventoSismicoId(Connection conn, long idEventoSismico) throws SQLException {
         String sql = """
@@ -182,13 +164,61 @@ public class SerieTemporalDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     long idSerie = rs.getLong("idSerieTemporal");
-                    SerieTemporal s = findById(idSerie);
+                    // Usar la conexión existente para evitar múltiples conexiones
+                    SerieTemporal s = findByIdWithConnection(conn, idSerie);
                     if (s != null)
                         series.add(s);
                 }
             }
         }
         return series;
+    }
+
+    /*
+     * Carga una serie temporal completa usando una conexión existente.
+     * Este método es utilizado internamente para evitar abrir múltiples conexiones
+     * y mantener la coherencia transaccional.
+     */
+    private SerieTemporal findByIdWithConnection(Connection conn, long idSerieTemporal) throws SQLException {
+        String sql = "SELECT * FROM SerieTemporal WHERE idSerieTemporal = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idSerieTemporal);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToSerieTemporal(rs, conn, idSerieTemporal);
+                }
+            }
+        }
+        return null;
+    }
+
+    /*
+     * Mapea un ResultSet a un objeto SerieTemporal y carga sus muestras asociadas.
+     * Este método centraliza la lógica de construcción del objeto para mayor cohesión.
+     * Delega la carga de muestras al DAO especializado que reutiliza la conexión.
+     */
+    private SerieTemporal mapResultSetToSerieTemporal(ResultSet rs, Connection conn, long idSerieTemporal) throws SQLException {
+        SerieTemporal s = new SerieTemporal();
+
+        s.setIdSerieTemporal(rs.getLong("idSerieTemporal"));
+        s.setCondicionAlarma(rs.getString("condicionAlarma"));
+        s.setFechaHoraRegistro(getLocalDateTime(rs, "fechaHoraRegistro"));
+        s.setFrecuenciaMuestreo(rs.getString("frecuenciaMuestreo"));
+
+        // Cargar estado asociado
+        String ambito = rs.getString("ambitoEstado");
+        String nombreEstado = rs.getString("nombreEstado");
+        Estado estado = estadoDAO.findByAmbitoAndNombre(ambito, nombreEstado);
+        s.setEstado(estado);
+
+        // Cargar muestras sísmicas usando el DAO especializado con la conexión existente
+        // Esto garantiza que cada muestra cargará sus detalles correctamente sin abrir nuevas conexiones
+        List<MuestraSismica> muestras = muestraSismicaDAO.findBySerieTemporalId(conn, idSerieTemporal);
+        s.setMuestrasSismicas(muestras);
+
+        return s;
     }
 
     // ==============================================================
@@ -218,28 +248,16 @@ public class SerieTemporalDAO {
         }
     }
 
-    private List<MuestraSismica> findMuestrasBySerieTemporal(Connection conn, long idSerie) throws SQLException {
-        String sql = "SELECT idMuestraSismica FROM SerieTemporal_MuestraSismica WHERE idSerieTemporal = ?";
-        List<MuestraSismica> muestras = new ArrayList<>();
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, idSerie);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    long idMuestra = rs.getLong("idMuestraSismica");
-                    MuestraSismica m = muestraSismicaDAO.findById(idMuestra);
-                    if (m != null)
-                        muestras.add(m);
-                }
-            }
-        }
-        return muestras;
-    }
-
+    // ==============================================================
+    // UTILIDAD: convertir Timestamp a LocalDateTime
+    // ==============================================================
     private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
         Timestamp ts = rs.getTimestamp(column);
         return ts != null ? ts.toLocalDateTime() : null;
     }
+
+    // ...existing code...
+
 
     public Map<Integer, Integer> getRelacionesEventoSerie() throws SQLException {
         Map<Integer, Integer> relaciones = new HashMap<>();

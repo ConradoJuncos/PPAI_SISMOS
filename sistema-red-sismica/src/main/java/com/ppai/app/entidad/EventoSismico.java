@@ -130,7 +130,13 @@ public class EventoSismico {
 
         // Recorrer las series temporales asociadas al evento
         for (SerieTemporal serie : seriesTemporales) {
-            System.out.println("test: " + serie.getMuestrasSismicas().toString());
+            System.out.println("Serie Temporal ID: " + serie.getIdSerieTemporal());
+            System.out.println("Muestras sísmicas: " + (serie.getMuestrasSismicas() != null ? serie.getMuestrasSismicas().size() : "null"));
+            if (serie.getMuestrasSismicas() != null) {
+                for (MuestraSismica muestra : serie.getMuestrasSismicas()) {
+                    System.out.println("  - Muestra: " + muestra);
+                }
+            }
             informacionSismica.add(serie.getDatos());
         }
 
