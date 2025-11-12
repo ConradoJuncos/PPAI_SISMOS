@@ -86,7 +86,8 @@ public class PantallaRevisionManual extends JFrame {
         JPanel panelCentral = new JPanel(new BorderLayout(10, 10));
 
         // Tabla de eventos
-        String[] columnas = {"Fecha y Hora", "Latitud Epicentro", "Longitud Epicentro", "Latitud Hipocentro", "Longitud Hipocentro"};
+        String[] columnas = { "Fecha y Hora", "Latitud Epicentro", "Longitud Epicentro", "Latitud Hipocentro",
+                "Longitud Hipocentro" };
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -99,7 +100,7 @@ public class PantallaRevisionManual extends JFrame {
         tablaEventos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         tablaEventos.setGridColor(new Color(220, 220, 220));
         tablaEventos.setShowGrid(true);
-        
+
         tablaEventos.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -107,9 +108,9 @@ public class PantallaRevisionManual extends JFrame {
                     int fila = tablaEventos.getSelectedRow();
                     String datosPrincipales = "";
                     if (fila != -1) {
-                        for (int i=0; i<5; i++) {
+                        for (int i = 0; i < 5; i++) {
                             datosPrincipales += modeloTabla.getValueAt(fila, i).toString();
-                            if (i!=4){
+                            if (i != 4) {
                                 datosPrincipales += ", ";
                             }
                         }
@@ -126,12 +127,11 @@ public class PantallaRevisionManual extends JFrame {
         panelDatosSismicos = new JPanel();
         panelDatosSismicos.setLayout(new BoxLayout(panelDatosSismicos, BoxLayout.Y_AXIS));
         panelDatosSismicos.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            "Datos Sísmicos Registrados",
-            0,
-            0,
-            new Font("Segoe UI", Font.BOLD, 14)
-        ));
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                "Datos Sísmicos Registrados",
+                0,
+                0,
+                new Font("Segoe UI", Font.BOLD, 14)));
         panelDatosSismicos.setVisible(false);
 
         // Labels para metadatos
@@ -193,7 +193,7 @@ public class PantallaRevisionManual extends JFrame {
         for (String datos : datosPrincipales) {
             String[] partes = datos.split(",");
             if (partes.length >= 5) {
-                modeloTabla.addRow(new Object[]{
+                modeloTabla.addRow(new Object[] {
                         partes[0].trim(),
                         partes[1].trim(),
                         partes[2].trim(),
@@ -219,11 +219,43 @@ public class PantallaRevisionManual extends JFrame {
         if (informacionSismica != null && !informacionSismica.isEmpty()) {
             StringBuilder infoText = new StringBuilder();
             int serieNumero = 1;
+
             for (Object info : informacionSismica) {
                 infoText.append("=== Serie Temporal ").append(serieNumero).append(" ===\n");
-                infoText.append(info.toString()).append("\n");
+
+                if (info instanceof com.ppai.app.dto.SerieTemporalDTO serieDTO) {
+                    infoText.append("ID Serie Temporal: ").append(serieDTO.getIdSerieTemporal()).append("\n");
+                    infoText.append("Fecha/Hora Registro: ").append(serieDTO.getFechaHoraRegistro()).append("\n");
+                    infoText.append("Frecuencia de Muestreo: ").append(serieDTO.getFrecuenciaMuestreo()).append("\n");
+                    infoText.append("Estación: ").append(serieDTO.getNombreEstacion())
+                            .append(" (Código: ").append(serieDTO.getCodigoEstacion()).append(")\n\n");
+
+                    // Mostrar las muestras sísmicas asociadas
+                    var muestras = serieDTO.getMuestras();
+                    if (muestras != null && !muestras.isEmpty()) {
+                        int muestraNum = 1;
+                        for (com.ppai.app.dto.MuestraSismicaDTO muestra : muestras) {
+                            infoText.append("   → Muestra #").append(muestraNum).append("\n");
+                            infoText.append("      Fecha/Hora: ").append(muestra.getFechaHora()).append("\n");
+                            infoText.append("      Velocidad de Onda: ").append(muestra.getVelocidadOnda())
+                                    .append("\n");
+                            infoText.append("      Frecuencia de Onda: ").append(muestra.getFrecuenciaOnda())
+                                    .append("\n");
+                            infoText.append("      Longitud de Onda: ").append(muestra.getLongitudOnda())
+                                    .append("\n\n");
+                            muestraNum++;
+                        }
+                    } else {
+                        infoText.append("   (Sin muestras sísmicas registradas)\n\n");
+                    }
+                } else {
+                    // fallback si el objeto no es del tipo esperado
+                    infoText.append(info.toString()).append("\n\n");
+                }
+
                 serieNumero++;
             }
+
             txtInfoSismica.setText(infoText.toString());
             txtInfoSismica.setCaretPosition(0); // Scroll al inicio
         } else {
@@ -254,27 +286,25 @@ public class PantallaRevisionManual extends JFrame {
     private void visualizarMapa() {
         // Mostrar popup de confirmación
         int respuesta = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            "¿Desea visualizar el mapa del evento sísmico y las estaciones sismológicas involucradas?",
-            "Confirmar Visualización de Mapa",
-            javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.QUESTION_MESSAGE
-        );
+                this,
+                "¿Desea visualizar el mapa del evento sísmico y las estaciones sismológicas involucradas?",
+                "Confirmar Visualización de Mapa",
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
 
         if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
             lblEstado.setText("Abriendo mapa de eventos sísmicos y estaciones sismológicas...");
             // Aquí se implementaría la lógica para abrir un mapa
             // Por ahora solo mostramos un mensaje
             javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "Funcionalidad de mapa en desarrollo.\n" +
-                "Se mostraría:\n" +
-                "- Ubicación del evento sísmico (epicentro e hipocentro)\n" +
-                "- Estaciones sismológicas involucradas\n" +
-                "- Magnitud y alcance del evento",
-                "Visualizar Mapa",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE
-            );
+                    this,
+                    "Funcionalidad de mapa en desarrollo.\n" +
+                            "Se mostraría:\n" +
+                            "- Ubicación del evento sísmico (epicentro e hipocentro)\n" +
+                            "- Estaciones sismológicas involucradas\n" +
+                            "- Magnitud y alcance del evento",
+                    "Visualizar Mapa",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblEstado.setText("Visualización de mapa cancelada.");
         }
