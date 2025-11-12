@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
 import com.ppai.app.contexto.Contexto;
 import com.ppai.app.entidad.EventoSismico;
 import com.ppai.app.entidad.Usuario;
+import com.ppai.app.entidad.Sismografo;
 import com.ppai.app.gestor.GestorRevisionManual;
 
 public class PantallaRevisionManual extends JFrame {
@@ -55,15 +56,15 @@ public class PantallaRevisionManual extends JFrame {
     private void inicializarComponentes() {
         setTitle("CU23 - Revisión Manual de Eventos Sísmicos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 700);
+        setSize(1400, 900);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
         // Panel superior con título y botones
         JPanel panelSuperior = new JPanel(new BorderLayout());
         JLabel lblTitulo = new JLabel("Revisión Manual de Eventos Sísmicos", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         panelSuperior.add(lblTitulo, BorderLayout.NORTH);
 
         // Panel de botones
@@ -85,6 +86,7 @@ public class PantallaRevisionManual extends JFrame {
 
         // Panel central con tabla y datos sísmicos
         JPanel panelCentral = new JPanel(new BorderLayout(10, 10));
+        panelCentral.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Tabla de eventos
         String[] columnas = { "Fecha y Hora", "Latitud Epicentro", "Longitud Epicentro", "Latitud Hipocentro",
@@ -122,9 +124,10 @@ public class PantallaRevisionManual extends JFrame {
         });
 
         JScrollPane scrollPane = new JScrollPane(tablaEventos);
-        panelCentral.add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Eventos Sísmicos Auto-Detectados No Revisados"));
+        panelCentral.add(scrollPane, BorderLayout.NORTH);
 
-        // Panel de datos sísmicos (inicialmente oculto)
+        // Panel de datos sísmicos (inicialmente oculto, ahora DESPLAZABLE)
         panelDatosSismicos = new JPanel();
         panelDatosSismicos.setLayout(new BoxLayout(panelDatosSismicos, BoxLayout.Y_AXIS));
         panelDatosSismicos.setBorder(BorderFactory.createTitledBorder(
@@ -148,28 +151,37 @@ public class PantallaRevisionManual extends JFrame {
         lblOrigen.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblOrigen.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // JTextArea para información sísmica (reemplaza JLabel para mejor formato)
-        txtInfoSismica = new JTextArea(10, 50);
-        txtInfoSismica.setFont(new Font("Consolas", Font.PLAIN, 12));
+        // JTextArea para información sísmica con mejor tamaño
+        txtInfoSismica = new JTextArea(15, 80);
+        txtInfoSismica.setFont(new Font("Courier New", Font.PLAIN, 12));
         txtInfoSismica.setEditable(false);
         txtInfoSismica.setText("Información Sísmica: -");
         txtInfoSismica.setLineWrap(true);
         txtInfoSismica.setWrapStyleWord(true);
+        txtInfoSismica.setBackground(new Color(240, 245, 250)); // Azul muy claro
+        txtInfoSismica.setForeground(new Color(25, 45, 85)); // Azul oscuro
+        txtInfoSismica.setMargin(new java.awt.Insets(12, 12, 12, 12));
         JScrollPane scrollInfoSismica = new JScrollPane(txtInfoSismica);
-        scrollInfoSismica.setBorder(BorderFactory.createTitledBorder("Información Sísmica"));
+        scrollInfoSismica.setBorder(BorderFactory.createTitledBorder("📊 Información Sísmica Clasificada por Estación"));
+        scrollInfoSismica.setPreferredSize(new java.awt.Dimension(1300, 350));
 
         panelDatosSismicos.add(lblAlcance);
         panelDatosSismicos.add(lblClasificacion);
         panelDatosSismicos.add(lblOrigen);
         panelDatosSismicos.add(scrollInfoSismica);
 
-        panelCentral.add(panelDatosSismicos, BorderLayout.SOUTH);
+        // Agregar panelDatosSismicos dentro de un scroll
+        JScrollPane scrollPanelDatos = new JScrollPane(panelDatosSismicos);
+        scrollPanelDatos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPanelDatos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panelCentral.add(scrollPanelDatos, BorderLayout.CENTER);
+
         add(panelCentral, BorderLayout.CENTER);
 
         // Barra inferior (estado)
         lblEstado = new JLabel("Listo.");
         lblEstado.setFont(new Font("Segoe UI", Font.ITALIC, 12));
-        lblEstado.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        lblEstado.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(lblEstado, BorderLayout.SOUTH);
 
         setVisible(true);
@@ -183,8 +195,9 @@ public class PantallaRevisionManual extends JFrame {
         lblEstado.setText("asd");
         Usuario usuario = contexto.getUsuarios().get(0);
         List<EventoSismico> eventos = contexto.getEventosSismicos();
+        List<Sismografo> sismografos = contexto.getSismografos();
 
-        this.gestor = new GestorRevisionManual(this, eventos, usuario);
+        this.gestor = new GestorRevisionManual(this, eventos, sismografos, usuario);
         lblEstado.setText("Eventos cargados correctamente.");
     }
 
@@ -215,18 +228,71 @@ public class PantallaRevisionManual extends JFrame {
 
         if (informacionSismica != null && !informacionSismica.isEmpty()) {
             StringBuilder infoText = new StringBuilder();
-            int serieNumero = 1;
 
-            for (ArrayList<String> info : informacionSismica) {
-                infoText.append("=== Serie Temporal ").append(serieNumero).append(" ===\n");
-                infoText.append("ID Serie Temporal: ").append(info.get(0)).append("\n");
-                infoText.append("Fecha/Hora Registro: ").append(info.get(1)).append("\n");
-                infoText.append("Frecuencia de Muestreo: ").append(info.get(2)).append("\n");
-                infoText.append("Estación: ").append("no funca todavia")
-                        .append(" (Código: ").append("67").append(")\n\n");
+            // Agrupar información por estación sismológica
+            java.util.Map<String, java.util.List<ArrayList<String>>> datosPorEstacion = agruparPorEstacion(informacionSismica);
 
-                serieNumero++;
+            // Mostrar información clasificada por estación
+            int estacionNumero = 1;
+            for (String estacion : datosPorEstacion.keySet()) {
+                java.util.List<ArrayList<String>> seriesDeLaEstacion = datosPorEstacion.get(estacion);
+
+                // Encabezado de estación con formato mejorado
+                infoText.append("\n");
+                infoText.append("╔════════════════════════════════════════════════════════════════╗\n");
+                infoText.append("║  ESTACIÓN SISMOLÓGICA #").append(estacionNumero).append("\n");
+                infoText.append("║  ").append(estacion).append("\n");
+                infoText.append("╚════════════════════════════════════════════════════════════════╝\n\n");
+
+                int serieNumero = 1;
+                for (ArrayList<String> info : seriesDeLaEstacion) {
+                    // Información de la serie temporal
+                    infoText.append("  ├─ SERIE TEMPORAL #").append(serieNumero).append("\n");
+                    infoText.append("  │  ID: ").append(info.get(0)).append("\n");
+                    infoText.append("  │  Fecha/Hora Inicio: ").append(info.get(1)).append("\n");
+                    infoText.append("  │  Frecuencia de Muestreo: ").append(info.get(2)).append(" Hz\n");
+
+                    // Procesar muestras sísmicas (índices 3+)
+                    if (info.size() > 3) {
+                        infoText.append("  │\n");
+                        infoText.append("  │  MUESTRAS SÍSMICAS:\n");
+
+                        int muestraNumero = 1;
+                        for (int i = 3; i < info.size(); i++) {
+                            String datosMustra = info.get(i);
+                            String[] valores = datosMustra.split("\\|");
+
+                            if (valores.length >= 4) {
+                                String fechaHora = valores[0];
+                                String velocidad = valores[1];
+                                String frecuencia = valores[2];
+                                String longitud = valores[3];
+
+                                boolean esUltima = (i == info.size() - 1);
+                                String prefijo = esUltima ? "  │  └─" : "  │  ├─";
+
+                                infoText.append(prefijo).append(" Muestra #").append(muestraNumero).append("\n");
+                                infoText.append("  │     ├─ Fecha/Hora: ").append(fechaHora).append("\n");
+                                infoText.append("  │     ├─ Velocidad de Onda: ").append(velocidad).append(" km/seg\n");
+                                infoText.append("  │     ├─ Frecuencia de Onda: ").append(frecuencia).append(" Hz\n");
+                                infoText.append("  │     └─ Longitud de Onda: ").append(longitud).append(" km/ciclo\n");
+
+                                muestraNumero++;
+                            }
+                        }
+                    }
+
+                    infoText.append("  │\n");
+                    serieNumero++;
+                }
+
+                estacionNumero++;
             }
+
+            infoText.append("\n╔════════════════════════════════════════════════════════════════╗\n");
+            infoText.append("║  INFORMACIÓN COMPLETAMENTE CARGADA Y CLASIFICADA              ║\n");
+            infoText.append("╚════════════════════════════════════════════════════════════════╝\n");
+
             txtInfoSismica.setText(infoText.toString());
             txtInfoSismica.setCaretPosition(0);
         } else {
@@ -242,6 +308,61 @@ public class PantallaRevisionManual extends JFrame {
         // Revalidar y repintar para actualizar la interfaz
         revalidate();
         repaint();
+    }
+
+    /**
+     * Agrupa la información sísmica por estación sismológica.
+     * Utiliza el código y nombre de estación que vienen al final de cada ArrayList<String>.
+     */
+    private java.util.Map<String, java.util.List<ArrayList<String>>> agruparPorEstacion(List<ArrayList<String>> informacionSismica) {
+        java.util.Map<String, java.util.List<ArrayList<String>>> datosPorEstacion = new java.util.LinkedHashMap<>();
+
+        for (ArrayList<String> datosSSerie : informacionSismica) {
+            // El código y nombre de estación están al final después de clasificar
+            String nombreEstacion = "Desconocida";
+            String codigoEstacion = "N/A";
+            int indiceFinDatos = datosSSerie.size();
+
+            // Verificar si los últimos dos elementos son código y nombre de estación
+            // El código debe ser numérico (o similar), y el nombre debe ser texto descriptivo
+            if (datosSSerie.size() >= 5) {
+                String posibleCodigo = datosSSerie.get(datosSSerie.size() - 2);
+                String posibleNombre = datosSSerie.get(datosSSerie.size() - 1);
+
+                // Verificar que el código sea un número (código de estación)
+                // y el nombre no contenga pipe (|) que indicaría que son datos de muestra
+                if (!posibleNombre.contains("|") && esCodigoEstacion(posibleCodigo)) {
+                    codigoEstacion = posibleCodigo;
+                    nombreEstacion = posibleNombre;
+                    indiceFinDatos = datosSSerie.size() - 2;
+                }
+            }
+
+            String clave = nombreEstacion + " (Código: " + codigoEstacion + ")";
+
+            // Crear una copia sin los datos de estación para almacenar
+            ArrayList<String> datosLimpios = new ArrayList<>();
+            for (int i = 0; i < indiceFinDatos; i++) {
+                datosLimpios.add(datosSSerie.get(i));
+            }
+
+            datosPorEstacion.computeIfAbsent(clave, k -> new java.util.ArrayList<>()).add(datosLimpios);
+        }
+
+        return datosPorEstacion;
+    }
+
+    /**
+     * Valida si una cadena es un código de estación válido.
+     * Los códigos son típicamente números o números cortos.
+     */
+    private boolean esCodigoEstacion(String codigo) {
+        try {
+            Long.parseLong(codigo);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     // Habilitar la opción de visualizar mapa

@@ -9,6 +9,7 @@ import java.util.List;
 import com.ppai.app.entidad.Empleado;
 import com.ppai.app.entidad.EventoSismico;
 import com.ppai.app.entidad.Usuario;
+import com.ppai.app.entidad.Sismografo;
 import com.ppai.app.frontend.PantallaRevisionManual;
 
 public class GestorRevisionManual {
@@ -20,6 +21,7 @@ public class GestorRevisionManual {
     private double longitudHipocentroEventoSismico;
     private EventoSismico seleccionEventoSismico;
     private List<EventoSismico> eventosSismicos = new ArrayList<>();
+    private List<Sismografo> sismografos = new ArrayList<>();
     private List<String> datosPrincipalesEventosSismicosNoRevisados = new ArrayList<>();
     private List<String> metadatosEventoSismicoSeleccionado = new ArrayList<>();
     private List<ArrayList<String>> informacionSismicaEventoSeleccionado = new ArrayList<>();
@@ -32,9 +34,11 @@ public class GestorRevisionManual {
     private PantallaRevisionManual pantalla;
 
     // Constructor
-    public GestorRevisionManual(PantallaRevisionManual pantalla, List<EventoSismico> eventosSismicos, Usuario usuarioLogueado) {
+    public GestorRevisionManual(PantallaRevisionManual pantalla, List<EventoSismico> eventosSismicos,
+                                  List<Sismografo> sismografos, Usuario usuarioLogueado) {
         this.pantalla = pantalla;
         this.eventosSismicos = eventosSismicos;
+        this.sismografos = sismografos;
         this.usuarioLogueado = usuarioLogueado;
 
         // Para debug
@@ -163,11 +167,44 @@ public class GestorRevisionManual {
 
     /**
      * Clasifica la información sísmica por estación sismológica.
-     * Por ahora retorna la información tal cual.
+     * Consulta cada sismografo para determinar si una serie temporal le pertenece.
+     * Retorna la información organizada y clasificada por estación.
      */
     private List<ArrayList<String>> clasificarPorEstacionSismologica() {
         System.out.println("Clasificando información por estación sismológica...");
-        return this.informacionSismicaEventoSeleccionado;
+        System.out.println("Total de sismografos disponibles: " + sismografos.size());
+
+        List<ArrayList<String>> informacionClasificada = new ArrayList<>();
+
+        // Para cada serie temporal en la información sísmica extraída
+        for (ArrayList<String> datosSerie : informacionSismicaEventoSeleccionado) {
+            // Extraer el ID de serie temporal (primer elemento)
+            long idSerieTemporal = Long.parseLong(datosSerie.get(0));
+            System.out.println("Buscando serie temporal ID: " + idSerieTemporal);
+
+            // Consultar cada sismografo si esta serie le pertenece
+            List<Object> datosEstacion = null;
+            for (Sismografo sismografo : sismografos) {
+                datosEstacion = sismografo.esTuSerieTemporal(idSerieTemporal);
+                if (datosEstacion != null) {
+                    break; // Encontramos el sismografo propietario
+                }
+            }
+
+            // Si encontramos la estación, agregar información completa con datos de estación
+            if (datosEstacion != null) {
+                ArrayList<String> datosSerieCompletos = new ArrayList<>(datosSerie);
+                // Agregar código de estación y nombre de estación
+                datosSerieCompletos.add(datosEstacion.get(0).toString()); // Código
+                datosSerieCompletos.add(datosEstacion.get(1).toString()); // Nombre
+                informacionClasificada.add(datosSerieCompletos);
+            } else {
+                // Si no se encuentra, agregar tal cual
+                informacionClasificada.add(datosSerie);
+            }
+        }
+
+        return informacionClasificada;
     }
 
     /**

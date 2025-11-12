@@ -33,7 +33,7 @@ public class DetalleMuestraSismica {
     }
 
     public boolean sosDenominacionTipoDeDatoLongitudOnda() {
-        if (this.tipoDeDato.sosDenominacionVelocidadOnda()) {
+        if (this.tipoDeDato.sosDenominacionLongitudOnda()) {
             return true;
         }
         return false;
