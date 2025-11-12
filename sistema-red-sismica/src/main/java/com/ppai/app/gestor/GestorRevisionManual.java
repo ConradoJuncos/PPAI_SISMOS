@@ -121,17 +121,11 @@ public class GestorRevisionManual {
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
         this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
-
-        // Después de bloquear, obtener y mostrar datos
         obtenerYMostrarDatosEventoSeleccionado();
     }
 
-    // Preparar los datos a mostrar del evento sismico seleccionado
     private void obtenerYMostrarDatosEventoSeleccionado() {
-        System.out.println("Obteniendo y mostrando datos del evento seleccionado...");
-
-        // 1. Obtener metadatos del evento seleccionado
-        obtenerMetadatosEventoSeleccionado();
+        this.setMetadatosEventoSismicoSeleccionado(obtenerMetadatosEventoSeleccionado());
 
         // 2. Extraer información sísmica del evento seleccionado
         // ESTO ES EL TRIPLE FOR
@@ -151,8 +145,8 @@ public class GestorRevisionManual {
         pantalla.habilitarVisualizacionMapa();
     }
 
-    private void obtenerMetadatosEventoSeleccionado() {
-        this.metadatosEventoSismicoSeleccionado = seleccionEventoSismico.obtenerMetadatosEventoSeleccionado();
+    private List<String> obtenerMetadatosEventoSeleccionado() {
+        return seleccionEventoSismico.obtenerMetadatosEventoSeleccionado();
     }
 
     // Extraer información sísmica del evento seleccionado
@@ -218,7 +212,7 @@ public class GestorRevisionManual {
     }
 
     private void finCU() {
-        System.out.println("NO FUNCIONA TODAVIA");
+        System.out.println("FUNCIONA PARCIALMENTE");
     }
 
     private void validarDatosSismicos() {
@@ -239,5 +233,9 @@ public class GestorRevisionManual {
     // Obtener la fecha y hora actualizada
     private LocalDateTime actualizarFechaHoraActual() {
         return LocalDateTime.now();
+    }
+
+    public void setMetadatosEventoSismicoSeleccionado(List<String> metadatos) {
+        this.metadatosEventoSismicoSeleccionado = metadatos;
     }
 }
