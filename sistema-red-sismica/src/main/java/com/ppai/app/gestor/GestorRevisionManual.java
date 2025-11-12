@@ -18,10 +18,10 @@ public class GestorRevisionManual {
     private double longitudEpicentroEventoSismico;
     private double longitudHipocentroEventoSismico;
     private EventoSismico seleccionEventoSismico;
-    private List<EventoSismico> eventosSismicos = new ArrayList<EventoSismico>();
-    private List<String> datosPrincipalesEventosSismicosNoRevisados = new ArrayList<String>();
-    private List<Object> metadatosEventoSismicoSeleccionado = new ArrayList<Object>();
-    private List<Object> informacionSismicaEventoSeleccionado = new ArrayList<Object>();
+    private List<EventoSismico> eventosSismicos = new ArrayList<>();
+    private List<String> datosPrincipalesEventosSismicosNoRevisados = new ArrayList<>();
+    private List<Object> metadatosEventoSismicoSeleccionado = new ArrayList<>();
+    private List<Object> informacionSismicaEventoSeleccionado = new ArrayList<>();
     private String opVisualizacion;
     private String opRechazoModificacion;
     private LocalDateTime fechaHoraActual;
@@ -40,24 +40,24 @@ public class GestorRevisionManual {
         System.out.println("Gestor Revision Manual creado, con estos eventos sismicos: ");
         System.out.println(this.eventosSismicos);
 
-        // EJECUTANDO EL METODO PRIMERO
+        // Comenzando el proceso de buscar los eventos sismicos auto detectados no reviados
         buscarEventosSismicosAutoDetectadosNoRevisados();
     }
 
+    // Buscar los eventos sismicos auto detectados no revisados y mostrar sus datos principales por pantalla
     private void buscarEventosSismicosAutoDetectadosNoRevisados() {
 
         // mensaje para debugeo
         System.out.println("Buscando eventos sismicos auto detectados no revisados....");
 
-        // Recorriendo todos los eventos sismicos y agregadolos al listado de no
-        // revisados
+        // Recorriendo todos los eventos sismicos y agregadolos al listado de no revisados
         for (EventoSismico eventoSismico : eventosSismicos) {
 
             // Para debug
             System.out.println("estado actual del evento sismico recorrido: ");
             System.out.println(eventoSismico.getEstadoActual().getNombreEstado());
 
-            // Verificar si el evento es auto detecado, y obtenerlo
+            // Verificar si el evento es auto detecado no revisado, y obtenerlo
             if (eventoSismico.esAutoDetectado() && eventoSismico.sosNoRevisado()) {
 
                 // Se agregan sus datos principales a la respuesta
@@ -66,8 +66,7 @@ public class GestorRevisionManual {
 
         }
 
-        // Ordenando los eventos sismicos auto detectados no revisados por fecha de
-        // ocurrencia
+        // Ordenando los eventos sismicos auto detectados no revisados por fecha de ocurrencia
         ordenarPorFechaHoraOcurrencia();
 
         // Mostrar los datos principales en la interfaz (en lugar de consola)
@@ -76,13 +75,9 @@ public class GestorRevisionManual {
         // Solo si no hay pantalla (modo debug)
         System.out.println(datosPrincipalesEventosSismicosNoRevisados);
 
-        // Obtener metadatos
-        // obtenerYMostrarDatosEventoSelecciando();
-
     }
 
-    // Ordenar los eventos sismicos autodetectados no revisados por fecha y hora de
-    // ocurrencia
+    // Ordenar los eventos sismicos autodetectados no revisados por fecha y hora de ocurrencia
     private void ordenarPorFechaHoraOcurrencia() {
         System.out.println("Ordenando los eventos sísmicos obtenidos por fecha de ocurrencia...");
 
@@ -140,6 +135,7 @@ public class GestorRevisionManual {
         // 2. Extraer información sísmica del evento seleccionado
         // ESTO ES EL TRIPLE FOR
         extraerInformacionSismicaEventoSeleccionado();
+        System.out.println(this.informacionSismicaEventoSeleccionado);
 
         // 3. Clasificar información por estación sismológica
         List<Object> informacionClasificada = clasificarPorEstacionSismologica();

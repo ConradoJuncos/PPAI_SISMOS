@@ -11,16 +11,18 @@ public class SerieTemporalDTO {
     private long codigoEstacion; // atributo para la inforamcion sismica
     private long idSerieTemporal;
     private LocalDateTime fechaHoraRegistro;
-    private double frecuenciaMuestreo;
+    private String frecuenciaMuestreo;
     private List<MuestraSismicaDTO> muestras = new ArrayList<MuestraSismicaDTO>();
+
+    // Método Constructor sin parametros
+    public SerieTemporalDTO(){}
 
     // Método Constructor con Parámetros inciales
     public SerieTemporalDTO(long idSerieTemporal, LocalDateTime fechaHoraRegistro, 
-    double frecuenciaMuestreo, List<MuestraSismicaDTO> muestras){
+    String frecuenciaMuestreo){
         this.idSerieTemporal = idSerieTemporal;
         this.fechaHoraRegistro = fechaHoraRegistro;
         this.frecuenciaMuestreo = frecuenciaMuestreo;
-        this.muestras = muestras;
     }
 
     // Métodos Getter y Setter
@@ -36,13 +38,12 @@ public class SerieTemporalDTO {
     public LocalDateTime getFechaHoraRegistro(){
         return this.fechaHoraRegistro;
     }
-    public double getFrecuenciaMuestreo(){
+    public String getFrecuenciaMuestreo(){
         return this.frecuenciaMuestreo;
     }
     public List<MuestraSismicaDTO> getMuestras(){
         return this.muestras;
     }
-    
     public void setNombreEstacion(String nombreEstacion){
         this.nombreEstacion = nombreEstacion;
     }
@@ -55,11 +56,15 @@ public class SerieTemporalDTO {
     public void setFechaHoraRegistro(LocalDateTime fechaHoraRegistro){
         this.fechaHoraRegistro = fechaHoraRegistro;
     }
-    public void setFrecuenciaMuestreo(double frecuenciaMuestreo){
+    public void setFrecuenciaMuestreo(String frecuenciaMuestreo){
         this.frecuenciaMuestreo = frecuenciaMuestreo;
     }
     public void setMuestras(List<MuestraSismicaDTO> muestras){
         this.muestras = muestras;
+    }
+    // Para setear de a una muestra
+    public void setMuestra(MuestraSismicaDTO muestra) {
+        this.muestras.add(muestra);
     }
     
 }

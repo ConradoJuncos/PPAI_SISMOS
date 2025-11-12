@@ -13,6 +13,14 @@ public class MuestraSismicaDTO {
     // Constructor sin parámetros
     public MuestraSismicaDTO(){}
 
+    // Constructor con parametros
+    public MuestraSismicaDTO(LocalDateTime fechaHora, double velocidadOnda, double frecuenciaOnda, double longitudOnda){
+        this.fechaHora = fechaHora;
+        this.velocidadOnda = velocidadOnda;
+        this.frecuenciaOnda = frecuenciaOnda;
+        this.longitudOnda = longitudOnda;
+    }
+
     // Métodos Getter y Setter
     public LocalDateTime getFechaHora(){
         return this.fechaHora;

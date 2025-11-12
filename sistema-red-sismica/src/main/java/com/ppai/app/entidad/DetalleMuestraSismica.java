@@ -18,6 +18,27 @@ public class DetalleMuestraSismica {
         return "falta implementar este método";
     }
 
+    public boolean sosDenominacionTipoDeDatoVelocidadOnda() {
+        if (this.tipoDeDato.sosDenominacionVelocidadOnda()) {   
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sosDenominacionTipoDeDatoFrecuenciaOnda() {
+        if (this.tipoDeDato.sosDenominacionFrecuenciaOnda()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean sosDenominacionTipoDeDatoLongitudOnda() {
+        if (this.tipoDeDato.sosDenominacionVelocidadOnda()) {
+            return true;
+        }
+        return false;
+    }
+
     // Métodos Getter y Setter
     public long getIdDetalleMuestraSismica(){
         return this.idDetalleMuestraSismica;

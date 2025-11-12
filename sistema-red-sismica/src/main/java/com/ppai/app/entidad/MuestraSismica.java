@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ppai.app.dto.MuestraSismicaDTO;
+
 public class MuestraSismica {
     
     // Atributos
@@ -15,10 +17,41 @@ public class MuestraSismica {
     public MuestraSismica(){}
 
     // Comportamiento
-    public String getDatos(){
-        // Implementar la lógica de este metodo
-        return "El método para mostrar los datos de muestra sismica todavía no ha sido implementado.";
+    public MuestraSismicaDTO getDatos(){
+
+        // Se recolecta y entrega la informacion empaquetada de la muestra sismica
+        return recolectarInformacionMuestraSismica();
     }
+
+    public MuestraSismicaDTO recolectarInformacionMuestraSismica(){
+
+        // Se obtiene la fecha y hora de la muestra sismica
+        LocalDateTime fechaHora = getFechaHoraMuestraSismica();
+
+        // Se definen los valores de los detalles de la muestra sismica
+        Double velocidadOnda = null;
+        Double frecuenciaOnda = null;
+        Double longitudOnda = null;
+
+        // Se recorren los detalles asociados a la muestra sismica
+        for (DetalleMuestraSismica detalle : detalleMuestrasSismicas) {
+
+            // Se validan y obtiene los valores de los detalles con tipos de dato con denominacion de interes
+            if (detalle.sosDenominacionTipoDeDatoVelocidadOnda()) { velocidadOnda = detalle.getValor(); }
+            if (detalle.sosDenominacionTipoDeDatoFrecuenciaOnda()) { frecuenciaOnda = detalle.getValor(); }
+            if (detalle.sosDenominacionTipoDeDatoLongitudOnda()) { longitudOnda = detalle.getValor(); }
+        }
+
+        return prepararInformacionMuestraSismicaDTO(fechaHora, velocidadOnda, frecuenciaOnda, longitudOnda);
+
+    }
+
+    // Empaquetar y preparar la informacion de la muestra sismica
+    public MuestraSismicaDTO prepararInformacionMuestraSismicaDTO(LocalDateTime fechaHora, double velocidadOnda, double frecuenciaOnda, double longitudOnda) {
+
+        return new MuestraSismicaDTO(fechaHora, velocidadOnda, frecuenciaOnda, longitudOnda);
+    }
+
     public void crearDetalleMuestra(){
         // Implementar la lógica de este método
     }

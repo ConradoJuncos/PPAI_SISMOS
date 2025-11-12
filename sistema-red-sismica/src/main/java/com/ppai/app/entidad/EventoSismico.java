@@ -126,6 +126,7 @@ public class EventoSismico {
 
     // Extraer información sísmica del evento (series temporales y muestras)
     public List<Object> extraerInformacionSismica() {
+        
         List<Object> informacionSismica = new ArrayList<>();
 
         // Recorrer las series temporales asociadas al evento

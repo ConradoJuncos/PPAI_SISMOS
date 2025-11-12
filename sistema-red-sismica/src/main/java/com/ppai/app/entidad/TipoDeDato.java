@@ -9,6 +9,32 @@ public class TipoDeDato {
     private double valorUmbral;
 
     // Comportamiento
+    public boolean sosDenominacionVelocidadOnda(){
+        if (this.denominacion.equals("Velocidad de onda")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean sosDenominacionFrecuenciaOnda(){
+        if (this.denominacion.equals("Frecuencia de onda")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean sosDenominacionLongitudOnda() {
+        if (this.denominacion.equals("Longitud de onda")) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
     public boolean esTuDenominacion(String denominacion){
         return this.denominacion == denominacion;
     }
