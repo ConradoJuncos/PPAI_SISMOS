@@ -19,9 +19,9 @@ public class EventoSismico {
     private MagnitudRichter magnitudRichter;
     private OrigenDeGeneracion origenGeneracion;
     private AlcanceSismo alcanceSismo;
-    private ArrayList<SerieTemporal> serieTemporal = new  ArrayList<SerieTemporal>();
+    private ArrayList<SerieTemporal> serieTemporal = new ArrayList<SerieTemporal>();
     private Estado estadoActual; 
-    private ArrayList<CambioEstado> cambioEstado = new ArrayList<CambioEstado>();
+    private ArrayList<CambioEstado> cambiosEstado = new ArrayList<CambioEstado>();
     private Empleado analistaSupervisor; 
 
     // Método constructor sin parámetros
@@ -31,7 +31,7 @@ public class EventoSismico {
     public EventoSismico(LocalDateTime fechaHoraOcurrencia, String latitudEpicentro, String latitudHipocentro,
         String longitudEpicentro, String longitudHipocentro, double valorMagnitud, ClasificacionSismo clasificacionSismo,
         MagnitudRichter magnitudRichter, OrigenDeGeneracion origenGeneracion, AlcanceSismo alcanceSismo, ArrayList<SerieTemporal> serieTemporal,
-        Estado estadoActual, ArrayList<CambioEstado> cambioEstado){
+        Estado estadoActual, ArrayList<CambioEstado> cambiosEstado){
             this.fechaHoraOcurrencia = fechaHoraOcurrencia;
             this.latitudEpicentro = latitudEpicentro;
             this.latitudHipocentro = latitudHipocentro;
@@ -41,7 +41,7 @@ public class EventoSismico {
             this.origenGeneracion = origenGeneracion;
             this.alcanceSismo = alcanceSismo;
             this.serieTemporal = serieTemporal;
-            this.cambioEstado = cambioEstado;
+            this.cambiosEstado = cambiosEstado;
     }
 
     // Comportamiento
@@ -95,20 +95,20 @@ public class EventoSismico {
 
     // Bloquear por revisión el evento sismico
     public void bloquearPorRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-        this.estadoActual.bloquearPorRevision(seleccionEventoSismico, this.cambioEstado, fechaHoraActual, usuarioLogueado);
+        this.estadoActual.bloquearPorRevision(seleccionEventoSismico, this.cambiosEstado, fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener el Cambio de Estado (Historial de Estado) Actual del Evento
     public CambioEstado obtenerCambioEstadoActual(){
 
         // Sobre los cambio de estado del evento sismico
-        for (CambioEstado hitorialEstado : cambioEstado){
+        for (CambioEstado historialEstado : cambiosEstado){
             
             // Si el cambio de estao es actual
-            if (hitorialEstado.esEstadoActual()){
+            if (historialEstado.esEstadoActual()){
 
                 // se retorna dicho cambio de estado
-                return hitorialEstado;
+                return historialEstado;
             }
         }
 
@@ -158,8 +158,8 @@ public class EventoSismico {
     public Estado getEstadoActual(){
         return this.estadoActual;
     }
-    public List<CambioEstado> getCambioEstado(){
-        return this.cambioEstado;
+    public List<CambioEstado> getCambiosEstado(){
+        return this.cambiosEstado;
     }
     public Empleado getAnalistaSupervisor(){
         return this.analistaSupervisor;
@@ -206,8 +206,8 @@ public class EventoSismico {
     public void setEstadoActual(Estado estadoActual){
         this.estadoActual = estadoActual;
     }
-    public void setCambioEstado(ArrayList<CambioEstado> cambioEstado){
-        this.cambioEstado = cambioEstado;
+    public void setCambioEstado(ArrayList<CambioEstado> cambiosEstado){
+        this.cambiosEstado = cambiosEstado;
     }
     public void setAnalistaSupervisor(Empleado analistaSupervisor){
         this.analistaSupervisor = analistaSupervisor;

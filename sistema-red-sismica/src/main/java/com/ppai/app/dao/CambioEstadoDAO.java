@@ -17,8 +17,8 @@ public class CambioEstadoDAO {
        -------------------------------------------------------------- */
     public void insert(CambioEstado ce) throws SQLException {
         // SQL corregido: usa la clave natural compuesta (ambitoEstado, nombreEstado)
-        String sql = "INSERT INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -52,8 +52,8 @@ public class CambioEstadoDAO {
        UPDATE – actualiza el cambio de estado.
        -------------------------------------------------------------- */
     public void update(CambioEstado ce) throws SQLException {
-        String sql = "UPDATE CambioEstado SET fechaHoraInicio = ?, fechaHoraFin = ?, ambitoEstado = ?, nombreEstado = ?, idResponsableInspeccion = ? WHERE idCambioEstado = ?";
-        
+        String sql = "UPDATE CambioEstado SET fechaHoraInicio = ?, fechaHoraFin = ?, ambitoEstado = ?, nombreEstado = ?, idResponsableInspeccion = ?, idEventoSismico = ? WHERE idCambioEstado = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

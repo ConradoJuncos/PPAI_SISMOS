@@ -17,14 +17,11 @@ public abstract class Estado {
     }
 
     // Comportamiento
-    public void crearProximoEstado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-        
-        registrarCambioDeEstado(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
+    public Estado crearProximoEstado(){
+        return null;
     }
 
-    protected void registrarCambioDeEstado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-     
-        System.out.println("Comienza el proceso de cambio de estado:" + seleccionEventoSismico + " a las " + fechaHoraActual + " por el usuario: " + usuarioLogueado);
+    protected void registrarCambioDeEstado(ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado, Estado nuevoEstado) {
     }
 
     protected Empleado obtenerResponsableDeInspeccion(Usuario usuarioLogueado) {
@@ -65,7 +62,7 @@ public abstract class Estado {
     public void aceptarParaRevision(){}
 
     // ESTE ES EL IMPORTANTE!!!!!
-    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
     }
     // revisar parámetros y retorno
     public void derivarAExperto(){}

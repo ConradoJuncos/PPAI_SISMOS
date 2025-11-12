@@ -9,16 +9,27 @@ public class AutoDetectado extends Estado {
     }
 
     @Override
-    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        System.out.println("f");
+    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        BloqueadoEnRevision estadoCreadoBloqueadoEnRevision = (BloqueadoEnRevision) crearProximoEstado();
+        eventoSismicoSeleccionado.setEstadoActual(estadoCreadoBloqueadoEnRevision);
+        registrarCambioDeEstado(cambiosEstado, fechaHoraActual, usuarioLogueado, estadoCreadoBloqueadoEnRevision);
     }
 
     // Sobrescribiendo el método de proximo estado
     @Override
-    public void crearProximoEstado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-
+    public Estado crearProximoEstado(){
         // Creando el proximo estado del evento sismico AutoDetectado --> BloqueadoEnRevision
-        BloqueadoEnRevision bloqueadoEnRevision = new BloqueadoEnRevision(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
+        return(new BloqueadoEnRevision());
+    }
+
+    public void registrarCambioDeEstado(ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado, Estado nuevoEstado) {
+        for (CambioEstado cambioEstado : cambiosEstado) {
+            if (cambioEstado.esEstadoActual()) {
+                cambioEstado.setFechaHoraFin(fechaHoraActual);
+            }
+        }
+        CambioEstado nuevoCambioEstado = new CambioEstado(fechaHoraActual, nuevoEstado, usuarioLogueado.getEmpleado());
+        cambiosEstado.add(nuevoCambioEstado);
     }
 
 }

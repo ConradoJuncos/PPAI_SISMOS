@@ -121,8 +121,9 @@ public class GestorRevisionManual {
 
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
+        System.out.println("Lista vieja: " + seleccionEventoSismico.getCambiosEstado());
         this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
-
+        System.out.println("Lista nueva: " + seleccionEventoSismico.getCambiosEstado());
     }
 
     // Preparar los datos a mostar del vento sismico seleccionado

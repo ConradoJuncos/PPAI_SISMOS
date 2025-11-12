@@ -42,7 +42,7 @@ public class EstadoDAO {
             case "PendienteDeRevision":
                 return new PendienteDeRevision(null, null, null);
             case "BloqueadoEnRevision":
-                return new BloqueadoEnRevision(null, null, null);
+                return new BloqueadoEnRevision();
             case "DerivadoAExperto":
                 return new DerivadoAExperto(null, null, null);
             case "Confirmado":
