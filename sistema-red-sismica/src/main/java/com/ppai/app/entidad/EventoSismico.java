@@ -19,9 +19,9 @@ public class EventoSismico {
     private MagnitudRichter magnitudRichter;
     private OrigenDeGeneracion origenGeneracion;
     private AlcanceSismo alcanceSismo;
-    private List<SerieTemporal> serieTemporal = new  ArrayList<SerieTemporal>();
+    private ArrayList<SerieTemporal> serieTemporal = new  ArrayList<SerieTemporal>();
     private Estado estadoActual; 
-    private List<CambioEstado> cambioEstado = new ArrayList<CambioEstado>();
+    private ArrayList<CambioEstado> cambioEstado = new ArrayList<CambioEstado>();
     private Empleado analistaSupervisor; 
 
     // Método constructor sin parámetros
@@ -30,8 +30,8 @@ public class EventoSismico {
     // Constructor (No incluye id por ser autogenerado, y no incluye analista supervisor por ser no revisado)
     public EventoSismico(LocalDateTime fechaHoraOcurrencia, String latitudEpicentro, String latitudHipocentro,
         String longitudEpicentro, String longitudHipocentro, double valorMagnitud, ClasificacionSismo clasificacionSismo,
-        MagnitudRichter magnitudRichter, OrigenDeGeneracion origenGeneracion, AlcanceSismo alcanceSismo, List<SerieTemporal> serieTemporal,
-        Estado estadoActual, List<CambioEstado> cambioEstado){
+        MagnitudRichter magnitudRichter, OrigenDeGeneracion origenGeneracion, AlcanceSismo alcanceSismo, ArrayList<SerieTemporal> serieTemporal,
+        Estado estadoActual, ArrayList<CambioEstado> cambioEstado){
             this.fechaHoraOcurrencia = fechaHoraOcurrencia;
             this.latitudEpicentro = latitudEpicentro;
             this.latitudHipocentro = latitudHipocentro;
@@ -86,25 +86,16 @@ public class EventoSismico {
 
     }
 
-    // Verificar si un conjunto de datos principales son propios de un evento sismico
-    public EventoSismico sonMisDatosPrincipales(String datosPrincipales){
-     
-        // Comparando el string con los datos principales del evento sismico
+    public Boolean sonMisDatosPrincipales(String datosPrincipales){
         if (datosPrincipales != null && datosPrincipales.equals(obtenerDatosPrincipales())){
-
-            // Se retorna a si mismo
-            return this;
+            return true;
         }
-
-        // Caso contrario, los datos principales no son propios de este vento sismico
-        return null;
+        return false;
     }
 
     // Bloquear por revisión el evento sismico
     public void bloquearPorRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-
-        // Delegación del cambio de estado al estado concreto actual
-        this.estadoActual.bloquearPorRevision(seleccionEventoSismico, fechaHoraActual, usuarioLogueado);
+        this.estadoActual.bloquearPorRevision(seleccionEventoSismico, this.cambioEstado, fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener el Cambio de Estado (Historial de Estado) Actual del Evento
@@ -209,13 +200,13 @@ public class EventoSismico {
     public void setAlcanceSismo(AlcanceSismo alcanceSismo){
         this.alcanceSismo = alcanceSismo;
     }
-    public void setSerieTemporal(List<SerieTemporal> serieTemporal){
+    public void setSerieTemporal(ArrayList<SerieTemporal> serieTemporal){
         this.serieTemporal = serieTemporal;
     }
     public void setEstadoActual(Estado estadoActual){
         this.estadoActual = estadoActual;
     }
-    public void setCambioEstado(List<CambioEstado> cambioEstado){
+    public void setCambioEstado(ArrayList<CambioEstado> cambioEstado){
         this.cambioEstado = cambioEstado;
     }
     public void setAnalistaSupervisor(Empleado analistaSupervisor){

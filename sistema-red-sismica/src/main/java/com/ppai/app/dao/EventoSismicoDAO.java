@@ -1,10 +1,20 @@
 package com.ppai.app.dao;
 
-import com.ppai.app.datos.DatabaseConnection;
-import com.ppai.app.entidad.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.ppai.app.datos.DatabaseConnection;
+import com.ppai.app.entidad.CambioEstado;
+import com.ppai.app.entidad.Estado;
+import com.ppai.app.entidad.EventoSismico;
+import com.ppai.app.entidad.SerieTemporal;
 
 public class EventoSismicoDAO {
 
@@ -160,8 +170,8 @@ public class EventoSismicoDAO {
                     e.setEstadoActual(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
                     // Listas 1:N
-                    e.setSerieTemporal(findSerieTemporalByEvento(conn, idEventoSismico));
-                    e.setCambioEstado(cambioEstadoDAO.findByEventoSismicoId(conn, idEventoSismico));
+                    //e.setSerieTemporal(findSerieTemporalByEvento(conn, idEventoSismico));
+                    //e.setCambioEstado(cambioEstadoDAO.findByEventoSismicoId(conn, idEventoSismico));
 
                     // El antiguo "Estado actual" por historial ya no se usa, la propiedad ya se
                     // cargó arriba.

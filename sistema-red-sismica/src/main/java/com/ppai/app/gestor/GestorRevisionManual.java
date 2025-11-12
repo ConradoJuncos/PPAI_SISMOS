@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.ppai.app.entidad.EventoSismico;
 import com.ppai.app.entidad.Usuario;
-import com.ppai.app.frontend.interfaces.IPantallaRevisionManual;
+import com.ppai.app.frontend.PantallaRevisionManual;
 
 public class GestorRevisionManual {
 
@@ -28,10 +28,10 @@ public class GestorRevisionManual {
     private Usuario usuarioLogueado;
 
     // Referencia a la pantalla (interfaz)
-    private IPantallaRevisionManual pantalla;
+    private PantallaRevisionManual pantalla;
 
     // Constructor
-    public GestorRevisionManual(IPantallaRevisionManual pantalla, List<EventoSismico> eventosSismicos, Usuario usuarioLogueado) {
+    public GestorRevisionManual(PantallaRevisionManual pantalla, List<EventoSismico> eventosSismicos, Usuario usuarioLogueado) {
         this.pantalla = pantalla;
         this.eventosSismicos = eventosSismicos;
         this.usuarioLogueado = usuarioLogueado;
@@ -44,8 +44,6 @@ public class GestorRevisionManual {
         buscarEventosSismicosAutoDetectadosNoRevisados();
     }
 
-    // Buscar todos los eventos sismicos con estado auto detectado y que no tengan
-    // analista asignado (no revisado)
     private void buscarEventosSismicosAutoDetectadosNoRevisados() {
 
         // mensaje para debugeo
@@ -77,7 +75,6 @@ public class GestorRevisionManual {
         
         // Solo si no hay pantalla (modo debug)
         System.out.println(datosPrincipalesEventosSismicosNoRevisados);
-        System.out.println("SE HAN MOSTRADO LOS DATOS PRINCIPALES!!!");
         
     }
 
@@ -104,46 +101,27 @@ public class GestorRevisionManual {
 
     // Tomar los datos del evento sismico seleccionado por el analista de sismos
     public void tomarSeleccionEventoSismico(String datosPrincipales) {
-
-        // Identificar y obtener al evento sismico seleccionado por el analista a partir
-        // de sus datos principales
-        // Y comenzar el proceso de bloqueo del evento más la obtención y muestreo de
-        // sus datos.
-        obtenerEventoSismicoSeleccionado(datosPrincipales);
-
+        this.seleccionEventoSismico = obtenerEventoSismicoSeleccionado(datosPrincipales);
+        bloquearEventoSismicoSeleccionado();
     }
 
     // Obtener el evento sismico seleccionado por el analista de sismos
-    private void obtenerEventoSismicoSeleccionado(String datosPrincipales) {
-
+    private EventoSismico obtenerEventoSismicoSeleccionado(String datosPrincipales) {
         // Buscar el evento sismico a partir de los datos principales
         for (EventoSismico eventoSismico : eventosSismicos) {
 
             // Comprobando si los datos principales son del evento sismico iterado
-            if (eventoSismico.sonMisDatosPrincipales(datosPrincipales) != null) {
-
-                // Se asigna el evento sismico seleccioando por el analista
-                this.seleccionEventoSismico = eventoSismico.sonMisDatosPrincipales(datosPrincipales);
+            if (eventoSismico.sonMisDatosPrincipales(datosPrincipales) == true) {
+                return eventoSismico;
             }
         }
-
-        // Cambiar el estado del evento sismico seleccionado a bloqueado en revision
-        // (Bloquear el evento sismico)
-
-        // 3. Llamar al metodo obtenerYMostrarDatosEventoSeleccionado():void
-        // Por ahora mostrando en terminal
+        return null;
 
     }
 
-    // Bloquear el eveto sismico seleccioando por el analista
     private void bloquearEventoSismicoSeleccionado() {
-
-        // Obtener la fecha y hora actual del sistema
         this.fechaHoraActual = getFechaHoraActual();
-
-        // Bloquear el evento sismico seleccionado por en analista con motivo de revision
-        this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual,
-                this.usuarioLogueado);
+        this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
 
     }
 

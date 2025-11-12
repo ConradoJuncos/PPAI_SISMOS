@@ -1,10 +1,30 @@
 package com.ppai.app.contexto;
 
-import com.ppai.app.dao.*;
-import com.ppai.app.entidad.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ppai.app.dao.DetalleMuestraSismicaDAO;
+import com.ppai.app.dao.EmpleadoDAO;
+import com.ppai.app.dao.EstacionSismologicaDAO;
+import com.ppai.app.dao.EstadoDAO;
+import com.ppai.app.dao.EventoSismicoDAO;
+import com.ppai.app.dao.MuestraSismicaDAO;
+import com.ppai.app.dao.SerieTemporalDAO;
+import com.ppai.app.dao.SismografoDAO;
+import com.ppai.app.dao.TipoDeDatoDAO;
+import com.ppai.app.dao.UsuarioDAO;
+import com.ppai.app.entidad.CambioEstado;
+import com.ppai.app.entidad.DetalleMuestraSismica;
+import com.ppai.app.entidad.Empleado;
+import com.ppai.app.entidad.EstacionSismologica;
+import com.ppai.app.entidad.Estado;
+import com.ppai.app.entidad.EventoSismico;
+import com.ppai.app.entidad.MuestraSismica;
+import com.ppai.app.entidad.SerieTemporal;
+import com.ppai.app.entidad.Sismografo;
+import com.ppai.app.entidad.TipoDeDato;
+import com.ppai.app.entidad.Usuario;
 
 /**
  * Contexto general del sistema.
@@ -35,6 +55,7 @@ public class Contexto {
     private List<Empleado> empleados = new ArrayList<>();
     private List<Usuario> usuarios = new ArrayList<>();
     private List<Estado> estados = new ArrayList<>();
+    private List<CambioEstado> cambiosEstados = new ArrayList<>();
 
     public Contexto() {
         try {
@@ -63,7 +84,6 @@ public class Contexto {
         System.out.println("Contexto inicializado correctamente.");
     }
 
-    // Getters para acceso a las colecciones en memoria
     public List<EventoSismico> getEventosSismicos() { return eventosSismicos; }
     public List<SerieTemporal> getSeriesTemporales() { return seriesTemporales; }
     public List<MuestraSismica> getMuestrasSismicas() { return muestrasSismicas; }
@@ -74,6 +94,7 @@ public class Contexto {
     public List<Empleado> getEmpleados() { return empleados; }
     public List<Usuario> getUsuarios() { return usuarios; }
     public List<Estado> getEstados() { return estados; }
+    public List<CambioEstado> getCambiosEstados() { return cambiosEstados; }
 
     // Metodo especial provisorio (usuario logueado del sistema)
     public Usuario getUsuarioLogueado(){

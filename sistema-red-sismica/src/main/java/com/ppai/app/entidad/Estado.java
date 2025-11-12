@@ -1,6 +1,7 @@
 package com.ppai.app.entidad;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 // Clase Abstracta de Estado (Patrón State)
 public abstract class Estado {
@@ -63,11 +64,9 @@ public abstract class Estado {
     // revisar parámetros y retorno
     public void aceptarParaRevision(){}
 
-    // reviar parámetros y retorno
-    public void bloquearPorRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-
+    // ESTE ES EL IMPORTANTE!!!!!
+    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
     }
-
     // revisar parámetros y retorno
     public void derivarAExperto(){}
 

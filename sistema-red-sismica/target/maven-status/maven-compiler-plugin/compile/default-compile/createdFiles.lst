@@ -3,6 +3,7 @@ com\ppai\app\entidad\Permiso.class
 com\ppai\app\entidad\OrdenDeInspeccion.class
 com\ppai\app\entidad\PlanConstruccionES.class
 com\ppai\app\entidad\EstacionSismologica.class
+com\ppai\app\frontend\PantallaRevisionManual$2.class
 com\ppai\app\dao\TrabajoARealizarDAO.class
 com\ppai\app\dao\PermisoDAO.class
 com\ppai\app\entidad\Rechazado.class
@@ -18,7 +19,6 @@ com\ppai\app\entidad\Perfil.class
 com\ppai\app\dao\CambioEstadoDAO.class
 com\ppai\app\entidad\Cerrado.class
 com\ppai\app\dao\ClasificacionSismoDAO.class
-com\ppai\app\frontend\interfaces\IPantallaRevisionManual.class
 com\ppai\app\dao\SuscripcionDAO.class
 com\ppai\app\dao\MotivoFueraServicioDAO.class
 com\ppai\app\entidad\SerieTemporal.class
