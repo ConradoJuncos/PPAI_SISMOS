@@ -134,7 +134,6 @@ public class GestorRevisionManual {
 
         // Extraer información sísmica del evento seleccionado
         extraerInformacionSismicaEventoSeleccionado();
-        System.out.println(this.informacionSismicaEventoSeleccionado);
 
         // Clasificar información por estación sismológica
         List<ArrayList<String>> informacionClasificada = clasificarPorEstacionSismologica();
@@ -143,7 +142,7 @@ public class GestorRevisionManual {
         generarSismogramaPorEstacionSismologica(informacionClasificada);
 
         // Mostrar los datos por pantalla
-        mostrarDatosSismicosRegistrados();
+        mostrarDatosSismicosRegistrados(informacionClasificada);
 
         // Habilitar la Opción de Visualizar Mapa de Eventos
         pantalla.habilitarVisualizacionMapa();
@@ -165,42 +164,32 @@ public class GestorRevisionManual {
         this.informacionSismicaEventoSeleccionado = seleccionEventoSismico.extraerInformacionSismica();
     }
 
-    /**
-     * Clasifica la información sísmica por estación sismológica.
-     * Consulta cada sismografo para determinar si una serie temporal le pertenece.
-     * Retorna la información organizada y clasificada por estación.
-     */
     private List<ArrayList<String>> clasificarPorEstacionSismologica() {
-        System.out.println("Clasificando información por estación sismológica...");
-        System.out.println("Total de sismografos disponibles: " + sismografos.size());
-
         List<ArrayList<String>> informacionClasificada = new ArrayList<>();
 
-        // Para cada serie temporal en la información sísmica extraída
-        for (ArrayList<String> datosSerie : informacionSismicaEventoSeleccionado) {
-            // Extraer el ID de serie temporal (primer elemento)
-            long idSerieTemporal = Long.parseLong(datosSerie.get(0));
-            System.out.println("Buscando serie temporal ID: " + idSerieTemporal);
+        System.out.println("INFOPOO" + informacionSismicaEventoSeleccionado);
 
-            // Consultar cada sismografo si esta serie le pertenece
+        for (ArrayList<String> datosSerie : informacionSismicaEventoSeleccionado) {
+            long idSerieTemporal = Long.parseLong(datosSerie.get(0));
+
             List<Object> datosEstacion = null;
             for (Sismografo sismografo : sismografos) {
                 datosEstacion = sismografo.esTuSerieTemporal(idSerieTemporal);
+
                 if (datosEstacion != null) {
-                    break; // Encontramos el sismografo propietario
+                    break;
                 }
             }
 
             // Si encontramos la estación, agregar información completa con datos de estación
             if (datosEstacion != null) {
-                ArrayList<String> datosSerieCompletos = new ArrayList<>(datosSerie);
-                // Agregar código de estación y nombre de estación
-                datosSerieCompletos.add(datosEstacion.get(0).toString()); // Código
-                datosSerieCompletos.add(datosEstacion.get(1).toString()); // Nombre
+                ArrayList<String> datosSerieCompletos = new ArrayList<>();
+                datosSerieCompletos.add(datosEstacion.get(0).toString());
+                datosSerieCompletos.add(datosEstacion.get(1).toString());
+                datosSerieCompletos.add(datosSerie.toString());
                 informacionClasificada.add(datosSerieCompletos);
             } else {
-                // Si no se encuentra, agregar tal cual
-                informacionClasificada.add(datosSerie);
+                System.out.println("ROTO NO SE ENCONTRO SISMOGRAFO AAAAAAAAAAAAA");
             }
         }
 
@@ -221,7 +210,7 @@ public class GestorRevisionManual {
      * Muestra los datos sísmicos registrados en la pantalla.
      * Prepara los datos en formato adecuado para la interfaz.
      */
-    private void mostrarDatosSismicosRegistrados() {
+    private void mostrarDatosSismicosRegistrados(List<ArrayList<String>> informacionEstaciones) {
         System.out.println("Mostrando datos sísmicos registrados en pantalla...");
 
         // Los datos ya están en formato ArrayList<String>
@@ -232,7 +221,8 @@ public class GestorRevisionManual {
             metadatosEventoSismicoSeleccionado.get(0),
             metadatosEventoSismicoSeleccionado.get(1),
             metadatosEventoSismicoSeleccionado.get(2),
-            datosSismicos
+            datosSismicos,
+            informacionEstaciones
         );
     }
 

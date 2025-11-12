@@ -227,7 +227,7 @@ public class PantallaRevisionManual extends JFrame {
     }
 
     // Mostrar los datos sísmicos registrados del evento seleccionado
-    public void mostrarDatosSismicosRegistrados(String alcanceSismo, String clasificacionSismo, String origenGeneracion, List<ArrayList<String>> informacionSismica) {
+    public void mostrarDatosSismicosRegistrados(String alcanceSismo, String clasificacionSismo, String origenGeneracion, List<ArrayList<String>> informacionSismica, List<ArrayList<String>> informacionEstaciones) {
         lblAlcance.setText("Alcance: " + alcanceSismo);
         lblClasificacion.setText("Clasificación: " + clasificacionSismo);
         lblOrigen.setText("Origen de Generación: " + origenGeneracion);
@@ -235,17 +235,10 @@ public class PantallaRevisionManual extends JFrame {
         // Limpiar panel de información sísmica
         panelInfoSismica.removeAll();
 
-        if (informacionSismica != null && !informacionSismica.isEmpty()) {
-            // Agrupar información por estación sismológica
-            java.util.Map<String, java.util.List<ArrayList<String>>> datosPorEstacion = agruparPorEstacion(informacionSismica);
-
-            // Crear paneles visuales para cada estación
+        if (true) {
             int estacionNumero = 1;
-            for (String estacion : datosPorEstacion.keySet()) {
-                java.util.List<ArrayList<String>> seriesDeLaEstacion = datosPorEstacion.get(estacion);
-
-                // Panel para esta estación
-                JPanel panelEstacion = crearPanelEstacion(estacion, estacionNumero, seriesDeLaEstacion);
+            for (ArrayList<String> estacion : informacionEstaciones) {
+                JPanel panelEstacion = crearPanelEstacion(estacion.get(0), estacion.get(1), estacion.get(2));
                 panelInfoSismica.add(panelEstacion);
                 panelInfoSismica.add(javax.swing.Box.createVerticalStrut(15)); // Espaciado entre estaciones
 
@@ -289,44 +282,27 @@ public class PantallaRevisionManual extends JFrame {
     }
 
     /**
-     * Crea un panel visual para una estación sismológica con todas sus series temporales.
+     * Crea un panel visual simplificado para una estación sismológica.
      */
-    private JPanel crearPanelEstacion(String nombreEstacion, int numero, java.util.List<ArrayList<String>> series) {
-        JPanel panelEstacion = new JPanel();
-        panelEstacion.setLayout(new BoxLayout(panelEstacion, BoxLayout.Y_AXIS));
+    private JPanel crearPanelEstacion(String nombreEstacion, String numero, String series) {
+        JPanel panelEstacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         panelEstacion.setBackground(Color.WHITE);
         panelEstacion.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
-            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+            BorderFactory.createLineBorder(new Color(100, 149, 237), 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        // Encabezado de la estación
-        JPanel panelEncabezado = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelEncabezado.setBackground(new Color(100, 149, 237));
-        JLabel lblEstacion = new JLabel("🏢 ESTACIÓN #" + numero + ": " + nombreEstacion);
-        lblEstacion.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblEstacion.setForeground(Color.WHITE);
-        panelEncabezado.add(lblEstacion);
-        panelEstacion.add(panelEncabezado);
-
-        panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
-
-        // Crear panel para cada serie temporal
-        int serieNumero = 1;
-        for (ArrayList<String> datosSerie : series) {
-            JPanel panelSerie = crearPanelSerieTemporal(serieNumero, datosSerie);
-            panelEstacion.add(panelSerie);
-            panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
-            serieNumero++;
-        }
+        JLabel lblEstacion = new JLabel("Estación #" + numero + " | Nombre: " + nombreEstacion + " | Series: " + series);
+        lblEstacion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        panelEstacion.add(lblEstacion);
 
         return panelEstacion;
     }
 
     /**
-     * Crea un panel visual para una serie temporal con sus muestras.
+     * Crea un panel visual para una serie temporal - ahora no se usa.
      */
-    private JPanel crearPanelSerieTemporal(int numero, ArrayList<String> datosSerie) {
+    private JPanel crearPanelSerieTemporal(int idEstacion, String datosSerie) {
         JPanel panelSerie = new JPanel();
         panelSerie.setLayout(new BoxLayout(panelSerie, BoxLayout.Y_AXIS));
         panelSerie.setBackground(new Color(245, 248, 252));
@@ -334,50 +310,6 @@ public class PantallaRevisionManual extends JFrame {
             BorderFactory.createLineBorder(new Color(176, 196, 222), 1),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-
-        // Información básica de la serie
-        JLabel lblSerieId = new JLabel("📈 Serie Temporal #" + numero + " (ID: " + datosSerie.get(0) + ")");
-        lblSerieId.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblSerieId.setForeground(new Color(47, 79, 79));
-        panelSerie.add(lblSerieId);
-
-        panelSerie.add(javax.swing.Box.createVerticalStrut(5));
-
-        JPanel panelInfo = new JPanel(new GridLayout(2, 1, 5, 5));
-        panelInfo.setBackground(new Color(245, 248, 252));
-
-        JLabel lblFecha = new JLabel("  📅 Fecha/Hora Inicio: " + datosSerie.get(1));
-        lblFecha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        panelInfo.add(lblFecha);
-
-        JLabel lblFreq = new JLabel("  📊 Frecuencia de Muestreo: " + datosSerie.get(2) + " Hz");
-        lblFreq.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        panelInfo.add(lblFreq);
-
-        panelSerie.add(panelInfo);
-
-        // Muestras sísmicas
-        if (datosSerie.size() > 3) {
-            panelSerie.add(javax.swing.Box.createVerticalStrut(10));
-
-            JLabel lblMuestras = new JLabel("  🔬 Muestras Sísmicas:");
-            lblMuestras.setFont(new Font("Segoe UI", Font.BOLD, 13));
-            lblMuestras.setForeground(new Color(25, 25, 112));
-            panelSerie.add(lblMuestras);
-
-            panelSerie.add(javax.swing.Box.createVerticalStrut(5));
-
-            for (int i = 3; i < datosSerie.size(); i++) {
-                String datosMuestra = datosSerie.get(i);
-                String[] valores = datosMuestra.split("\\|");
-
-                if (valores.length >= 4) {
-                    JPanel panelMuestra = crearPanelMuestra(i - 2, valores);
-                    panelSerie.add(panelMuestra);
-                    panelSerie.add(javax.swing.Box.createVerticalStrut(5));
-                }
-            }
-        }
 
         return panelSerie;
     }

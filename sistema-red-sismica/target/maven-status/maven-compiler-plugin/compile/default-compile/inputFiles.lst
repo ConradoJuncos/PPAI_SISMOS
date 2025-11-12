@@ -42,7 +42,6 @@ C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\jav
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\EstacionSismologica.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\Estado.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\dao\TareaAsignadaDAO.java
-C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\dto\SerieTemporalDTO.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\dao\UsuarioDAO.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\BloqueadoEnRevision.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\Perfil.java
@@ -59,7 +58,6 @@ C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\jav
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\SinRevision.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\ApreciacionTipo.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\OrigenDeGeneracion.java
-C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\dto\MuestraSismicaDTO.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\dao\RolDAO.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\dao\EstacionSismologicaDAO.java
 C:\Users\Lito\Downloads\PPAI_SISMOS\PPAI_SISMOS\sistema-red-sismica\src\main\java\com\ppai\app\entidad\AutoDetectado.java
