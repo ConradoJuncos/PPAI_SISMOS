@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -207,57 +208,27 @@ public class PantallaRevisionManual extends JFrame {
     }
 
     // Mostrar los datos sísmicos registrados del evento seleccionado
-    public void mostrarDatosSismicosRegistrados(List<Object> metadatos, List<Object> informacionSismica) {
-        // Actualizar los labels con los metadatos
-        if (metadatos != null && metadatos.size() >= 3) {
-            lblAlcance.setText("Alcance: " + metadatos.get(0).toString());
-            lblClasificacion.setText("Clasificación: " + metadatos.get(1).toString());
-            lblOrigen.setText("Origen de Generación: " + metadatos.get(2).toString());
-        }
+    public void mostrarDatosSismicosRegistrados(String alcanceSismo, String clasificacionSismo, String origenGeneracion, List<ArrayList<String>> informacionSismica) {
+        lblAlcance.setText("Alcance: " + alcanceSismo);
+        lblClasificacion.setText("Clasificación: " + clasificacionSismo);
+        lblOrigen.setText("Origen de Generación: " + origenGeneracion);
 
-        // Mostrar información sísmica en el JTextArea
         if (informacionSismica != null && !informacionSismica.isEmpty()) {
             StringBuilder infoText = new StringBuilder();
             int serieNumero = 1;
 
-            for (Object info : informacionSismica) {
+            for (ArrayList<String> info : informacionSismica) {
                 infoText.append("=== Serie Temporal ").append(serieNumero).append(" ===\n");
-
-                if (info instanceof com.ppai.app.dto.SerieTemporalDTO serieDTO) {
-                    infoText.append("ID Serie Temporal: ").append(serieDTO.getIdSerieTemporal()).append("\n");
-                    infoText.append("Fecha/Hora Registro: ").append(serieDTO.getFechaHoraRegistro()).append("\n");
-                    infoText.append("Frecuencia de Muestreo: ").append(serieDTO.getFrecuenciaMuestreo()).append("\n");
-                    infoText.append("Estación: ").append(serieDTO.getNombreEstacion())
-                            .append(" (Código: ").append(serieDTO.getCodigoEstacion()).append(")\n\n");
-
-                    // Mostrar las muestras sísmicas asociadas
-                    var muestras = serieDTO.getMuestras();
-                    if (muestras != null && !muestras.isEmpty()) {
-                        int muestraNum = 1;
-                        for (com.ppai.app.dto.MuestraSismicaDTO muestra : muestras) {
-                            infoText.append("   → Muestra #").append(muestraNum).append("\n");
-                            infoText.append("      Fecha/Hora: ").append(muestra.getFechaHora()).append("\n");
-                            infoText.append("      Velocidad de Onda: ").append(muestra.getVelocidadOnda())
-                                    .append("\n");
-                            infoText.append("      Frecuencia de Onda: ").append(muestra.getFrecuenciaOnda())
-                                    .append("\n");
-                            infoText.append("      Longitud de Onda: ").append(muestra.getLongitudOnda())
-                                    .append("\n\n");
-                            muestraNum++;
-                        }
-                    } else {
-                        infoText.append("   (Sin muestras sísmicas registradas)\n\n");
-                    }
-                } else {
-                    // fallback si el objeto no es del tipo esperado
-                    infoText.append(info.toString()).append("\n\n");
-                }
+                infoText.append("ID Serie Temporal: ").append(info.get(0)).append("\n");
+                infoText.append("Fecha/Hora Registro: ").append(info.get(1)).append("\n");
+                infoText.append("Frecuencia de Muestreo: ").append(info.get(2)).append("\n");
+                infoText.append("Estación: ").append("no funca todavia")
+                        .append(" (Código: ").append("67").append(")\n\n");
 
                 serieNumero++;
             }
-
             txtInfoSismica.setText(infoText.toString());
-            txtInfoSismica.setCaretPosition(0); // Scroll al inicio
+            txtInfoSismica.setCaretPosition(0);
         } else {
             txtInfoSismica.setText("Información Sísmica: No hay datos disponibles");
         }

@@ -20,8 +20,8 @@ public class GestorRevisionManual {
     private EventoSismico seleccionEventoSismico;
     private List<EventoSismico> eventosSismicos = new ArrayList<>();
     private List<String> datosPrincipalesEventosSismicosNoRevisados = new ArrayList<>();
-    private List<Object> metadatosEventoSismicoSeleccionado = new ArrayList<>();
-    private List<Object> informacionSismicaEventoSeleccionado = new ArrayList<>();
+    private List<String> metadatosEventoSismicoSeleccionado = new ArrayList<>();
+    private List<ArrayList<Object>> informacionSismicaEventoSeleccionado = new ArrayList<>();
     private String opVisualizacion;
     private String opRechazoModificacion;
     private LocalDateTime fechaHoraActual;
@@ -138,7 +138,7 @@ public class GestorRevisionManual {
         System.out.println(this.informacionSismicaEventoSeleccionado);
 
         // 3. Clasificar información por estación sismológica
-        List<Object> informacionClasificada = clasificarPorEstacionSismologica();
+        List<ArrayList<Object>> informacionClasificada = clasificarPorEstacionSismologica();
 
         // 4. Llamar al caso de uso 18 abstracto - Generar Sismograma
         generarSismogramaPorEstacionSismologica(informacionClasificada);
@@ -152,7 +152,6 @@ public class GestorRevisionManual {
 
     private void obtenerMetadatosEventoSeleccionado() {
         this.metadatosEventoSismicoSeleccionado = seleccionEventoSismico.obtenerMetadatosEventoSeleccionado();
-        System.out.println("Metadatos obtenidos: " + metadatosEventoSismicoSeleccionado);
     }
 
     // Extraer información sísmica del evento seleccionado
@@ -162,7 +161,7 @@ public class GestorRevisionManual {
     }
 
     // Clasificar información por estación sismológica
-    private List<Object> clasificarPorEstacionSismologica() {
+    private List<ArrayList<Object>> clasificarPorEstacionSismologica() {
         System.out.println("Clasificando información por estación sismológica...");
         // Aquí se organizaría la información por estación
         // Por ahora retornamos la información tal cual
@@ -170,7 +169,7 @@ public class GestorRevisionManual {
     }
 
     // Generar sismograma por estación sismológica (CU18 - abstracto)
-    private void generarSismogramaPorEstacionSismologica(List<Object> informacionClasificada) {
+    private void generarSismogramaPorEstacionSismologica(List<ArrayList<Object>> informacionClasificada) {
         System.out.println("Generando sismogramas por estación sismológica...");
         // Este es un caso de uso abstracto que se ejecutaría aquí
         // Por ahora solo lo simulamos con un mensaje
@@ -179,9 +178,20 @@ public class GestorRevisionManual {
     // Mostrar los datos sismicos registrados, pasando los parametros correspondientes
     private void mostrarDatosSismicosRegistrados() {
         System.out.println("Mostrando datos sísmicos registrados en pantalla...");
+        List<ArrayList<String>> datosSismicos = new ArrayList<ArrayList<String>>();
+        for (ArrayList<Object> serieTemporal : informacionSismicaEventoSeleccionado) {
+            ArrayList<String> datoSismico = new ArrayList<String>();
+            datoSismico.add(serieTemporal.get(0).toString());
+            datoSismico.add(serieTemporal.get(1).toString());
+            datoSismico.add(serieTemporal.get(2).toString());
+            datosSismicos.add(datoSismico);
+        }
+
         pantalla.mostrarDatosSismicosRegistrados(
-            metadatosEventoSismicoSeleccionado,
-            informacionSismicaEventoSeleccionado
+            metadatosEventoSismicoSeleccionado.get(0),
+            metadatosEventoSismicoSeleccionado.get(1),
+            metadatosEventoSismicoSeleccionado.get(2),
+            datosSismicos
         );
     }
 

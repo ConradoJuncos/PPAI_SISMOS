@@ -17,13 +17,13 @@ public class MuestraSismica {
     public MuestraSismica(){}
 
     // Comportamiento
-    public MuestraSismicaDTO getDatos(){
+    public ArrayList<Object> getDatos(){
 
         // Se recolecta y entrega la informacion empaquetada de la muestra sismica
         return recolectarInformacionMuestraSismica();
     }
 
-    public MuestraSismicaDTO recolectarInformacionMuestraSismica(){
+    public ArrayList<Object> recolectarInformacionMuestraSismica(){
 
         // Se obtiene la fecha y hora de la muestra sismica
         LocalDateTime fechaHora = getFechaHoraMuestraSismica();
@@ -47,9 +47,15 @@ public class MuestraSismica {
     }
 
     // Empaquetar y preparar la informacion de la muestra sismica
-    public MuestraSismicaDTO prepararInformacionMuestraSismicaDTO(LocalDateTime fechaHora, double velocidadOnda, double frecuenciaOnda, double longitudOnda) {
+    public ArrayList<Object> prepararInformacionMuestraSismicaDTO(LocalDateTime fechaHora, double velocidadOnda, double frecuenciaOnda, double longitudOnda) {
 
-        return new MuestraSismicaDTO(fechaHora, velocidadOnda, frecuenciaOnda, longitudOnda);
+        ArrayList<Object> informacionMuestraSismica = new ArrayList<Object>();
+        informacionMuestraSismica.add(fechaHora);
+        informacionMuestraSismica.add(velocidadOnda);
+        informacionMuestraSismica.add(frecuenciaOnda);
+        informacionMuestraSismica.add(longitudOnda);
+        
+        return informacionMuestraSismica;
     }
 
     public void crearDetalleMuestra(){
