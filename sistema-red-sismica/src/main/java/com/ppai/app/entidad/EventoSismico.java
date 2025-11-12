@@ -123,21 +123,26 @@ public class EventoSismico {
         return metadatos;
     }
 
-    // Extraer información sísmica del evento (series temporales y muestras)
-    public List<ArrayList<Object>> extraerInformacionSismica() {
-        
-        List<ArrayList<Object>> informacionSismica = new ArrayList<>();
+    /**
+     * Extrae toda la información sísmica del evento (series temporales y sus muestras).
+     * Retorna una lista donde cada elemento es un ArrayList<String> con los datos de una serie temporal
+     * y todas sus muestras asociadas.
+     *
+     * Estructura de cada elemento:
+     * - Índice 0: ID de serie temporal
+     * - Índice 1: Fecha/Hora de registro
+     * - Índice 2: Frecuencia de muestreo
+     * - Índice 3+: Datos de cada muestra (fechaHora|velocidad|frecuencia|longitud)
+     */
+    public List<ArrayList<String>> extraerInformacionSismica() {
+        List<ArrayList<String>> informacionSismica = new ArrayList<>();
 
         // Recorrer las series temporales asociadas al evento
         for (SerieTemporal serie : seriesTemporales) {
-            System.out.println("Serie Temporal ID: " + serie.getIdSerieTemporal());
-            System.out.println("Muestras sísmicas: " + (serie.getMuestrasSismicas() != null ? serie.getMuestrasSismicas().size() : "null"));
-            if (serie.getMuestrasSismicas() != null) {
-                for (MuestraSismica muestra : serie.getMuestrasSismicas()) {
-                    System.out.println("  - Muestra: " + muestra);
-                }
-            }
-            informacionSismica.add(serie.getDatos());
+
+            // Obtener datos de la serie (incluye datos de muestras)
+            ArrayList<String> datosSerie = serie.getDatos();
+            informacionSismica.add(datosSerie);
         }
 
         System.out.println("Información sísmica extraída: " + informacionSismica);

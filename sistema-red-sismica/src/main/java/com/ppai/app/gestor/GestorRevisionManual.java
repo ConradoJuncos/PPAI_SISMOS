@@ -22,7 +22,7 @@ public class GestorRevisionManual {
     private List<EventoSismico> eventosSismicos = new ArrayList<>();
     private List<String> datosPrincipalesEventosSismicosNoRevisados = new ArrayList<>();
     private List<String> metadatosEventoSismicoSeleccionado = new ArrayList<>();
-    private List<ArrayList<Object>> informacionSismicaEventoSeleccionado = new ArrayList<>();
+    private List<ArrayList<String>> informacionSismicaEventoSeleccionado = new ArrayList<>();
     private String opVisualizacion;
     private String opRechazoModificacion;
     private LocalDateTime fechaHoraActual;
@@ -45,40 +45,35 @@ public class GestorRevisionManual {
         buscarEventosSismicosAutoDetectadosNoRevisados();
     }
 
-    // Buscar los eventos sismicos auto detectados no revisados y mostrar sus datos principales por pantalla
+    /**
+     * Busca todos los eventos sísmicos auto detectados que aún no han sido revisados.
+     * Ordena por fecha/hora de ocurrencia y muestra en pantalla.
+     */
     private void buscarEventosSismicosAutoDetectadosNoRevisados() {
-
-        // mensaje para debugeo
         System.out.println("Buscando eventos sismicos auto detectados no revisados....");
 
-        // Recorriendo todos los eventos sismicos y agregadolos al listado de no revisados
+        // Recorrer todos los eventos sísmicos
         for (EventoSismico eventoSismico : eventosSismicos) {
-
-            // Para debug
             System.out.println("estado actual del evento sismico recorrido: ");
             System.out.println(eventoSismico.getEstadoActual().getNombreEstado());
 
-            // Verificar si el evento es auto detecado no revisado, y obtenerlo
+            // Verificar si es auto detectado y no revisado
             if (eventoSismico.esAutoDetectado() && eventoSismico.sosNoRevisado()) {
-
-                // Se agregan sus datos principales a la respuesta
                 datosPrincipalesEventosSismicosNoRevisados.add(eventoSismico.obtenerDatosPrincipales());
             }
-
         }
 
-        // Ordenando los eventos sismicos auto detectados no revisados por fecha de ocurrencia
+        // Ordenar por fecha/hora de ocurrencia
         ordenarPorFechaHoraOcurrencia();
 
-        // Mostrar los datos principales en la interfaz (en lugar de consola)
+        // Mostrar en pantalla
         pantalla.mostrarEventosSismicosYSolicitarSeleccion(this.datosPrincipalesEventosSismicosNoRevisados);
-        
-        // Solo si no hay pantalla (modo debug)
         System.out.println(datosPrincipalesEventosSismicosNoRevisados);
-
     }
 
-    // Ordenar los eventos sismicos autodetectados no revisados por fecha y hora de ocurrencia
+    /**
+     * Ordena los eventos sísmicos por fecha y hora de ocurrencia (ascendente).
+     */
     private void ordenarPorFechaHoraOcurrencia() {
         System.out.println("Ordenando los eventos sísmicos obtenidos por fecha de ocurrencia...");
 
@@ -98,90 +93,104 @@ public class GestorRevisionManual {
         });
     }
 
-    // Tomar los datos del evento sismico seleccionado por el analista de sismos
+    /**
+     * Toma la selección del evento sísmico realizada por el usuario.
+     */
     public void tomarSeleccionEventoSismico(String datosPrincipales) {
         this.seleccionEventoSismico = obtenerEventoSismicoSeleccionado(datosPrincipales);
         bloquearEventoSismicoSeleccionado();
     }
 
-    // Obtener el evento sismico seleccionado por el analista de sismos
+    /**
+     * Obtiene el evento sísmico seleccionado a partir de sus datos principales.
+     */
     private EventoSismico obtenerEventoSismicoSeleccionado(String datosPrincipales) {
-        // Buscar el evento sismico a partir de los datos principales
         for (EventoSismico eventoSismico : eventosSismicos) {
-
-            // Comprobando si los datos principales son del evento sismico iterado
             if (eventoSismico.sonMisDatosPrincipales(datosPrincipales) == true) {
                 return eventoSismico;
             }
         }
         return null;
-
     }
 
+    /**
+     * Bloquea el evento sísmico seleccionado para revisión y obtiene sus datos.
+     */
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
         this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
         obtenerYMostrarDatosEventoSeleccionado();
     }
 
+    /**
+     * Obtiene y muestra todos los datos del evento seleccionado.
+     */
     private void obtenerYMostrarDatosEventoSeleccionado() {
         this.setMetadatosEventoSismicoSeleccionado(obtenerMetadatosEventoSeleccionado());
 
-        // 2. Extraer información sísmica del evento seleccionado
-        // ESTO ES EL TRIPLE FOR
+        // Extraer información sísmica del evento seleccionado
         extraerInformacionSismicaEventoSeleccionado();
         System.out.println(this.informacionSismicaEventoSeleccionado);
 
-        // 3. Clasificar información por estación sismológica
-        List<ArrayList<Object>> informacionClasificada = clasificarPorEstacionSismologica();
+        // Clasificar información por estación sismológica
+        List<ArrayList<String>> informacionClasificada = clasificarPorEstacionSismologica();
 
-        // 4. Llamar al caso de uso 18 abstracto - Generar Sismograma
+        // Generar sismogramas
         generarSismogramaPorEstacionSismologica(informacionClasificada);
 
-        // 5. Mostrar los datos por pantalla
+        // Mostrar los datos por pantalla
         mostrarDatosSismicosRegistrados();
 
-        // 6. Habilitar la Opción de Visualizar Mapa de Eventos
+        // Habilitar la Opción de Visualizar Mapa de Eventos
         pantalla.habilitarVisualizacionMapa();
     }
 
+    /**
+     * Obtiene los metadatos del evento sísmico seleccionado.
+     */
     private List<String> obtenerMetadatosEventoSeleccionado() {
         return seleccionEventoSismico.obtenerMetadatosEventoSeleccionado();
     }
 
-    // Extraer información sísmica del evento seleccionado
+    /**
+     * Extrae información sísmica del evento seleccionado.
+     * Obtiene todas las series temporales y sus muestras asociadas.
+     */
     private void extraerInformacionSismicaEventoSeleccionado() {
         System.out.println("Extrayendo información sísmica del evento seleccionado...");
         this.informacionSismicaEventoSeleccionado = seleccionEventoSismico.extraerInformacionSismica();
     }
 
-    // Clasificar información por estación sismológica
-    private List<ArrayList<Object>> clasificarPorEstacionSismologica() {
+    /**
+     * Clasifica la información sísmica por estación sismológica.
+     * Por ahora retorna la información tal cual.
+     */
+    private List<ArrayList<String>> clasificarPorEstacionSismologica() {
         System.out.println("Clasificando información por estación sismológica...");
-        // Aquí se organizaría la información por estación
-        // Por ahora retornamos la información tal cual
         return this.informacionSismicaEventoSeleccionado;
     }
 
-    // Generar sismograma por estación sismológica (CU18 - abstracto)
-    private void generarSismogramaPorEstacionSismologica(List<ArrayList<Object>> informacionClasificada) {
+    /**
+     * Genera sismogramas por estación sismológica.
+     * Caso de uso abstracto que se implementaría aquí.
+     */
+    private void generarSismogramaPorEstacionSismologica(List<ArrayList<String>> informacionClasificada) {
         System.out.println("Generando sismogramas por estación sismológica...");
         // Este es un caso de uso abstracto que se ejecutaría aquí
         // Por ahora solo lo simulamos con un mensaje
     }
 
-    // Mostrar los datos sismicos registrados, pasando los parametros correspondientes
+    /**
+     * Muestra los datos sísmicos registrados en la pantalla.
+     * Prepara los datos en formato adecuado para la interfaz.
+     */
     private void mostrarDatosSismicosRegistrados() {
         System.out.println("Mostrando datos sísmicos registrados en pantalla...");
-        List<ArrayList<String>> datosSismicos = new ArrayList<ArrayList<String>>();
-        for (ArrayList<Object> serieTemporal : informacionSismicaEventoSeleccionado) {
-            ArrayList<String> datoSismico = new ArrayList<String>();
-            datoSismico.add(serieTemporal.get(0).toString());
-            datoSismico.add(serieTemporal.get(1).toString());
-            datoSismico.add(serieTemporal.get(2).toString());
-            datosSismicos.add(datoSismico);
-        }
 
+        // Los datos ya están en formato ArrayList<String>
+        List<ArrayList<String>> datosSismicos = this.informacionSismicaEventoSeleccionado;
+
+        // Mostrar en pantalla
         pantalla.mostrarDatosSismicosRegistrados(
             metadatosEventoSismicoSeleccionado.get(0),
             metadatosEventoSismicoSeleccionado.get(1),
@@ -190,14 +199,21 @@ public class GestorRevisionManual {
         );
     }
 
-    // Tomar opcion no visualizacion de sismograma por estacion sismlogica
+    /**
+     * Toma la opción de no visualizar sismogramas por estación.
+     */
     public void tomarNoVisualizacion() {
         pantalla.solicitarModificaciónDatosSismicos();
     }
 
+    /**
+     * Toma el rechazo a la modificación de datos.
+     */
     public void tomarRechazoModificacion() {
         pantalla.solicitarOpcAccionEvento();
     }
+
+    // ...existing code...
 
     // Rechazar el evento sismico anteriormente seleccioando por el usuario
     public void rechazarEventoSismicoSeleccionado() {

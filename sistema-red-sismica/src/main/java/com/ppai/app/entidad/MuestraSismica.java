@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ppai.app.dto.MuestraSismicaDTO;
-
 public class MuestraSismica {
     
     // Atributos
@@ -16,45 +14,65 @@ public class MuestraSismica {
     // Constructor sin parámetros
     public MuestraSismica(){}
 
-    // Comportamiento
-    public ArrayList<Object> getDatos(){
-
-        // Se recolecta y entrega la informacion empaquetada de la muestra sismica
+    /**
+     * Obtiene los datos de la muestra sísmica.
+     * Estructura del ArrayList<String>:
+     * - Posición 0: Fecha/Hora de la muestra
+     * - Posición 1: Velocidad de onda (km/seg)
+     * - Posición 2: Frecuencia de onda (Hz)
+     * - Posición 3: Longitud de onda (km/ciclo)
+     */
+    public ArrayList<String> getDatos() {
         return recolectarInformacionMuestraSismica();
     }
 
-    public ArrayList<Object> recolectarInformacionMuestraSismica(){
-
-        // Se obtiene la fecha y hora de la muestra sismica
+    /**
+     * Recolecta la información de la muestra sísmica a partir de sus detalles.
+     * Retorna un ArrayList<String> con fecha, velocidad, frecuencia y longitud.
+     */
+    private ArrayList<String> recolectarInformacionMuestraSismica() {
+        // Obtener fecha y hora de la muestra
         LocalDateTime fechaHora = getFechaHoraMuestraSismica();
 
-        // Se definen los valores de los detalles de la muestra sismica
+        // Inicializar valores de detalles de la muestra
         Double velocidadOnda = null;
         Double frecuenciaOnda = null;
         Double longitudOnda = null;
 
-        // Se recorren los detalles asociados a la muestra sismica
-        for (DetalleMuestraSismica detalle : detalleMuestrasSismicas) {
-
-            // Se validan y obtiene los valores de los detalles con tipos de dato con denominacion de interes
-            if (detalle.sosDenominacionTipoDeDatoVelocidadOnda()) { velocidadOnda = detalle.getValor(); }
-            if (detalle.sosDenominacionTipoDeDatoFrecuenciaOnda()) { frecuenciaOnda = detalle.getValor(); }
-            if (detalle.sosDenominacionTipoDeDatoLongitudOnda()) { longitudOnda = detalle.getValor(); }
+        // Recorrer detalles asociados para obtener valores específicos
+        if (this.detalleMuestrasSismicas != null) {
+            for (DetalleMuestraSismica detalle : this.detalleMuestrasSismicas) {
+                if (detalle.sosDenominacionTipoDeDatoVelocidadOnda()) {
+                    velocidadOnda = detalle.getValor();
+                } else if (detalle.sosDenominacionTipoDeDatoFrecuenciaOnda()) {
+                    frecuenciaOnda = detalle.getValor();
+                } else if (detalle.sosDenominacionTipoDeDatoLongitudOnda()) {
+                    longitudOnda = detalle.getValor();
+                }
+            }
         }
 
-        return prepararInformacionMuestraSismicaDTO(fechaHora, velocidadOnda, frecuenciaOnda, longitudOnda);
-
+        // Retornar información empaquetada como strings
+        return prepararInformacionMuestraSismica(fechaHora, velocidadOnda, frecuenciaOnda, longitudOnda);
     }
 
-    // Empaquetar y preparar la informacion de la muestra sismica
-    public ArrayList<Object> prepararInformacionMuestraSismicaDTO(LocalDateTime fechaHora, double velocidadOnda, double frecuenciaOnda, double longitudOnda) {
+    /**
+     * Prepara la información de la muestra en formato ArrayList<String>.
+     * Convierte los valores a strings y los empaqueta.
+     */
+    private ArrayList<String> prepararInformacionMuestraSismica(
+            LocalDateTime fechaHora, Double velocidadOnda, Double frecuenciaOnda, Double longitudOnda) {
 
-        ArrayList<Object> informacionMuestraSismica = new ArrayList<Object>();
-        informacionMuestraSismica.add(fechaHora);
-        informacionMuestraSismica.add(velocidadOnda);
-        informacionMuestraSismica.add(frecuenciaOnda);
-        informacionMuestraSismica.add(longitudOnda);
-        
+        ArrayList<String> informacionMuestraSismica = new ArrayList<>();
+
+        // Agregar fecha/hora
+        informacionMuestraSismica.add(fechaHora != null ? fechaHora.toString() : "");
+
+        // Agregar valores de detalles (con valores por defecto si son null)
+        informacionMuestraSismica.add(velocidadOnda != null ? String.valueOf(velocidadOnda) : "0.0");
+        informacionMuestraSismica.add(frecuenciaOnda != null ? String.valueOf(frecuenciaOnda) : "0.0");
+        informacionMuestraSismica.add(longitudOnda != null ? String.valueOf(longitudOnda) : "0.0");
+
         return informacionMuestraSismica;
     }
 

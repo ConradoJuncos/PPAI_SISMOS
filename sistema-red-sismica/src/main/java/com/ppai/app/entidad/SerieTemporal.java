@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ppai.app.dto.SerieTemporalDTO;
 import com.ppai.app.entidad.MuestraSismica;
 
 public class SerieTemporal {
@@ -20,32 +19,42 @@ public class SerieTemporal {
     // Constructor sin parámetros
     public SerieTemporal(){}
 
-    public ArrayList<Object> getDatos() {
+    /**
+     * Obtiene los datos de la serie temporal incluyendo información de muestras sísmicas.
+     * Estructura del ArrayList<String>:
+     * - Posición 0: ID de serie temporal
+     * - Posición 1: Fecha/Hora de registro
+     * - Posición 2: Frecuencia de muestreo
+     * - Posición 3+: Datos de cada muestra (fechaHora|velocidad|frecuencia|longitud)
+     */
+    public ArrayList<String> getDatos() {
         return recolectarInformacionSerieTemporal();
     }
 
-    // Recolectar informacion sismica de la serie temporal
-    public ArrayList<Object> recolectarInformacionSerieTemporal(){
+    /**
+     * Recolecta información de la serie temporal y sus muestras sísmicas asociadas.
+     * Retorna un ArrayList<String> con todos los datos organizados de forma jerárquica.
+     */
+    private ArrayList<String> recolectarInformacionSerieTemporal() {
+        ArrayList<String> informacionSerieTemporal = new ArrayList<>();
 
-        ArrayList<Object> informacionSerieTemporal = new ArrayList<Object>();
-        informacionSerieTemporal.add(this.getIdSerieTemporal());
-        informacionSerieTemporal.add(this.getFechaHoraRegistro());
-        informacionSerieTemporal.add(this.getFrecuenciaMuestreo());
+        // Agregar datos de la serie temporal
+        informacionSerieTemporal.add(String.valueOf(this.idSerieTemporal));
+        informacionSerieTemporal.add(this.fechaHoraRegistro != null ? this.fechaHoraRegistro.toString() : "");
+        informacionSerieTemporal.add(this.frecuenciaMuestreo != null ? this.frecuenciaMuestreo : "");
 
-        return informacionSerieTemporal;
-
-    }
-
-    // Recolectar la informacion de las muestras sismicas asociadas a la serie temopral
-    public ArrayList<Object> recolectarInformacionMuestrasSismicas(Long idSerieTemporal, LocalDateTime fechaHoraRegistro, String frecuenciaMuestreo){
-
-        ArrayList<Object> informacionMuestras = new ArrayList<Object>();
-        for (MuestraSismica muestra : muestrasSismicas){
-            informacionMuestras.add(muestra.getDatos());
+        // Agregar datos de cada muestra sísmica asociada
+        if (this.muestrasSismicas != null) {
+            for (MuestraSismica muestra : this.muestrasSismicas) {
+                ArrayList<String> datosMuestra = muestra.getDatos();
+                // Agregar los datos de la muestra como un string concatenado
+                informacionSerieTemporal.add(String.join("|", datosMuestra));
+            }
         }
 
-        return informacionMuestras;
+        return informacionSerieTemporal;
     }
+
 
     // Métodos Getter y Setter
     public long getIdSerieTemporal(){
