@@ -35,5 +35,6 @@ replay_pid*
 target/
 
 # Maven build files
-sistema-red-sismica/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+sistema-red-sismica/target/
 sistema-red-sismica/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+sistema-red-sismica/redSismica.sqlite3
