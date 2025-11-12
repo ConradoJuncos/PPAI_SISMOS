@@ -3,17 +3,21 @@ package com.ppai.app.frontend;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.MouseAdapter; // <-- CAMBIO: Importación para MouseAdapter
-import java.awt.event.MouseEvent;   // <-- CAMBIO: Importación para MouseEvent
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,7 +33,15 @@ public class PantallaRevisionManual extends JFrame {
     private JTable tablaEventos;
     private DefaultTableModel modeloTabla;
     private JButton btnEjecutar;
+    private JButton btnVisualizarMapa;
     private JLabel lblEstado;
+
+    // Paneles para mostrar información adicional
+    private JPanel panelDatosSismicos;
+    private JLabel lblAlcance;
+    private JLabel lblClasificacion;
+    private JLabel lblOrigen;
+    private JLabel lblInfoSismica;
 
     public PantallaRevisionManual(Contexto contexto) {
         this.contexto = contexto;
@@ -42,23 +54,38 @@ public class PantallaRevisionManual extends JFrame {
     private void inicializarComponentes() {
         setTitle("CU23 - Revisión Manual de Eventos Sísmicos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 500);
+        setSize(1000, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
+        // Panel superior con título y botones
         JPanel panelSuperior = new JPanel(new BorderLayout());
         JLabel lblTitulo = new JLabel("Revisión Manual de Eventos Sísmicos", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        panelSuperior.add(lblTitulo, BorderLayout.CENTER);
+        panelSuperior.add(lblTitulo, BorderLayout.NORTH);
+
+        // Panel de botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 
         btnEjecutar = new JButton("Registrar Revision Manual");
         btnEjecutar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         btnEjecutar.addActionListener(e -> RegistrarRevisionManual());
-        panelSuperior.add(btnEjecutar, BorderLayout.SOUTH);
+        panelBotones.add(btnEjecutar);
+
+        btnVisualizarMapa = new JButton("Visualizar Mapa");
+        btnVisualizarMapa.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        btnVisualizarMapa.setEnabled(false); // Deshabilitado inicialmente
+        btnVisualizarMapa.addActionListener(e -> visualizarMapa());
+        panelBotones.add(btnVisualizarMapa);
+
+        panelSuperior.add(panelBotones, BorderLayout.CENTER);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Tabla central
+        // Panel central con tabla y datos sísmicos
+        JPanel panelCentral = new JPanel(new BorderLayout(10, 10));
+
+        // Tabla de eventos
         String[] columnas = {"Fecha y Hora", "Latitud Epicentro", "Longitud Epicentro", "Latitud Hipocentro", "Longitud Hipocentro"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -93,7 +120,44 @@ public class PantallaRevisionManual extends JFrame {
         });
 
         JScrollPane scrollPane = new JScrollPane(tablaEventos);
-        add(scrollPane, BorderLayout.CENTER);
+        panelCentral.add(scrollPane, BorderLayout.CENTER);
+
+        // Panel de datos sísmicos (inicialmente oculto)
+        panelDatosSismicos = new JPanel();
+        panelDatosSismicos.setLayout(new BoxLayout(panelDatosSismicos, BoxLayout.Y_AXIS));
+        panelDatosSismicos.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1),
+            "Datos Sísmicos Registrados",
+            0,
+            0,
+            new Font("Segoe UI", Font.BOLD, 14)
+        ));
+        panelDatosSismicos.setVisible(false);
+
+        // Labels para metadatos
+        lblAlcance = new JLabel("Alcance: -");
+        lblAlcance.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblAlcance.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        lblClasificacion = new JLabel("Clasificación: -");
+        lblClasificacion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblClasificacion.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        lblOrigen = new JLabel("Origen de Generación: -");
+        lblOrigen.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblOrigen.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        lblInfoSismica = new JLabel("Información Sísmica: -");
+        lblInfoSismica.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblInfoSismica.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        panelDatosSismicos.add(lblAlcance);
+        panelDatosSismicos.add(lblClasificacion);
+        panelDatosSismicos.add(lblOrigen);
+        panelDatosSismicos.add(lblInfoSismica);
+
+        panelCentral.add(panelDatosSismicos, BorderLayout.SOUTH);
+        add(panelCentral, BorderLayout.CENTER);
 
         // Barra inferior (estado)
         lblEstado = new JLabel("Listo.");
@@ -134,5 +198,62 @@ public class PantallaRevisionManual extends JFrame {
         }
 
         lblEstado.setText("Mostrando eventos sísmicos no revisados. Haga doble clic para seleccionar.");
+    }
+
+    // Mostrar los datos sísmicos registrados del evento seleccionado
+    public void mostrarDatosSismicosRegistrados(List<Object> metadatos, List<Object> informacionSismica) {
+        // Actualizar los labels con los metadatos
+        if (metadatos != null && metadatos.size() >= 3) {
+            lblAlcance.setText("Alcance: " + metadatos.get(0).toString());
+            lblClasificacion.setText("Clasificación: " + metadatos.get(1).toString());
+            lblOrigen.setText("Origen de Generación: " + metadatos.get(2).toString());
+        }
+
+        // Mostrar información sísmica
+        if (informacionSismica != null && !informacionSismica.isEmpty()) {
+            StringBuilder infoText = new StringBuilder("Información Sísmica: ");
+            for (Object info : informacionSismica) {
+                infoText.append(info.toString()).append("; ");
+            }
+            lblInfoSismica.setText(infoText.toString());
+        } else {
+            lblInfoSismica.setText("Información Sísmica: No hay datos disponibles");
+        }
+
+        // Hacer visible el panel de datos sísmicos
+        panelDatosSismicos.setVisible(true);
+
+        // Actualizar estado
+        lblEstado.setText("Datos sísmicos registrados mostrados correctamente. Evento bloqueado en revisión.");
+
+        // Revalidar y repintar para actualizar la interfaz
+        revalidate();
+        repaint();
+    }
+
+    // Habilitar la opción de visualizar mapa
+    public void habilitarVisualizacionMapa() {
+        btnVisualizarMapa.setEnabled(true);
+        btnVisualizarMapa.setBackground(new Color(76, 175, 80)); // Color verde
+        btnVisualizarMapa.setForeground(Color.WHITE);
+        lblEstado.setText("Mapa de eventos habilitado. Puede visualizar el evento y las estaciones involucradas.");
+        System.out.println("Botón de visualización de mapa habilitado.");
+    }
+
+    // Acción al presionar el botón de visualizar mapa
+    private void visualizarMapa() {
+        lblEstado.setText("Abriendo mapa de eventos sísmicos y estaciones sismológicas...");
+        // Aquí se implementaría la lógica para abrir un mapa
+        // Por ahora solo mostramos un mensaje
+        javax.swing.JOptionPane.showMessageDialog(
+            this,
+            "Funcionalidad de mapa en desarrollo.\n" +
+            "Se mostraría:\n" +
+            "- Ubicación del evento sísmico (epicentro e hipocentro)\n" +
+            "- Estaciones sismológicas involucradas\n" +
+            "- Magnitud y alcance del evento",
+            "Visualizar Mapa",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE
+        );
     }
 }

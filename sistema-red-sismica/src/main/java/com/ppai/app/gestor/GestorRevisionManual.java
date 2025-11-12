@@ -75,7 +75,10 @@ public class GestorRevisionManual {
         
         // Solo si no hay pantalla (modo debug)
         System.out.println(datosPrincipalesEventosSismicosNoRevisados);
-        
+
+        // Obtener metadatos
+        // obtenerYMostrarDatosEventoSelecciando();
+
     }
 
     // Ordenar los eventos sismicos autodetectados no revisados por fecha y hora de
@@ -122,31 +125,68 @@ public class GestorRevisionManual {
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
         this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
+
+        // Después de bloquear, obtener y mostrar datos
+        obtenerYMostrarDatosEventoSeleccionado();
     }
 
-    // Preparar los datos a mostar del vento sismico seleccionado
-    private void obtenerYMostrarDatosEventoSelecciando() {
+    // Preparar los datos a mostrar del evento sismico seleccionado
+    private void obtenerYMostrarDatosEventoSeleccionado() {
+        System.out.println("Obteniendo y mostrando datos del evento seleccionado...");
 
-        // 1. Llamar al metodo obtenerMetadadosEventoSeleccionado(): void
+        // 1. Obtener metadatos del evento seleccionado
+        obtenerMetadatosEventoSeleccionado();
 
-        // 2. Llamar al metodo extraerInformacionSismicaEventoSelecciondo(): Object[]
+        // 2. Extraer información sísmica del evento seleccionado
+        // ESTO ES EL TRIPLE FOR
+        extraerInformacionSismicaEventoSeleccionado();
 
-        // 3. Clasificar inforamcion por estacion sismologica
-        // llamando al método clasificarPorEstacionSismologica (private)
+        // 3. Clasificar información por estación sismológica
+        List<Object> informacionClasificada = clasificarPorEstacionSismologica();
 
-        // 4. Llamar al caso de uso 18 abstracto,
-        // mediante el metodo generarSismogramaPorEstaacionSismologica()
+        // 4. Llamar al caso de uso 18 abstracto - Generar Sismograma
+        generarSismogramaPorEstacionSismologica(informacionClasificada);
 
-        // 5. Mostrar los datos por pantalla llamando al metodo de la pantalla
-        // mostrarDatosSismicosRegistrados(), con los parámetros correspondientes
+        // 5. Mostrar los datos por pantalla
+        mostrarDatosSismicosRegistrados();
 
-        // 6. Habilitar la Opcion de Visualizar Mapa de Eventos
+        // 6. Habilitar la Opción de Visualizar Mapa de Eventos
+        pantalla.habilitarVisualizacionMapa();
     }
 
-    // Mostrar los datos sismicos registrados, pasando los parametros
-    // correspondientes
+    private void obtenerMetadatosEventoSeleccionado() {
+        this.metadatosEventoSismicoSeleccionado = seleccionEventoSismico.obtenerMetadatosEventoSeleccionado();
+        System.out.println("Metadatos obtenidos: " + metadatosEventoSismicoSeleccionado);
+    }
+
+    // Extraer información sísmica del evento seleccionado
+    private void extraerInformacionSismicaEventoSeleccionado() {
+        System.out.println("Extrayendo información sísmica del evento seleccionado...");
+        this.informacionSismicaEventoSeleccionado = seleccionEventoSismico.extraerInformacionSismica();
+    }
+
+    // Clasificar información por estación sismológica
+    private List<Object> clasificarPorEstacionSismologica() {
+        System.out.println("Clasificando información por estación sismológica...");
+        // Aquí se organizaría la información por estación
+        // Por ahora retornamos la información tal cual
+        return this.informacionSismicaEventoSeleccionado;
+    }
+
+    // Generar sismograma por estación sismológica (CU18 - abstracto)
+    private void generarSismogramaPorEstacionSismologica(List<Object> informacionClasificada) {
+        System.out.println("Generando sismogramas por estación sismológica...");
+        // Este es un caso de uso abstracto que se ejecutaría aquí
+        // Por ahora solo lo simulamos con un mensaje
+    }
+
+    // Mostrar los datos sismicos registrados, pasando los parametros correspondientes
     private void mostrarDatosSismicosRegistrados() {
-
+        System.out.println("Mostrando datos sísmicos registrados en pantalla...");
+        pantalla.mostrarDatosSismicosRegistrados(
+            metadatosEventoSismicoSeleccionado,
+            informacionSismicaEventoSeleccionado
+        );
     }
 
     // Tomar opcion no visualizacion de sismograma por estacion sismlogica

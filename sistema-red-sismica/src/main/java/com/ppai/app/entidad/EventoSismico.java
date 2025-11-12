@@ -115,6 +115,29 @@ public class EventoSismico {
         return null; // Para evitar fallos
     }
 
+    public List<Object> obtenerMetadatosEventoSeleccionado() {
+        List<Object> metadatos = new ArrayList<Object>();
+        metadatos.add(alcanceSismo.getNombre());
+        metadatos.add(clasificacionSismo.getNombre());
+        metadatos.add(origenGeneracion.getNombre());
+        System.out.println("DebUG: " + metadatos);
+        return metadatos;
+    }
+
+    // Extraer información sísmica del evento (series temporales y muestras)
+    public List<Object> extraerInformacionSismica() {
+        List<Object> informacionSismica = new ArrayList<>();
+
+        // Recorrer las series temporales asociadas al evento
+        for (SerieTemporal serie : serieTemporal) {
+            // Obtener los datos de cada serie temporal
+            informacionSismica.add(serie.getDatos());
+        }
+
+        System.out.println("Información sísmica extraída: " + informacionSismica);
+        return informacionSismica;
+    }
+
     // Métodos Getter y Setter
     public long getIdEventoSismico(){
         return this.idEventoSismico;
