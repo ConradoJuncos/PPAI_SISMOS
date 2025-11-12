@@ -11,8 +11,8 @@ public class AutoDetectado extends Estado {
     @Override
     public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         BloqueadoEnRevision estadoCreadoBloqueadoEnRevision = (BloqueadoEnRevision) crearProximoEstado();
-        eventoSismicoSeleccionado.setEstadoActual(estadoCreadoBloqueadoEnRevision);
         registrarCambioDeEstado(cambiosEstado, fechaHoraActual, usuarioLogueado, estadoCreadoBloqueadoEnRevision);
+        eventoSismicoSeleccionado.setEstadoActual(estadoCreadoBloqueadoEnRevision);
     }
 
     // Sobrescribiendo el método de proximo estado

@@ -143,10 +143,9 @@ public class CambioEstadoDAO {
        -------------------------------------------------------------- */
     public List<CambioEstado> findByEventoSismicoId(Connection conn, long idEventoSismico) throws SQLException {
         String sql = """
-            SELECT ce.* FROM CambioEstado ce
-            JOIN EventoSismico_CambioEstado ece ON ce.idCambioEstado = ece.idCambioEstado
-            WHERE ece.idEventoSismico = ?
-            ORDER BY ce.fechaHoraInicio ASC
+            SELECT * FROM CambioEstado
+            WHERE idEventoSismico = ?
+            ORDER BY fechaHoraInicio ASC
             """;
         List<CambioEstado> cambios = new ArrayList<>();
 
@@ -160,7 +159,30 @@ public class CambioEstadoDAO {
         }
         return cambios;
     }
-    
+
+    /* --------------------------------------------------------------
+       FIND BY EVENTO SISMICO ID (sin Connection externa) – para uso público
+       -------------------------------------------------------------- */
+    public List<CambioEstado> findByEventoSismico(long idEventoSismico) throws SQLException {
+        String sql = """
+            SELECT * FROM CambioEstado
+            WHERE idEventoSismico = ?
+            ORDER BY fechaHoraInicio ASC
+            """;
+        List<CambioEstado> cambios = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idEventoSismico);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    cambios.add(mapResultSetToCambioEstado(rs, conn));
+                }
+            }
+        }
+        return cambios;
+    }
+
     // ==============================================================
     // MÉTODOS AUXILIARES
     // ==============================================================

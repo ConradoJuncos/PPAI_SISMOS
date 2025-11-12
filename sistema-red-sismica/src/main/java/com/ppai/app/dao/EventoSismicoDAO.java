@@ -169,14 +169,11 @@ public class EventoSismicoDAO {
                     String nombreEstado = rs.getString("nombreEstado");
                     e.setEstadoActual(estadoActualDAO.findByAmbitoAndNombre(ambito, nombreEstado));
 
-                    // Listas 1:N
-                    //e.setSerieTemporal(findSerieTemporalByEvento(conn, idEventoSismico));
-                    //e.setCambioEstado(cambioEstadoDAO.findByEventoSismicoId(conn, idEventoSismico));
+                    // Listas 1:N - Cargar cambios de estado
+                    ArrayList<CambioEstado> cambiosEstado = (ArrayList<CambioEstado>) cambioEstadoDAO.findByEventoSismico(idEventoSismico);
+                    e.setCambioEstado(cambiosEstado);
 
-                    // El antiguo "Estado actual" por historial ya no se usa, la propiedad ya se
-                    // cargó arriba.
-                    // e.setEstadoActual(findEstadoActual(conn, idEventoSismico)); // <-- ESTE
-                    // CÓDIGO SE VUELVE OBSOLETO
+                    //e.setSerieTemporal(findSerieTemporalByEvento(conn, idEventoSismico));
 
                     return e;
                 }

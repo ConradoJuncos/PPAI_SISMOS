@@ -637,24 +637,6 @@ public class DatabaseConnection {
             stmt.executeUpdate(
                     """
                                 INSERT OR IGNORE INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) VALUES
-                                -- Evento 1: AutoDetectado (sin evolución)
-                                ('2025-02-21 19:05:00', '2025-02-21 19:10:00', 'EventoSismico', 'AutoDetectado', 1, 1),
-
-                                -- Evento 2: AutoDetectado → AutoConfirmado → Confirmado
-                                ('2025-04-01 10:00:00', '2025-04-01 10:01:00', 'EventoSismico', 'AutoDetectado', 1, 2),
-                                ('2025-04-01 10:01:00', '2025-04-01 10:03:00', 'EventoSismico', 'AutoConfirmado', 1, 2),
-                                ('2025-04-01 10:03:00', NULL, 'EventoSismico', 'Confirmado', 2, 2),
-
-                                -- Evento 3: AutoDetectado → PendienteDeRevision → Confirmado
-                                ('2025-04-02 14:15:00', '2025-04-02 14:16:00', 'EventoSismico', 'AutoDetectado', 1, 3),
-                                ('2025-04-02 14:16:00', '2025-04-02 14:18:00', 'EventoSismico', 'PendienteDeRevision', 1, 3),
-                                ('2025-04-02 14:18:00', NULL, 'EventoSismico', 'Confirmado', 2, 3),
-
-                                -- Evento 4: AutoDetectado → PendienteDeRevision → DerivadoAExperto
-                                ('2025-04-03 09:30:00', '2025-04-03 09:31:00', 'EventoSismico', 'AutoDetectado', 1, 4),
-                                ('2025-04-03 09:31:00', '2025-04-03 09:33:00', 'EventoSismico', 'PendienteDeRevision', 1, 4),
-                                ('2025-04-03 09:33:00', NULL, 'EventoSismico', 'DerivadoAExperto', 2, 4),
-
                                 -- Evento 5: AutoDetectado → AutoConfirmado → PendienteDeRevision
                                 ('2025-04-05 12:10:00', '2025-04-05 12:11:00', 'EventoSismico', 'AutoDetectado', 1, 5),
                                 ('2025-04-05 12:11:00', '2025-04-05 12:12:00', 'EventoSismico', 'AutoConfirmado', 1, 5),
