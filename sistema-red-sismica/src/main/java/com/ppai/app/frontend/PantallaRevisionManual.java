@@ -40,10 +40,11 @@ public class PantallaRevisionManual extends JFrame {
 
     // Paneles para mostrar información adicional
     private JPanel panelDatosSismicos;
+    private JScrollPane scrollDatosSismicos; // ScrollPane para hacer visible
     private JLabel lblAlcance;
     private JLabel lblClasificacion;
     private JLabel lblOrigen;
-    private JTextArea txtInfoSismica;
+    private JPanel panelInfoSismica; // Cambio de JTextArea a JPanel
 
     public PantallaRevisionManual(Contexto contexto) {
         this.contexto = contexto;
@@ -125,56 +126,61 @@ public class PantallaRevisionManual extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(tablaEventos);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Eventos Sísmicos Auto-Detectados No Revisados"));
+        scrollPane.setPreferredSize(new java.awt.Dimension(1300, 180));
         panelCentral.add(scrollPane, BorderLayout.NORTH);
 
-        // Panel de datos sísmicos (inicialmente oculto, ahora DESPLAZABLE)
+        // Panel de datos sísmicos (inicialmente oculto) con ÚNICA SCROLLBAR
         panelDatosSismicos = new JPanel();
         panelDatosSismicos.setLayout(new BoxLayout(panelDatosSismicos, BoxLayout.Y_AXIS));
-        panelDatosSismicos.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
-                "Datos Sísmicos Registrados",
-                0,
-                0,
-                new Font("Segoe UI", Font.BOLD, 14)));
-        panelDatosSismicos.setVisible(false);
+        panelDatosSismicos.setBackground(Color.WHITE);
+        panelDatosSismicos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Labels para metadatos
         lblAlcance = new JLabel("Alcance: -");
-        lblAlcance.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblAlcance.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        lblAlcance.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblAlcance.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
 
         lblClasificacion = new JLabel("Clasificación: -");
-        lblClasificacion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblClasificacion.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        lblClasificacion.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblClasificacion.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
 
         lblOrigen = new JLabel("Origen de Generación: -");
-        lblOrigen.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblOrigen.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        lblOrigen.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblOrigen.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
 
-        // JTextArea para información sísmica con mejor tamaño
-        txtInfoSismica = new JTextArea(15, 80);
-        txtInfoSismica.setFont(new Font("Courier New", Font.PLAIN, 12));
-        txtInfoSismica.setEditable(false);
-        txtInfoSismica.setText("Información Sísmica: -");
-        txtInfoSismica.setLineWrap(true);
-        txtInfoSismica.setWrapStyleWord(true);
-        txtInfoSismica.setBackground(new Color(240, 245, 250)); // Azul muy claro
-        txtInfoSismica.setForeground(new Color(25, 45, 85)); // Azul oscuro
-        txtInfoSismica.setMargin(new java.awt.Insets(12, 12, 12, 12));
-        JScrollPane scrollInfoSismica = new JScrollPane(txtInfoSismica);
-        scrollInfoSismica.setBorder(BorderFactory.createTitledBorder("📊 Información Sísmica Clasificada por Estación"));
-        scrollInfoSismica.setPreferredSize(new java.awt.Dimension(1300, 350));
+        // Separador visual
+        javax.swing.JSeparator separador = new javax.swing.JSeparator();
+        separador.setForeground(new Color(70, 130, 180));
+
+        // Panel para información sísmica con mejor diseño visual
+        panelInfoSismica = new JPanel();
+        panelInfoSismica.setLayout(new BoxLayout(panelInfoSismica, BoxLayout.Y_AXIS));
+        panelInfoSismica.setBackground(new Color(245, 248, 252));
+        panelInfoSismica.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
+                "📊 Información Sísmica Clasificada por Estación",
+                0, 0,
+                new Font("Segoe UI", Font.BOLD, 16),
+                new Color(70, 130, 180)),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
 
         panelDatosSismicos.add(lblAlcance);
         panelDatosSismicos.add(lblClasificacion);
         panelDatosSismicos.add(lblOrigen);
-        panelDatosSismicos.add(scrollInfoSismica);
+        panelDatosSismicos.add(javax.swing.Box.createVerticalStrut(10));
+        panelDatosSismicos.add(separador);
+        panelDatosSismicos.add(javax.swing.Box.createVerticalStrut(15));
+        panelDatosSismicos.add(panelInfoSismica);
 
-        // Agregar panelDatosSismicos dentro de un scroll
-        JScrollPane scrollPanelDatos = new JScrollPane(panelDatosSismicos);
-        scrollPanelDatos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPanelDatos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        panelCentral.add(scrollPanelDatos, BorderLayout.CENTER);
+        // ÚNICA scrollbar para toda la sección de datos sísmicos
+        scrollDatosSismicos = new JScrollPane(panelDatosSismicos);
+        scrollDatosSismicos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollDatosSismicos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollDatosSismicos.getVerticalScrollBar().setUnitIncrement(20);
+        scrollDatosSismicos.setVisible(false); // Inicialmente oculto
+        panelCentral.add(scrollDatosSismicos, BorderLayout.CENTER);
 
         add(panelCentral, BorderLayout.CENTER);
 
@@ -226,88 +232,192 @@ public class PantallaRevisionManual extends JFrame {
         lblClasificacion.setText("Clasificación: " + clasificacionSismo);
         lblOrigen.setText("Origen de Generación: " + origenGeneracion);
 
-        if (informacionSismica != null && !informacionSismica.isEmpty()) {
-            StringBuilder infoText = new StringBuilder();
+        // Limpiar panel de información sísmica
+        panelInfoSismica.removeAll();
 
+        if (informacionSismica != null && !informacionSismica.isEmpty()) {
             // Agrupar información por estación sismológica
             java.util.Map<String, java.util.List<ArrayList<String>>> datosPorEstacion = agruparPorEstacion(informacionSismica);
 
-            // Mostrar información clasificada por estación
+            // Crear paneles visuales para cada estación
             int estacionNumero = 1;
             for (String estacion : datosPorEstacion.keySet()) {
                 java.util.List<ArrayList<String>> seriesDeLaEstacion = datosPorEstacion.get(estacion);
 
-                // Encabezado de estación con formato mejorado
-                infoText.append("\n");
-                infoText.append("╔════════════════════════════════════════════════════════════════╗\n");
-                infoText.append("║  ESTACIÓN SISMOLÓGICA #").append(estacionNumero).append("\n");
-                infoText.append("║  ").append(estacion).append("\n");
-                infoText.append("╚════════════════════════════════════════════════════════════════╝\n\n");
-
-                int serieNumero = 1;
-                for (ArrayList<String> info : seriesDeLaEstacion) {
-                    // Información de la serie temporal
-                    infoText.append("  ├─ SERIE TEMPORAL #").append(serieNumero).append("\n");
-                    infoText.append("  │  ID: ").append(info.get(0)).append("\n");
-                    infoText.append("  │  Fecha/Hora Inicio: ").append(info.get(1)).append("\n");
-                    infoText.append("  │  Frecuencia de Muestreo: ").append(info.get(2)).append(" Hz\n");
-
-                    // Procesar muestras sísmicas (índices 3+)
-                    if (info.size() > 3) {
-                        infoText.append("  │\n");
-                        infoText.append("  │  MUESTRAS SÍSMICAS:\n");
-
-                        int muestraNumero = 1;
-                        for (int i = 3; i < info.size(); i++) {
-                            String datosMustra = info.get(i);
-                            String[] valores = datosMustra.split("\\|");
-
-                            if (valores.length >= 4) {
-                                String fechaHora = valores[0];
-                                String velocidad = valores[1];
-                                String frecuencia = valores[2];
-                                String longitud = valores[3];
-
-                                boolean esUltima = (i == info.size() - 1);
-                                String prefijo = esUltima ? "  │  └─" : "  │  ├─";
-
-                                infoText.append(prefijo).append(" Muestra #").append(muestraNumero).append("\n");
-                                infoText.append("  │     ├─ Fecha/Hora: ").append(fechaHora).append("\n");
-                                infoText.append("  │     ├─ Velocidad de Onda: ").append(velocidad).append(" km/seg\n");
-                                infoText.append("  │     ├─ Frecuencia de Onda: ").append(frecuencia).append(" Hz\n");
-                                infoText.append("  │     └─ Longitud de Onda: ").append(longitud).append(" km/ciclo\n");
-
-                                muestraNumero++;
-                            }
-                        }
-                    }
-
-                    infoText.append("  │\n");
-                    serieNumero++;
-                }
+                // Panel para esta estación
+                JPanel panelEstacion = crearPanelEstacion(estacion, estacionNumero, seriesDeLaEstacion);
+                panelInfoSismica.add(panelEstacion);
+                panelInfoSismica.add(javax.swing.Box.createVerticalStrut(15)); // Espaciado entre estaciones
 
                 estacionNumero++;
             }
 
-            infoText.append("\n╔════════════════════════════════════════════════════════════════╗\n");
-            infoText.append("║  INFORMACIÓN COMPLETAMENTE CARGADA Y CLASIFICADA              ║\n");
-            infoText.append("╚════════════════════════════════════════════════════════════════╝\n");
+            // Panel final de confirmación
+            JPanel panelFinal = new JPanel();
+            panelFinal.setBackground(new Color(76, 175, 80));
+            panelFinal.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            JLabel lblFinal = new JLabel("✓ Información completamente cargada y clasificada");
+            lblFinal.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            lblFinal.setForeground(Color.WHITE);
+            panelFinal.add(lblFinal);
+            panelInfoSismica.add(panelFinal);
 
-            txtInfoSismica.setText(infoText.toString());
-            txtInfoSismica.setCaretPosition(0);
         } else {
-            txtInfoSismica.setText("Información Sísmica: No hay datos disponibles");
+            JLabel lblNoData = new JLabel("No hay datos disponibles");
+            lblNoData.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+            lblNoData.setForeground(Color.GRAY);
+            panelInfoSismica.add(lblNoData);
         }
 
-        // Hacer visible el panel de datos sísmicos
-        panelDatosSismicos.setVisible(true);
+        // Hacer visible el scroll de datos sísmicos
+        scrollDatosSismicos.setVisible(true);
 
         // Actualizar estado
         lblEstado.setText("Datos sísmicos registrados mostrados correctamente. Evento bloqueado en revisión.");
 
         // Revalidar y repintar para actualizar la interfaz
+        panelInfoSismica.revalidate();
+        panelInfoSismica.repaint();
+
+        // Hacer scroll al inicio
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            scrollDatosSismicos.getVerticalScrollBar().setValue(0);
+        });
+
         revalidate();
         repaint();
+    }
+
+    /**
+     * Crea un panel visual para una estación sismológica con todas sus series temporales.
+     */
+    private JPanel crearPanelEstacion(String nombreEstacion, int numero, java.util.List<ArrayList<String>> series) {
+        JPanel panelEstacion = new JPanel();
+        panelEstacion.setLayout(new BoxLayout(panelEstacion, BoxLayout.Y_AXIS));
+        panelEstacion.setBackground(Color.WHITE);
+        panelEstacion.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+
+        // Encabezado de la estación
+        JPanel panelEncabezado = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelEncabezado.setBackground(new Color(100, 149, 237));
+        JLabel lblEstacion = new JLabel("🏢 ESTACIÓN #" + numero + ": " + nombreEstacion);
+        lblEstacion.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblEstacion.setForeground(Color.WHITE);
+        panelEncabezado.add(lblEstacion);
+        panelEstacion.add(panelEncabezado);
+
+        panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
+
+        // Crear panel para cada serie temporal
+        int serieNumero = 1;
+        for (ArrayList<String> datosSerie : series) {
+            JPanel panelSerie = crearPanelSerieTemporal(serieNumero, datosSerie);
+            panelEstacion.add(panelSerie);
+            panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
+            serieNumero++;
+        }
+
+        return panelEstacion;
+    }
+
+    /**
+     * Crea un panel visual para una serie temporal con sus muestras.
+     */
+    private JPanel crearPanelSerieTemporal(int numero, ArrayList<String> datosSerie) {
+        JPanel panelSerie = new JPanel();
+        panelSerie.setLayout(new BoxLayout(panelSerie, BoxLayout.Y_AXIS));
+        panelSerie.setBackground(new Color(245, 248, 252));
+        panelSerie.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(176, 196, 222), 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        // Información básica de la serie
+        JLabel lblSerieId = new JLabel("📈 Serie Temporal #" + numero + " (ID: " + datosSerie.get(0) + ")");
+        lblSerieId.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblSerieId.setForeground(new Color(47, 79, 79));
+        panelSerie.add(lblSerieId);
+
+        panelSerie.add(javax.swing.Box.createVerticalStrut(5));
+
+        JPanel panelInfo = new JPanel(new GridLayout(2, 1, 5, 5));
+        panelInfo.setBackground(new Color(245, 248, 252));
+
+        JLabel lblFecha = new JLabel("  📅 Fecha/Hora Inicio: " + datosSerie.get(1));
+        lblFecha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        panelInfo.add(lblFecha);
+
+        JLabel lblFreq = new JLabel("  📊 Frecuencia de Muestreo: " + datosSerie.get(2) + " Hz");
+        lblFreq.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        panelInfo.add(lblFreq);
+
+        panelSerie.add(panelInfo);
+
+        // Muestras sísmicas
+        if (datosSerie.size() > 3) {
+            panelSerie.add(javax.swing.Box.createVerticalStrut(10));
+
+            JLabel lblMuestras = new JLabel("  🔬 Muestras Sísmicas:");
+            lblMuestras.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            lblMuestras.setForeground(new Color(25, 25, 112));
+            panelSerie.add(lblMuestras);
+
+            panelSerie.add(javax.swing.Box.createVerticalStrut(5));
+
+            for (int i = 3; i < datosSerie.size(); i++) {
+                String datosMuestra = datosSerie.get(i);
+                String[] valores = datosMuestra.split("\\|");
+
+                if (valores.length >= 4) {
+                    JPanel panelMuestra = crearPanelMuestra(i - 2, valores);
+                    panelSerie.add(panelMuestra);
+                    panelSerie.add(javax.swing.Box.createVerticalStrut(5));
+                }
+            }
+        }
+
+        return panelSerie;
+    }
+
+    /**
+     * Crea un panel visual para una muestra sísmica.
+     */
+    private JPanel crearPanelMuestra(int numero, String[] valores) {
+        JPanel panelMuestra = new JPanel();
+        panelMuestra.setLayout(new GridLayout(4, 1, 3, 3));
+        panelMuestra.setBackground(Color.WHITE);
+        panelMuestra.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+
+        String fechaHora = valores[0];
+        String velocidad = valores[1];
+        String frecuencia = valores[2];
+        String longitud = valores[3];
+
+        JLabel lblNumero = new JLabel("    ⚡ Muestra #" + numero + " - " + fechaHora);
+        lblNumero.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        lblNumero.setForeground(new Color(70, 130, 180));
+
+        JLabel lblVel = new JLabel("       🌊 Velocidad de Onda: " + velocidad + " km/seg");
+        lblVel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+
+        JLabel lblFreq = new JLabel("       📡 Frecuencia de Onda: " + frecuencia + " Hz");
+        lblFreq.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+
+        JLabel lblLong = new JLabel("       📏 Longitud de Onda: " + longitud + " km/ciclo");
+        lblLong.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+
+        panelMuestra.add(lblNumero);
+        panelMuestra.add(lblVel);
+        panelMuestra.add(lblFreq);
+        panelMuestra.add(lblLong);
+
+        return panelMuestra;
     }
 
     /**
