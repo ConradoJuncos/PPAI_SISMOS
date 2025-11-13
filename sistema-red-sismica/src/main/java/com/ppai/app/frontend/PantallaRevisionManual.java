@@ -37,7 +37,7 @@ public class PantallaRevisionManual extends JFrame {
     private JTable tablaEventos;
     private DefaultTableModel modeloTabla;
     private JButton btnEjecutar;
-    private JButton btnVisualizarMapa;
+    private JButton btnBloquearEvento;
     private JLabel lblEstado;
 
     // Paneles para mostrar información adicional
@@ -78,11 +78,11 @@ public class PantallaRevisionManual extends JFrame {
         btnEjecutar.addActionListener(e -> RegistrarRevisionManual());
         panelBotones.add(btnEjecutar);
 
-        btnVisualizarMapa = new JButton("Visualizar Mapa");
-        btnVisualizarMapa.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnVisualizarMapa.setEnabled(false); // Deshabilitado inicialmente
-        btnVisualizarMapa.addActionListener(e -> visualizarMapa());
-        panelBotones.add(btnVisualizarMapa);
+        btnBloquearEvento = new JButton("Bloquear Evento");
+        btnBloquearEvento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        btnBloquearEvento.setEnabled(false); // Deshabilitado inicialmente
+        btnBloquearEvento.addActionListener(e -> visualizarMapa());
+        panelBotones.add(btnBloquearEvento);
 
         panelSuperior.add(panelBotones, BorderLayout.CENTER);
         add(panelSuperior, BorderLayout.NORTH);
@@ -568,11 +568,11 @@ public class PantallaRevisionManual extends JFrame {
 
     // Habilitar la opción de visualizar mapa
     public void habilitarVisualizacionMapa() {
-        btnVisualizarMapa.setEnabled(true);
-        btnVisualizarMapa.setBackground(new Color(76, 175, 80)); // Color verde
-        btnVisualizarMapa.setForeground(Color.WHITE);
+        btnBloquearEvento.setEnabled(true);
+        btnBloquearEvento.setBackground(new Color(76, 175, 80)); // Color verde
+        btnBloquearEvento.setForeground(Color.WHITE);
         lblEstado.setText("Mapa de eventos habilitado. Puede visualizar el evento y las estaciones involucradas.");
-        System.out.println("Botón de visualización de mapa habilitado.");
+        System.out.println("Botón de bloqueo de evento habilitado.");
     }
 
     // Acción al presionar el botón de visualizar mapa
@@ -617,8 +617,8 @@ public class PantallaRevisionManual extends JFrame {
         };
         int respuesta = javax.swing.JOptionPane.showOptionDialog(
             this, // Parent component
-            "¿Desea modificar los datos sísmicos?", // Message
-            "Confirmar Modificación de Datos Sísmicos", // Title
+            "Seleccione una acción", // Message
+            "Seleccion de Acción", // Title
             javax.swing.JOptionPane.YES_NO_CANCEL_OPTION, // Option type (or DEFAULT_OPTION)
             javax.swing.JOptionPane.QUESTION_MESSAGE, // Message type (for the icon)
             null, // Icon (null to use default based on message type)
