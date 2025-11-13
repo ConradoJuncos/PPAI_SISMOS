@@ -575,8 +575,8 @@ public class PantallaRevisionManual extends JFrame {
 
     public void solicitarOpcAccionEvento() {
         Object[] options = {
-        "Aceptar",  // Option 0
-        "TODO",   // Option 1
+        "Confirmar",  // Option 0
+        "Derivar A Experto",   // Option 1
         "Rechazar" // Option 2
         };
         int respuesta = javax.swing.JOptionPane.showOptionDialog(
@@ -591,8 +591,10 @@ public class PantallaRevisionManual extends JFrame {
         );
 
         if (respuesta == 0) {
+            gestor.confirmarEventoSismicoSeleccionado();
             lblEstado.setText("Modificación de datos sísmicos aceptada.");
         } else if (respuesta == 1) {
+            gestor.derivarAExpertoEventoSismicoSeleccionado();
             lblEstado.setText("Modificación de datos sísmicos TODO seleccionada.");
         } else if (respuesta == 2) {
             gestor.rechazarEventoSismicoSeleccionado();

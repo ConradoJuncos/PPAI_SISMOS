@@ -52,7 +52,7 @@ public class EventoSismicoDAO {
             ps.setDouble(7, e.getValorMagnitud());
             ps.setLong(8, e.getClasificacionSismo().getIdClasificacionSismo());
             ps.setInt(9, e.getMagnitudRichter().getNumero());
-            ps.setLong(10, e.getOrigenGegeneracion().getOrigenDeGeneracion());
+            ps.setLong(10, e.getOrigenGeneracion().getOrigenDeGeneracion());
             ps.setLong(11, e.getAlcanceSismo().getIdAlcanceSismo());
             ps.setObject(12, e.getAnalistaSupervisor() != null ? e.getAnalistaSupervisor().getIdEmpleado() : null);
 
@@ -104,7 +104,7 @@ public class EventoSismicoDAO {
             ps.setDouble(7, e.getValorMagnitud());
             ps.setLong(8, e.getClasificacionSismo().getIdClasificacionSismo());
             ps.setInt(9, e.getMagnitudRichter().getNumero());
-            ps.setLong(10, e.getOrigenGegeneracion().getOrigenDeGeneracion());
+            ps.setLong(10, e.getOrigenGeneracion().getOrigenDeGeneracion());
             ps.setLong(11, e.getAlcanceSismo().getIdAlcanceSismo());
             ps.setObject(12, e.getAnalistaSupervisor() != null ? e.getAnalistaSupervisor().getIdEmpleado() : null);
 

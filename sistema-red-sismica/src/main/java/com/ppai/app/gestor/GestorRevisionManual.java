@@ -283,16 +283,60 @@ public class GestorRevisionManual {
         this.finCU();
     }
 
+    // Aceptar el evento sismico anteriormente seleccioando por el usuario
+    public void confirmarEventoSismicoSeleccionado() {
+
+        // 1. Validar los datos sismicos si hubieran sido modificados
+        this.validarDatosSismicos();
+
+        this.actualizarEventoSismicoAConfirmado();
+
+        // 3. llamar a fin caso de uso finCU()
+        this.finCU();
+    }
+
+    // Derivar a experto el evento sismico anteriormente seleccioando por el usuario
+    public void derivarAExpertoEventoSismicoSeleccionado() {
+
+        // 1. Validar los datos sismicos si hubieran sido modificados
+        this.validarDatosSismicos();
+
+        this.actualizarEventoSismicoADerivadoAExperto();
+
+        // 3. llamar a fin caso de uso finCU()
+        this.finCU();
+    }
+
     private void finCU() {
-        System.out.println("FUNCIONA PARCIALMENTE");
+        System.out.println("Caso de uso ejecutado correctamente");
     }
 
     private void validarDatosSismicos() {
-        System.out.println("metodo no implementado validardatosismiscos");
+        try {
+            if (seleccionEventoSismico.getMagnitudRichter() == null) {
+                throw new Exception("No hay magnitud");
+            }
+            if (seleccionEventoSismico.getAlcanceSismo() == null) {
+                throw new Exception("No hay alcance");
+            }
+            if (seleccionEventoSismico.getOrigenGeneracion() == null) {
+                throw new Exception("No hay origen de generacion");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void actualizarEventoSismicoARechazado() {
         this.seleccionEventoSismico.rechazar(fechaHoraActual, usuarioLogueado);
+    }
+
+    private void actualizarEventoSismicoAConfirmado() {
+        this.seleccionEventoSismico.confirmar(fechaHoraActual, usuarioLogueado);
+    }
+
+    private void actualizarEventoSismicoADerivadoAExperto() {
+        this.seleccionEventoSismico.derivarAExperto(fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener fecha y hora actual del sistema

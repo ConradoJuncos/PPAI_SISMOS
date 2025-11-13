@@ -7,7 +7,7 @@ public class Confirmado extends Estado{
     // Hereda todos los métodos y atributos de la clase abstracta Estado
 
     // Método constructor
-    public Confirmado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+    public Confirmado(){
 
         super("Confirmado", "EventoSismico");
     }

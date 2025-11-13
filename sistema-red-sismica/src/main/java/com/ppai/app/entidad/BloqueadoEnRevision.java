@@ -22,6 +22,22 @@ public class BloqueadoEnRevision extends Estado {
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoRechazado);
     }
 
+    @Override
+    public void confirmar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        Confirmado estadoCreadoConfirmado = new Confirmado();
+        Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
+        registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoConfirmado);
+        eventoSismicoSeleccionado.setEstadoActual(estadoCreadoConfirmado);
+    }
+
+    @Override
+    public void derivarAExperto(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        DerivadoAExperto estadoCreadoDerivadoAExperto = new DerivadoAExperto();
+        Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
+        registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoDerivadoAExperto);
+        eventoSismicoSeleccionado.setEstadoActual(estadoCreadoDerivadoAExperto);
+    }
+
     public void registrarCambioDeEstado(ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Empleado empleado, Estado nuevoEstado) {
         for (CambioEstado cambioEstado : cambiosEstado) {
             if (cambioEstado.esEstadoActual()) {

@@ -44,9 +44,9 @@ public class EstadoDAO {
             case "BloqueadoEnRevision":
                 return new BloqueadoEnRevision();
             case "DerivadoAExperto":
-                return new DerivadoAExperto(null, null, null);
+                return new DerivadoAExperto();
             case "Confirmado":
-                return new Confirmado(null, null, null);
+                return new Confirmado();
             case "AutoConfirmado":
                 return new AutoConfirmado(null, null, null);
             case "Rechazado":

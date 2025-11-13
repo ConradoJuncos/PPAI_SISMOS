@@ -149,6 +149,22 @@ public class EventoSismico {
         return informacionSismica;
     }
 
+    public void rechazar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        this.estadoActual.rechazar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
+        System.out.println(estadoActual);
+    }
+
+    public void confirmar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        this.estadoActual.confirmar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
+        System.out.println(estadoActual);
+    }
+
+    public void derivarAExperto(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        this.estadoActual.derivarAExperto(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
+        System.out.println(estadoActual);
+    }
+
+
     // Métodos Getter y Setter
     public long getIdEventoSismico(){
         return this.idEventoSismico;
@@ -180,7 +196,7 @@ public class EventoSismico {
     public MagnitudRichter getMagnitudRichter(){
         return this.magnitudRichter;
     }
-    public OrigenDeGeneracion getOrigenGegeneracion(){
+    public OrigenDeGeneracion getOrigenGeneracion(){
         return this.origenGeneracion;
     }
     public AlcanceSismo getAlcanceSismo(){
@@ -247,8 +263,4 @@ public class EventoSismico {
         this.analistaSupervisor = analistaSupervisor;
     }
 
-    public void rechazar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        this.estadoActual.rechazar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
-        System.out.println(estadoActual);
-    }
 }
