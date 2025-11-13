@@ -145,23 +145,19 @@ public class EventoSismico {
             informacionSismica.add(datosSerie);
         }
 
-        System.out.println("Información sísmica extraída: " + informacionSismica);
         return informacionSismica;
     }
 
     public void rechazar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         this.estadoActual.rechazar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
-        System.out.println(estadoActual);
     }
 
     public void confirmar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         this.estadoActual.confirmar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
-        System.out.println(estadoActual);
     }
 
     public void derivarAExperto(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         this.estadoActual.derivarAExperto(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
-        System.out.println(estadoActual);
     }
 
 

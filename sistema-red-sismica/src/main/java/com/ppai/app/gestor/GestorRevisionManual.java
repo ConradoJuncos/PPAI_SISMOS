@@ -52,10 +52,6 @@ public class GestorRevisionManual {
         this.cambioEstadoDAO = new CambioEstadoDAO();
         this.eventoSismicoDAO = new EventoSismicoDAO();
 
-        // Para debug
-        System.out.println("Gestor Revision Manual creado, con estos eventos sismicos: ");
-        System.out.println(this.eventosSismicos);
-
         // Comenzando el proceso de buscar los eventos sismicos auto detectados no reviados
         buscarEventosSismicosAutoDetectadosNoRevisados();
     }
@@ -69,8 +65,6 @@ public class GestorRevisionManual {
 
         // Recorrer todos los eventos sísmicos
         for (EventoSismico eventoSismico : eventosSismicos) {
-            System.out.println("estado actual del evento sismico recorrido: ");
-            System.out.println(eventoSismico.getEstadoActual().getNombreEstado());
 
             // Verificar si es auto detectado y no revisado
             if (eventoSismico.esAutoDetectado() && eventoSismico.sosNoRevisado()) {
@@ -83,7 +77,6 @@ public class GestorRevisionManual {
 
         // Mostrar en pantalla
         pantalla.mostrarEventosSismicosYSolicitarSeleccion(this.datosPrincipalesEventosSismicosNoRevisados);
-        System.out.println(datosPrincipalesEventosSismicosNoRevisados);
     }
 
     /**
@@ -200,11 +193,9 @@ public class GestorRevisionManual {
                 };
                 informacionClasificada.add(datosSerieCompletos);
             } else {
-                System.out.println("ROTO NO SE ENCONTRO SISMOGRAFO AAAAAAAAAAAAA");
+                System.out.println("No se encontro el sismografo");
             }
         }
-
-        System.out.println(informacionClasificada);
 
         return informacionClasificada;
     }

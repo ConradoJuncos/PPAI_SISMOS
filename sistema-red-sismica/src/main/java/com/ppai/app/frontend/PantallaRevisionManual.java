@@ -352,9 +352,8 @@ public class PantallaRevisionManual extends JFrame {
                 ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
                 JLabel lblImagen = new JLabel(iconoEscalado);
                 panelEncabezadoConImagen.add(lblImagen);
-                System.out.println("✓ Imagen cargada desde: " + imagenFile.getAbsolutePath());
             } else {
-                System.err.println("✗ Archivo de imagen no encontrado en: " + imagenFile.getAbsolutePath());
+                System.err.println("✗ Archivo de imagen no encontrado");
             }
         } catch (Exception e) {
             System.err.println("✗ Error al cargar imagen: " + e.getMessage());
@@ -572,7 +571,6 @@ public class PantallaRevisionManual extends JFrame {
         btnBloquearEvento.setBackground(new Color(76, 175, 80)); // Color verde
         btnBloquearEvento.setForeground(Color.WHITE);
         lblEstado.setText("Mapa de eventos habilitado. Puede visualizar el evento y las estaciones involucradas.");
-        System.out.println("Botón de bloqueo de evento habilitado.");
     }
 
     // Acción al presionar el botón de visualizar mapa
@@ -587,7 +585,6 @@ public class PantallaRevisionManual extends JFrame {
 
         if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
             lblEstado.setText("Abriendo mapa de eventos sísmicos y estaciones sismológicas...");
-            System.out.println("no se supone que apretes este :'v 67");
         } else {
             lblEstado.setText("Visualización de mapa cancelada.");
             gestor.tomarNoVisualizacion();
