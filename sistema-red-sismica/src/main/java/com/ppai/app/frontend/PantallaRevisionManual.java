@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -76,8 +74,38 @@ public class PantallaRevisionManual extends JFrame {
 
         btnBloquearEvento = new JButton("Bloquear Evento");
         btnBloquearEvento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btnBloquearEvento.setEnabled(false); // Deshabilitado inicialmente
-        btnBloquearEvento.addActionListener(e -> visualizarMapa());
+        
+        btnBloquearEvento.addActionListener(e -> {
+            JButton boton = (JButton) e.getSource();
+            
+            // Si el texto es "Bloquear Evento", estamos en la PRIMERA ETAPA
+            if (boton.getText().equals("Bloquear Evento")) {
+                // --- Lógica del Primer Clic: Procesar la selección ---
+                
+                int fila = tablaEventos.getSelectedRow();
+                String datosPrincipales = "";
+                
+                if (fila != -1) {
+                    StringBuilder sb = new StringBuilder();
+                    // Recorre las primeras 5 columnas
+                    for (int i = 0; i < 5; i++) {
+                        sb.append(modeloTabla.getValueAt(fila, i).toString());
+                        if (i != 4) {
+                            sb.append(", ");
+                        }
+                    }
+                    datosPrincipales = sb.toString();
+                    tomarSeleccionEventoSismico(datosPrincipales);
+                }
+                
+                boton.setText("Visualizar mapa");
+                
+            } else {
+                visualizarMapa();
+                boton.setText("Bloquear Evento");
+            }
+        });
+
         panelBotones.add(btnBloquearEvento);
 
         panelSuperior.add(panelBotones, BorderLayout.CENTER);
@@ -102,25 +130,6 @@ public class PantallaRevisionManual extends JFrame {
         tablaEventos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         tablaEventos.setGridColor(new Color(220, 220, 220));
         tablaEventos.setShowGrid(true);
-
-        tablaEventos.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int fila = tablaEventos.getSelectedRow();
-                    String datosPrincipales = "";
-                    if (fila != -1) {
-                        for (int i = 0; i < 5; i++) {
-                            datosPrincipales += modeloTabla.getValueAt(fila, i).toString();
-                            if (i != 4) {
-                                datosPrincipales += ", ";
-                            }
-                        }
-                        tomarSeleccionEventoSismico(datosPrincipales);
-                    }
-                }
-            }
-        });
 
         JScrollPane scrollPane = new JScrollPane(tablaEventos);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Eventos Sísmicos Auto-Detectados No Revisados"));
