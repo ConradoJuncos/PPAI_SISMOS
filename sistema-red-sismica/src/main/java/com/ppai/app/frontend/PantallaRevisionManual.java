@@ -7,11 +7,13 @@ import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -321,16 +323,48 @@ public class PantallaRevisionManual extends JFrame {
             BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
+        panelEstacion.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, panelEstacion.getPreferredSize().height));
+
+        // Panel para encabezado + imagen (lado a lado)
+        JPanel panelEncabezadoConImagen = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
+        panelEncabezadoConImagen.setBackground(new Color(70, 130, 180));
+        panelEncabezadoConImagen.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 70));
 
         // Encabezado de la estación
-        JPanel panelEncabezado = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        panelEncabezado.setBackground(new Color(70, 130, 180));
         JLabel lblEstacion = new JLabel("🏢 " + nombreEstacion + " (Código: " + codigoEstacion + ")");
         lblEstacion.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblEstacion.setForeground(Color.WHITE);
-        panelEncabezado.add(lblEstacion);
-        panelEstacion.add(panelEncabezado);
+        panelEncabezadoConImagen.add(lblEstacion);
+
+        // Cargar y agregar imagen al encabezado
+        try {
+            // Intentar cargar desde la ruta del archivo del sistema
+            java.io.File imagenFile = new java.io.File("src/main/java/com/ppai/app/resources/sismograma.png");
+
+            if (!imagenFile.exists()) {
+                // Intentar con ruta relativa al jar compilado
+                imagenFile = new java.io.File("com/ppai/app/resources/sismograma.png");
+            }
+
+            if (imagenFile.exists()) {
+                ImageIcon icono = new ImageIcon(imagenFile.getAbsolutePath());
+                java.awt.Image imagenEscalada = icono.getImage().getScaledInstance(120, 50, java.awt.Image.SCALE_SMOOTH);
+                ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+                JLabel lblImagen = new JLabel(iconoEscalado);
+                panelEncabezadoConImagen.add(lblImagen);
+                System.out.println("✓ Imagen cargada desde: " + imagenFile.getAbsolutePath());
+            } else {
+                System.err.println("✗ Archivo de imagen no encontrado en: " + imagenFile.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            System.err.println("✗ Error al cargar imagen: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        panelEstacion.add(panelEncabezadoConImagen);
         panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
+
+        // ...existing code...
 
         // Información de la serie temporal
         JLabel lblInfoSerie = new JLabel("Serie Temporal #" + idSerie);
@@ -400,6 +434,10 @@ public class PantallaRevisionManual extends JFrame {
                 }
             }
         }
+
+        // Revalidar y repintar para mostrar cambios
+        panelEstacion.revalidate();
+        panelEstacion.repaint();
 
         return panelEstacion;
     }
