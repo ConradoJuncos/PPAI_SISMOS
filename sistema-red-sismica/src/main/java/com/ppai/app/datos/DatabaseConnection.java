@@ -32,7 +32,7 @@ public class DatabaseConnection {
                 return;
             }
 
-            //dropAllTables(conn);
+            dropAllTables(conn);
             createTables(conn);
             insertSampleData(conn);
 
@@ -170,7 +170,7 @@ public class DatabaseConnection {
                 "    FOREIGN KEY (idRol) REFERENCES Rol(idRol)\n" +
                 ");");
 
-        tables.add("CREATE TABLE IF NOT EXISTS Estado (\n" +
+        tables.add("CREATE TABLE Estado (\n" +
                 "    ambitoEstado TEXT NOT NULL,\n" +
                 "    nombreEstado TEXT NOT NULL,\n" +
                 "    PRIMARY KEY (ambitoEstado, nombreEstado)\n" +
@@ -456,7 +456,7 @@ public class DatabaseConnection {
             // ====== CLASIFICACION SISMO (3) ======
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO ClasificacionSismo (idClasificacionSismo, kmProfundidadDesde, kmProfundidadHasta, nombre) VALUES
+                                INSERT OR IGNORE INTO ClasificacionSismo (idClasificacionSismo, kmProfundidadDesde, kmProfundidadHasta, nombre) VALUES
                                 (1, 0.0, 70.0, 'Superficial'),
                                 (2, 70.1, 300.0, 'Intermedio'),
                                 (3, 300.1, 700.0, 'Profundo');
@@ -465,7 +465,7 @@ public class DatabaseConnection {
             // ====== ALCANCE SISMO (3) ======
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO AlcanceSismo (idAlcanceSismo, descripcion, nombre) VALUES
+                                INSERT OR IGNORE INTO AlcanceSismo (idAlcanceSismo, descripcion, nombre) VALUES
                                 (1, 'Sismo perceptible solo en el área inmediata al epicentro, con efectos muy localizados.', 'Local'),
                                 (2, 'Sismo perceptible en una región amplia (varios países o continentes) con efectos distribuidos.', 'Regional'),
                                 (3, 'Sismo con efectos limitados que no genera daños significativos y a menudo solo es registrado por instrumentación.', 'Instrumental');
@@ -474,7 +474,7 @@ public class DatabaseConnection {
             // ====== ORIGEN DE GENERACIÓN (2) ======
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO OrigenDeGeneracion (idOrigenDeGeneracion, descripcion, nombre) VALUES
+                                INSERT OR IGNORE INTO OrigenDeGeneracion (idOrigenDeGeneracion, descripcion, nombre) VALUES
                                 (1, 'Movimiento en la zona de subducción entre placas tectónicas (principalmente en el plano de la placa subducida).', 'Sismo interplaca'),
                                 (2, 'Movimiento en las fallas dentro de una misma placa tectónica (generalmente en la corteza continental).', 'Sismo cortical');
                             """);
@@ -482,7 +482,7 @@ public class DatabaseConnection {
             // ====== MAGNITUD RICHTER (3) ======
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO MagnitudRichter (numero, descripcion) VALUES
+                                INSERT OR IGNORE INTO MagnitudRichter (numero, descripcion) VALUES
                                 (3, 'Menor: Generalmente no se siente, pero es registrado. Daños muy leves o nulos.'),
                                 (4, 'Ligero: A menudo se siente, pero solo causa daños menores.'),
                                 (5, 'Moderado: Se siente ampliamente y puede causar daños mayores a edificios débiles o leves a resistentes.');
@@ -490,46 +490,45 @@ public class DatabaseConnection {
 
             // ====== ESTADOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO Estado (ambitoEstado, nombreEstado) VALUES
+                        INSERT OR IGNORE INTO Estado (ambitoEstado, nombreEstado) VALUES
                         ('EventoSismico', 'AutoDetectado'),
                         ('EventoSismico', 'PendienteDeRevision'),
                         ('EventoSismico', 'BloqueadoEnRevision'),
-                        ('EventoSismico', 'DerivadoAExperto'),
-                        ('EventoSismico', 'Confirmado'),
+                        ('EventoSismico', 'Derivado'),
+                        ('EventoSismico', 'ConfirmadoPorPersonal'),
                         ('EventoSismico', 'Rechazado'),
                         ('EventoSismico', 'PendienteDeCierre'),
                         ('EventoSismico', 'Cerrado'),
                         ('EventoSismico', 'SinRevision'),
                         ('EventoSismico', 'AutoConfirmado'),
-                        ('EventoSismico', 'Anulado'),
                         ('SerieTemporal', 'Activo'),
                         ('SerieTemporal', 'Inactivo');
                     """);
 
             // ====== ROLES ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO Rol (nombre, descripcion) VALUES
+                        INSERT OR IGNORE INTO Rol (nombre, descripcion) VALUES
                         ('Analista de Sismos', 'Realiza revisión manual y análisis de eventos sísmicos'),
                         ('Supervisor', 'Supervisa revisiones y valida eventos sísmicos');
                     """);
 
             // ====== EMPLEADOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO Empleado (nombre, apellido, email, telefono, legajo, idRol) VALUES
+                        INSERT OR IGNORE INTO Empleado (nombre, apellido, email, telefono, legajo, idRol) VALUES
                         ('Laura', 'Pérez', 'laura.perez@ccrs.gob.ar', '+54 9 351 555-1001', 'E001', 1),
                         ('Carlos', 'Domínguez', 'carlos.dominguez@ccrs.gob.ar', '+54 9 351 555-1002', 'E002', 2);
                     """);
 
             // ====== USUARIOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO Usuario (nombreUsuario, contraseña, idEmpleado) VALUES
+                        INSERT OR IGNORE INTO Usuario (nombreUsuario, contraseña, idEmpleado) VALUES
                         ('Emanuel', 'ema123', 1),
                         ('LucasSegundo', 'contra123', 2);
                     """);
 
             // FABRICANTES
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO Fabricante (idFabricante, nombre, razonSocial) VALUES
+                        INSERT OR IGNORE INTO Fabricante (idFabricante, nombre, razonSocial) VALUES
                         (1, 'ZETLAB', 'ZETLAB Universe'),
                         (2, 'GeoTech', 'GeoTech SA'),
                         (3, 'Kinemetrics', 'Kine metric SA');
@@ -537,7 +536,7 @@ public class DatabaseConnection {
 
             // ====== MODELOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO ModeloSismografo (caracteristicas, nombreModelo, idFabricante) VALUES
+                        INSERT OR IGNORE INTO ModeloSismografo (caracteristicas, nombreModelo, idFabricante) VALUES
                         ('Alta sensibilidad, 3 ejes, rango ±2g', 'ZET 7152-N VER.3', 1),
                         ('Sensor de alta precisión para estaciones automáticas', 'GeoTech A500', 2),
                         ('Modelo compacto para registro portátil', 'Kinemetrics Horizon', 3);
@@ -546,7 +545,7 @@ public class DatabaseConnection {
             // ====== ESTACIONES ======
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO EstacionSismologica (nombre, latitud, longitud, documentoCertificacionAdq, fechaSolicitudCertificacion, nroCertificacionAdquisicion) VALUES
+                                INSERT OR IGNORE INTO EstacionSismologica (nombre, latitud, longitud, documentoCertificacionAdq, fechaSolicitudCertificacion, nroCertificacionAdquisicion) VALUES
                                 ('Estación Córdoba', -31.4201, -64.1888, NULL, NULL, NULL),
                                 ('Estación San Juan', -31.5375, -68.5364, NULL, NULL, NULL),
                                 ('Estación Salta', -24.7859, -65.4117, NULL, NULL, NULL);
@@ -554,7 +553,7 @@ public class DatabaseConnection {
 
             // ====== SISMOGRAFOS ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO Sismografo (fechaAdquisicion, nroSerie, idModelo, codigoEstacion) VALUES
+                        INSERT OR IGNORE INTO Sismografo (fechaAdquisicion, nroSerie, idModelo, codigoEstacion) VALUES
                         ('2024-11-02', 1523, 1, 1),
                         ('2024-11-05', 1524, 1, 2),
                         ('2025-01-10', 5001, 2, 3);
@@ -562,7 +561,7 @@ public class DatabaseConnection {
 
             // ====== TIPOS DE DATO ======
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO TipoDeDato (denominacion, nombreUnidadMedida, valorUmbral) VALUES
+                        INSERT OR IGNORE INTO TipoDeDato (denominacion, nombreUnidadMedida, valorUmbral) VALUES
                         ('Frecuencia de onda', 'Hz', 15.0),
                         ('Longitud de onda', 'km/ciclo', 1.5),
                         ('Velocidad de onda', 'km/s', 8.0);
@@ -572,7 +571,7 @@ public class DatabaseConnection {
             // IDs asignados implícitamente 1..12 por el orden de inserción
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO EventoSismico (
+                                INSERT OR IGNORE INTO EventoSismico (
                                     fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, longitudEpicentro, latitudHipocentro, longitudHipocentro,
                                     valorMagnitud, magnitudRichter, idClasificacionSismo, idOrigenGeneracionSismo, idAlcanceSismo,
                                     ambitoEstado, nombreEstado
@@ -601,13 +600,13 @@ public class DatabaseConnection {
                                 ('2025-04-07 03:05:00', '2025-04-07 03:00:03', -32.00, -66.20, -32.00, -66.20, 4.3, 4, 2, 2, 2, 'EventoSismico', 'BloqueadoEnRevision'),
 
                                 -- 8 (Derivado) | Mag: 4.0 (FK: 4) | Clasif: 2 | Origen: 1 | Alcance: 1
-                                ('2025-04-08 05:25:00', '2025-04-08 05:20:07', -32.15, -66.35, -32.15, -66.35, 4.0, 4, 2, 1, 1, 'EventoSismico', 'DerivadoAExperto'),
+                                ('2025-04-08 05:25:00', '2025-04-08 05:20:07', -32.15, -66.35, -32.15, -66.35, 4.0, 4, 2, 1, 1, 'EventoSismico', 'Derivado'),
 
-                                -- 9 (Confirmado) | Mag: 4.6 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
-                                ('2025-04-09 21:45:00', '2025-04-09 21:40:28', -32.30, -66.50, -32.30, -66.50, 4.6, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
+                                -- 9 (ConfirmadoPorPersonal) | Mag: 4.6 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
+                                ('2025-04-09 21:45:00', '2025-04-09 21:40:28', -32.30, -66.50, -32.30, -66.50, 4.6, 4, 1, 2, 2, 'EventoSismico', 'ConfirmadoPorPersonal'),
 
-                                -- 10 (Confirmado) | Mag: 4.9 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
-                                ('2025-04-11 08:05:00', '2025-04-11 08:00:30', -32.40, -66.55, -32.40, -66.55, 4.9, 4, 1, 2, 2, 'EventoSismico', 'Confirmado'),
+                                -- 10 (ConfirmadoPorPersonal) | Mag: 4.9 (FK: 4) | Clasif: 1 | Origen: 2 | Alcance: 2
+                                ('2025-04-11 08:05:00', '2025-04-11 08:00:30', -32.40, -66.55, -32.40, -66.55, 4.9, 4, 1, 2, 2, 'EventoSismico', 'ConfirmadoPorPersonal'),
 
                                 -- 11 (Rechazado) | Mag: 3.7 (FK: 3) | Clasif: 1 | Origen: 2 | Alcance: 1
                                 ('2025-03-08 13:05:00', '2025-03-08 13:00:20', -32.15, -68.40, -32.15, -68.40, 3.7, 3, 1, 2, 1, 'EventoSismico', 'Rechazado'),
@@ -620,7 +619,7 @@ public class DatabaseConnection {
             // Usamos idResponsable 1 o 2 según corresponda
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) VALUES
+                                INSERT OR IGNORE INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) VALUES
                                 ('2025-02-21 19:10:00', NULL, 'EventoSismico', 'AutoDetectado', 1, 1),
                                 ('2025-04-01 10:02:00', NULL, 'EventoSismico', 'AutoDetectado', 1, 2),
                                 ('2025-04-02 14:17:00', NULL, 'EventoSismico', 'AutoDetectado', 1, 3),
@@ -628,9 +627,9 @@ public class DatabaseConnection {
                                 ('2025-04-05 12:12:00', NULL, 'EventoSismico', 'PendienteDeRevision', 2, 5),
                                 ('2025-04-06 18:27:00', NULL, 'EventoSismico', 'PendienteDeRevision', 2, 6),
                                 ('2025-04-07 03:02:00', NULL, 'EventoSismico', 'BloqueadoEnRevision', 1, 7),
-                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'DerivadoAExperto', 1, 8),
-                                ('2025-04-09 21:42:00', NULL, 'EventoSismico', 'Confirmado', 2, 9),
-                                ('2025-04-11 08:02:00', NULL, 'EventoSismico', 'Confirmado', 2, 10),
+                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'Derivado', 1, 8),
+                                ('2025-04-09 21:42:00', NULL, 'EventoSismico', 'ConfirmadoPorPersonal', 2, 9),
+                                ('2025-04-11 08:02:00', NULL, 'EventoSismico', 'ConfirmadoPorPersonal', 2, 10),
                                 ('2025-03-08 13:06:00', NULL, 'EventoSismico', 'Rechazado', 2, 11),
                                 ('2025-04-10 11:57:00', NULL, 'EventoSismico', 'Rechazado', 2, 12);
                             """);
@@ -638,7 +637,7 @@ public class DatabaseConnection {
             // ====== HISTORIAL DE CAMBIOS DE ESTADO (por evento) ======
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) VALUES
+                                INSERT OR IGNORE INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) VALUES
                                 -- Evento 5: AutoDetectado → AutoConfirmado → PendienteDeRevision
                                 ('2025-04-05 12:10:00', '2025-04-05 12:11:00', 'EventoSismico', 'AutoDetectado', 1, 5),
                                 ('2025-04-05 12:11:00', '2025-04-05 12:12:00', 'EventoSismico', 'AutoConfirmado', 1, 5),
@@ -649,27 +648,27 @@ public class DatabaseConnection {
                                 ('2025-04-06 18:26:00', '2025-04-06 18:27:00', 'EventoSismico', 'PendienteDeRevision', 2, 6),
                                 ('2025-04-06 18:27:00', NULL, 'EventoSismico', 'BloqueadoEnRevision', 2, 6),
 
-                                -- Evento 7: AutoDetectado → BloqueadoEnRevision → Confirmado → PendienteDeCierre
+                                -- Evento 7: AutoDetectado → BloqueadoEnRevision → ConfirmadoPorPersonal → PendienteDeCierre
                                 ('2025-04-07 03:00:00', '2025-04-07 03:01:00', 'EventoSismico', 'AutoDetectado', 1, 7),
                                 ('2025-04-07 03:01:00', '2025-04-07 03:02:00', 'EventoSismico', 'BloqueadoEnRevision', 2, 7),
-                                ('2025-04-07 03:02:00', '2025-04-07 03:03:00', 'EventoSismico', 'Confirmado', 2, 7),
+                                ('2025-04-07 03:02:00', '2025-04-07 03:03:00', 'EventoSismico', 'ConfirmadoPorPersonal', 2, 7),
                                 ('2025-04-07 03:03:00', NULL, 'EventoSismico', 'PendienteDeCierre', 2, 7),
 
-                                -- Evento 8: AutoDetectado → PendienteDeRevision → DerivadoAExperto
+                                -- Evento 8: AutoDetectado → PendienteDeRevision → Derivado
                                 ('2025-04-08 05:20:00', '2025-04-08 05:21:00', 'EventoSismico', 'AutoDetectado', 1, 8),
                                 ('2025-04-08 05:21:00', '2025-04-08 05:22:00', 'EventoSismico', 'PendienteDeRevision', 2, 8),
-                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'DerivadoAExperto', 2, 8),
+                                ('2025-04-08 05:22:00', NULL, 'EventoSismico', 'Derivado', 2, 8),
 
-                                -- Evento 9: AutoDetectado → AutoConfirmado → Confirmado → Cerrado
+                                -- Evento 9: AutoDetectado → AutoConfirmado → ConfirmadoPorPersonal → Cerrado
                                 ('2025-04-09 21:40:00', '2025-04-09 21:41:00', 'EventoSismico', 'AutoDetectado', 1, 9),
                                 ('2025-04-09 21:41:00', '2025-04-09 21:42:00', 'EventoSismico', 'AutoConfirmado', 1, 9),
-                                ('2025-04-09 21:42:00', '2025-04-09 21:44:00', 'EventoSismico', 'Confirmado', 2, 9),
+                                ('2025-04-09 21:42:00', '2025-04-09 21:44:00', 'EventoSismico', 'ConfirmadoPorPersonal', 2, 9),
                                 ('2025-04-09 21:44:00', NULL, 'EventoSismico', 'Cerrado', 2, 9),
 
-                                -- Evento 10: AutoDetectado → AutoConfirmado → Confirmado
+                                -- Evento 10: AutoDetectado → AutoConfirmado → ConfirmadoPorPersonal
                                 ('2025-04-11 08:00:00', '2025-04-11 08:01:00', 'EventoSismico', 'AutoDetectado', 1, 10),
                                 ('2025-04-11 08:01:00', '2025-04-11 08:02:00', 'EventoSismico', 'AutoConfirmado', 1, 10),
-                                ('2025-04-11 08:02:00', NULL, 'EventoSismico', 'Confirmado', 2, 10),
+                                ('2025-04-11 08:02:00', NULL, 'EventoSismico', 'ConfirmadoPorPersonal', 2, 10),
 
                                 -- Evento 11: AutoDetectado → PendienteDeRevision → Rechazado
                                 ('2025-03-08 13:00:00', '2025-03-08 13:01:00', 'EventoSismico', 'AutoDetectado', 1, 11),
@@ -687,7 +686,7 @@ public class DatabaseConnection {
             // 12 iniciales (id 13..)
             // Por tanto, se vinculan ordenadamente:
             /*stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES
+                        INSERT OR IGNORE INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES
                         -- Evento 1
                         (1, 13),
                         -- Evento 2
@@ -719,7 +718,7 @@ public class DatabaseConnection {
             // idSerieTemporal = 1..36
             stmt.executeUpdate(
                     """
-                            INSERT OR IGNORE OR IGNORE INTO SerieTemporal (
+                            INSERT OR IGNORE INTO SerieTemporal (
                                 idSerieTemporal, fechaHoraRegistro, frecuenciaMuestreo, condicionAlarma,
                                 ambitoEstado, nombreEstado, idEventoSismico, codigoEstacion, idSismografo
                             ) VALUES
@@ -788,7 +787,7 @@ public class DatabaseConnection {
             // idMuestraSismica explícitos 1..72 (36 series * 2)
             stmt.executeUpdate(
                     """
-                                INSERT OR IGNORE OR IGNORE INTO MuestraSismica (idMuestraSismica, fechaHoraMuestraSismica, idSerieTemporal) VALUES
+                                INSERT OR IGNORE INTO MuestraSismica (idMuestraSismica, fechaHoraMuestraSismica, idSerieTemporal) VALUES
                                 -- series 1..3 (evento1)
                                 (1, '2025-02-21 19:05:41', 1), (2, '2025-02-21 19:10:41', 1),
                                 (3, '2025-02-21 19:05:41', 2), (4, '2025-02-21 19:10:41', 2),
@@ -845,7 +844,7 @@ public class DatabaseConnection {
             // idTipoDeDato: 1=Frecuencia, 2=Longitud, 3=Velocidad
             // Valores realistas, ligeramente variables
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO DetalleMuestraSismica (valor, idMuestraSismica, idTipoDeDato) VALUES
+                        INSERT OR IGNORE INTO DetalleMuestraSismica (valor, idMuestraSismica, idTipoDeDato) VALUES
                         -- muestras 1..6 (evento1)
                         (10.00, 1, 1), (0.70, 1, 2), (7.00, 1, 3),
                         (10.05, 2, 1), (0.70, 2, 2), (7.02, 2, 3),
@@ -936,7 +935,7 @@ public class DatabaseConnection {
             // Vinculan cada muestra símica con su serie temporal
             // 2 muestras por serie, 36 series = 72 muestras totales
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO SerieTemporal_MuestraSismica (idSerieTemporal, idMuestraSismica) VALUES
+                        INSERT OR IGNORE INTO SerieTemporal_MuestraSismica (idSerieTemporal, idMuestraSismica) VALUES
                         -- Serie 1: muestras 1,2
                         (1, 1), (1, 2),
                         -- Serie 2: muestras 3,4
@@ -1015,7 +1014,7 @@ public class DatabaseConnection {
             // Vinculan cada muestra síismica con sus 3 detalles (Frecuencia, Longitud, Velocidad)
             // 72 muestras * 3 detalles = 216 detalles totales
             stmt.executeUpdate("""
-                        INSERT OR IGNORE OR IGNORE INTO MuestraSismica_DetalleMuestraSismica (idMuestraSismica, idDetalleMuestraSismica) VALUES
+                        INSERT OR IGNORE INTO MuestraSismica_DetalleMuestraSismica (idMuestraSismica, idDetalleMuestraSismica) VALUES
                         -- Muestra 1: detalles 1,2,3
                         (1, 1), (1, 2), (1, 3),
                         -- Muestra 2: detalles 4,5,6

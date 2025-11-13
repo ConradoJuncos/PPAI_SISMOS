@@ -43,16 +43,14 @@ public class EstadoDAO {
                 return new PendienteDeRevision(null, null, null);
             case "BloqueadoEnRevision":
                 return new BloqueadoEnRevision();
-            case "DerivadoAExperto":
-                return new DerivadoAExperto();
-            case "Confirmado":
-                return new Confirmado();
+            case "Derivado":
+                return new Derivado();
+            case "ConfirmadoPorPersonal":
+                return new ConfirmadoPorPersonal();
             case "AutoConfirmado":
                 return new AutoConfirmado(null, null, null);
             case "Rechazado":
                 return new Rechazado();
-            case "Anulado":
-                return new Anulado(null, null, null);
             case "PendienteDeCierre":
                 return new PendienteDeCierre(null, null, null);
             case "Cerrado":
