@@ -118,6 +118,7 @@ public class GestorRevisionManual {
      */
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
+        // no tiene que enviar el evento
         this.seleccionEventoSismico.revisar(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
         obtenerYMostrarDatosEventoSeleccionado();
     }
