@@ -12,12 +12,6 @@ public class DetalleMuestraSismica {
     // Constructor sin parametros
     public DetalleMuestraSismica(){}
 
-    // Comportamiento
-    public String getDatos(){
-        // Implementar la logica del método para
-        return "falta implementar este método";
-    }
-
     public boolean sosDenominacionTipoDeDatoVelocidadOnda() {
         if (this.tipoDeDato.sosDenominacionVelocidadOnda()) {   
             return true;
