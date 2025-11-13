@@ -1,7 +1,5 @@
 package com.ppai.app.entidad;
 
-import com.ppai.app.entidad.TipoDeDato;
-
 public class DetalleMuestraSismica {
  
     // Atributos

@@ -12,8 +12,7 @@ public class TrabajoARealizar {
     private LocalDateTime fechaInicioPrevista;
     private LocalDateTime fechaInicioReal;
     private TipoTrabajo definicionTrabajo;
-
-    // Comportamiento
+    
     public boolean esFinalizado(){
         if (this.fechaFinReal == null){
             return false;

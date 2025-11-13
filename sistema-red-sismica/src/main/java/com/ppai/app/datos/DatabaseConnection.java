@@ -32,8 +32,7 @@ public class DatabaseConnection {
                 return;
             }
 
-//            Descomentar para borrar todas las tablas al inicio de la ejecucion
-//            dropAllTables(conn);
+            //dropAllTables(conn);
             createTables(conn);
             insertSampleData(conn);
 

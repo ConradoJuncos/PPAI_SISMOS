@@ -33,20 +33,6 @@ public class CambioEstado {
         }
         return false;
     }
-    
-    // verificar si el estado asociado al cambio de estado es auto
-    public boolean sosAutoDetectado(){
-
-        // Preguntar al estado asociado si es auto detectado
-        if (this.estado.sosAutoDetectado()){
-            
-            // El estado asociado es auto detectad
-            return true;
-        }
-
-        // El estado asociado no es auto detectado
-        return false;
-    }
 
     // Métodos Getters y Setters
     public long getIdCambioEstado() {

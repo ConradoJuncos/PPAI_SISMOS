@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ppai.app.entidad.MuestraSismica;
-
 public class SerieTemporal {
     
     // Atributos

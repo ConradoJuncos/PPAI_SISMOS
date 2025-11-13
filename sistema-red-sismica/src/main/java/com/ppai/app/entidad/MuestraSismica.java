@@ -9,7 +9,7 @@ public class MuestraSismica {
     // Atributos
     private long idMuestraSismica;
     private LocalDateTime fechaHoraMuestraSismica;
-    private List<DetalleMuestraSismica> detalleMuestrasSismicas = new ArrayList<>();
+    private List<DetalleMuestraSismica> detallesMuestraSismica = new ArrayList<>();
 
     // Constructor sin parámetros
     public MuestraSismica(){}
@@ -40,8 +40,8 @@ public class MuestraSismica {
         Double longitudOnda = null;
 
         // Recorrer detalles asociados para obtener valores específicos
-        if (this.detalleMuestrasSismicas != null) {
-            for (DetalleMuestraSismica detalle : this.detalleMuestrasSismicas) {
+        if (this.detallesMuestraSismica != null) {
+            for (DetalleMuestraSismica detalle : this.detallesMuestraSismica) {
                 if (detalle.sosDenominacionTipoDeDatoVelocidadOnda()) {
                     velocidadOnda = detalle.getValor();
                 } else if (detalle.sosDenominacionTipoDeDatoFrecuenciaOnda()) {
@@ -77,10 +77,9 @@ public class MuestraSismica {
     }
 
     public void crearDetalleMuestra(){
-        // Implementar la lógica de este método
+        // Método del análisis
     }
 
-    // Métodos Getter y Setter
     public long getIdMuestraSismica(){
         return this.idMuestraSismica;
     }
@@ -88,7 +87,7 @@ public class MuestraSismica {
         return this.fechaHoraMuestraSismica;
     }
     public List<DetalleMuestraSismica> getDetalleMuestrasSismicas(){
-        return this.detalleMuestrasSismicas;
+        return this.detallesMuestraSismica;
     }
     public void setIdMuestraSismica(long idMuestraSismica) {
         this.idMuestraSismica = idMuestraSismica;
@@ -96,7 +95,7 @@ public class MuestraSismica {
     public void setFechaHoraMuestraSismica(LocalDateTime fechaHoraMuestraSismica){
         this.fechaHoraMuestraSismica = fechaHoraMuestraSismica;
     }
-    public void setDetalleMuestrasSismicas(List<DetalleMuestraSismica> detalleMuestrasSismicas){
-        this.detalleMuestrasSismicas = detalleMuestrasSismicas;
+    public void setDetallesMuestraSismica(List<DetalleMuestraSismica> detallesMuestraSismica){
+        this.detallesMuestraSismica = detallesMuestraSismica;
     }
 }

@@ -2,13 +2,10 @@ package com.ppai.app.frontend;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -20,14 +17,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import com.ppai.app.contexto.Contexto;
 import com.ppai.app.entidad.EventoSismico;
-import com.ppai.app.entidad.Usuario;
 import com.ppai.app.entidad.Sismografo;
+import com.ppai.app.entidad.Usuario;
 import com.ppai.app.gestor.GestorRevisionManual;
 
 public class PantallaRevisionManual extends JFrame {
@@ -310,9 +306,6 @@ public class PantallaRevisionManual extends JFrame {
         repaint();
     }
 
-    /**
-     * Crea un panel visual completo para una estación sismológica con sus muestras sísmicas.
-     */
     private JPanel crearPanelEstacionConMuestras(String nombreEstacion, String codigoEstacion,
                                                   String idSerie, String fechaInicio, String frecuencia,
                                                   String muestrasString) {
@@ -439,132 +432,6 @@ public class PantallaRevisionManual extends JFrame {
         return panelEstacion;
     }
 
-    /**
-     * Crea un panel visual simplificado para una estación sismológica.
-     */
-    private JPanel crearPanelEstacion(String nombreEstacion, String numero, String series) {
-        JPanel panelEstacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
-        panelEstacion.setBackground(Color.WHITE);
-        panelEstacion.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(100, 149, 237), 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-
-        JLabel lblEstacion = new JLabel("Estación #" + numero + " | Nombre: " + nombreEstacion + " | Series: " + series);
-        lblEstacion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        panelEstacion.add(lblEstacion);
-
-        return panelEstacion;
-    }
-
-    /**
-     * Crea un panel visual para una serie temporal - ahora no se usa.
-     */
-    private JPanel crearPanelSerieTemporal(int idEstacion, String datosSerie) {
-        JPanel panelSerie = new JPanel();
-        panelSerie.setLayout(new BoxLayout(panelSerie, BoxLayout.Y_AXIS));
-        panelSerie.setBackground(new Color(245, 248, 252));
-        panelSerie.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(176, 196, 222), 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-
-        return panelSerie;
-    }
-
-    /**
-     * Crea un panel visual para una muestra sísmica.
-     */
-    private JPanel crearPanelMuestra(int numero, String[] valores) {
-        JPanel panelMuestra = new JPanel();
-        panelMuestra.setLayout(new GridLayout(4, 1, 3, 3));
-        panelMuestra.setBackground(Color.WHITE);
-        panelMuestra.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-
-        String fechaHora = valores[0];
-        String velocidad = valores[1];
-        String frecuencia = valores[2];
-        String longitud = valores[3];
-
-        JLabel lblNumero = new JLabel("    ⚡ Muestra #" + numero + " - " + fechaHora);
-        lblNumero.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblNumero.setForeground(new Color(70, 130, 180));
-
-        JLabel lblVel = new JLabel("       🌊 Velocidad de Onda: " + velocidad + " km/seg");
-        lblVel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-
-        JLabel lblFreq = new JLabel("       📡 Frecuencia de Onda: " + frecuencia + " Hz");
-        lblFreq.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-
-        JLabel lblLong = new JLabel("       📏 Longitud de Onda: " + longitud + " km/ciclo");
-        lblLong.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-
-        panelMuestra.add(lblNumero);
-        panelMuestra.add(lblVel);
-        panelMuestra.add(lblFreq);
-        panelMuestra.add(lblLong);
-
-        return panelMuestra;
-    }
-
-    /**
-     * Agrupa la información sísmica por estación sismológica.
-     * Utiliza el código y nombre de estación que vienen al final de cada ArrayList<String>.
-     */
-    private java.util.Map<String, java.util.List<ArrayList<String>>> agruparPorEstacion(List<ArrayList<String>> informacionSismica) {
-        java.util.Map<String, java.util.List<ArrayList<String>>> datosPorEstacion = new java.util.LinkedHashMap<>();
-
-        for (ArrayList<String> datosSSerie : informacionSismica) {
-            // El código y nombre de estación están al final después de clasificar
-            String nombreEstacion = "Desconocida";
-            String codigoEstacion = "N/A";
-            int indiceFinDatos = datosSSerie.size();
-
-            // Verificar si los últimos dos elementos son código y nombre de estación
-            // El código debe ser numérico (o similar), y el nombre debe ser texto descriptivo
-            if (datosSSerie.size() >= 5) {
-                String posibleCodigo = datosSSerie.get(datosSSerie.size() - 2);
-                String posibleNombre = datosSSerie.get(datosSSerie.size() - 1);
-
-                // Verificar que el código sea un número (código de estación)
-                // y el nombre no contenga pipe (|) que indicaría que son datos de muestra
-                if (!posibleNombre.contains("|") && esCodigoEstacion(posibleCodigo)) {
-                    codigoEstacion = posibleCodigo;
-                    nombreEstacion = posibleNombre;
-                    indiceFinDatos = datosSSerie.size() - 2;
-                }
-            }
-
-            String clave = nombreEstacion + " (Código: " + codigoEstacion + ")";
-
-            // Crear una copia sin los datos de estación para almacenar
-            ArrayList<String> datosLimpios = new ArrayList<>();
-            for (int i = 0; i < indiceFinDatos; i++) {
-                datosLimpios.add(datosSSerie.get(i));
-            }
-
-            datosPorEstacion.computeIfAbsent(clave, k -> new java.util.ArrayList<>()).add(datosLimpios);
-        }
-
-        return datosPorEstacion;
-    }
-
-    /**
-     * Valida si una cadena es un código de estación válido.
-     * Los códigos son típicamente números o números cortos.
-     */
-    private boolean esCodigoEstacion(String codigo) {
-        try {
-            Long.parseLong(codigo);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     // Habilitar la opción de visualizar mapa
     public void habilitarVisualizacionMapa() {
         btnBloquearEvento.setEnabled(true);
@@ -623,15 +490,21 @@ public class PantallaRevisionManual extends JFrame {
             options[0] // The button to be initially focused
         );
 
-        if (respuesta == 0) {
-            gestor.confirmarEventoSismicoSeleccionado();
-            lblEstado.setText("Modificación de datos sísmicos aceptada.");
-        } else if (respuesta == 1) {
-            gestor.derivarAExpertoEventoSismicoSeleccionado();
-            lblEstado.setText("Modificación de datos sísmicos TODO seleccionada.");
-        } else if (respuesta == 2) {
-            gestor.rechazarEventoSismicoSeleccionado();
-            lblEstado.setText("Evento sísmico rechazado.");
+        switch (respuesta) {
+            case 0:
+                gestor.confirmarEventoSismicoSeleccionado();
+                lblEstado.setText("Modificación de datos sísmicos aceptada.");
+                break;
+            case 1:
+                gestor.derivarAExpertoEventoSismicoSeleccionado();
+                lblEstado.setText("Modificación de datos sísmicos TODO seleccionada.");
+                break;
+            case 2:
+                gestor.rechazarEventoSismicoSeleccionado();
+                lblEstado.setText("Evento sísmico rechazado.");
+                break;
+            default:
+                break;
         }
     }
 }

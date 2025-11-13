@@ -125,7 +125,7 @@ public class MuestraSismicaDAO {
 
         // Cargar detalles sísmicos usando la conexión existente
         List<DetalleMuestraSismica> detalles = findDetallesByMuestra(conn, idMuestraSismica);
-        m.setDetalleMuestrasSismicas(detalles);
+        m.setDetallesMuestraSismica(detalles);
 
         return m;
     }

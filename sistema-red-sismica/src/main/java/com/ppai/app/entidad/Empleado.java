@@ -9,6 +9,8 @@ public class Empleado {
     private String telefono;
     private Rol rol;
 
+    public Empleado() {}
+
     public long getIdEmpleado(){ 
         return this.idEmpleado; 
     }

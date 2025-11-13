@@ -1,35 +1,27 @@
 package com.ppai.app.gestor;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ppai.app.entidad.Empleado;
-import com.ppai.app.entidad.EventoSismico;
-import com.ppai.app.entidad.Usuario;
-import com.ppai.app.entidad.Sismografo;
-import com.ppai.app.entidad.CambioEstado;
 import com.ppai.app.dao.CambioEstadoDAO;
 import com.ppai.app.dao.EventoSismicoDAO;
+import com.ppai.app.entidad.CambioEstado;
+import com.ppai.app.entidad.EventoSismico;
+import com.ppai.app.entidad.Sismografo;
+import com.ppai.app.entidad.Usuario;
 import com.ppai.app.frontend.PantallaRevisionManual;
 
 public class GestorRevisionManual {
 
-    // Atributos del gestor
-    private LocalDateTime fechaHoraOcurrenciaEventoSismico;
-    private double latitudEpicentroEventoSismico;
-    private double longitudEpicentroEventoSismico;
-    private double longitudHipocentroEventoSismico;
     private EventoSismico seleccionEventoSismico;
     private List<EventoSismico> eventosSismicos = new ArrayList<>();
     private List<Sismografo> sismografos = new ArrayList<>();
     private List<String> datosPrincipalesEventosSismicosNoRevisados = new ArrayList<>();
     private List<String> metadatosEventoSismicoSeleccionado = new ArrayList<>();
     private List<ArrayList<String>> informacionSismicaEventoSeleccionado = new ArrayList<>();
-    private String opVisualizacion;
-    private String opRechazoModificacion;
     private LocalDateTime fechaHoraActual;
     private Usuario usuarioLogueado;
 
@@ -189,7 +181,7 @@ public class GestorRevisionManual {
                 datosSerieCompletos.add(datosEstacion.get(1).toString());
                 for (String datoSerie : datosSerie) {
                     datosSerieCompletos.add(datoSerie);
-                };
+                }
                 informacionClasificada.add(datosSerieCompletos);
             } else {
                 System.out.println("No se encontro el sismografo");

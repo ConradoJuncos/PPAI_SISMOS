@@ -15,7 +15,7 @@ public class ModeloSismografo {
     public String getCaracteristicas(){
         return this.caracteristicas;
     }
-    public String getNombre(){
+    public String getNombreModelo(){
         return this.nombreModelo;
     }
     public Fabricante getFabricante(){

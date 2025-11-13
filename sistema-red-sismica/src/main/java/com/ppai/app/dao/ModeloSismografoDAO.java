@@ -1,10 +1,16 @@
 package com.ppai.app.dao;
 
-import com.ppai.app.entidad.ModeloSismografo;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ppai.app.datos.DatabaseConnection;
 import com.ppai.app.entidad.Fabricante;
-import java.sql.*;
-import java.util.*;
+import com.ppai.app.entidad.ModeloSismografo;
 
 public class ModeloSismografoDAO {
 
@@ -20,7 +26,7 @@ public class ModeloSismografoDAO {
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, m.getCaracteristicas());
-            ps.setString(2, m.getNombre());                     // <-- getNombre() → nombreModelo
+            ps.setString(2, m.getNombreModelo());                     // <-- getNombre() → nombreModelo
             ps.setLong(3, m.getFabricante().getIdFabricante()); // <-- Obtiene ID desde el objeto
 
             ps.executeUpdate();
@@ -44,7 +50,7 @@ public class ModeloSismografoDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, m.getCaracteristicas());
-            ps.setString(2, m.getNombre());
+            ps.setString(2, m.getNombreModelo());
             ps.setLong(3, m.getFabricante().getIdFabricante()); // <-- Usa el objeto
             ps.setLong(4, m.getIdModeloSismografo());
 
