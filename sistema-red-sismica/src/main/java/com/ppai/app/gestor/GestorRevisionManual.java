@@ -268,6 +268,7 @@ public class GestorRevisionManual {
 
         this.fechaHoraActual = getFechaHoraActual();
 
+        // --> DELEGACION <--
         this.seleccionEventoSismico.rechazar(fechaHoraActual, usuarioLogueado);
 
         this.finCU();
@@ -279,6 +280,7 @@ public class GestorRevisionManual {
 
         this.fechaHoraActual = getFechaHoraActual();
 
+        // --> DELEGACION <--
         this.seleccionEventoSismico.confirmar(fechaHoraActual, usuarioLogueado);
 
         this.finCU();
@@ -290,6 +292,7 @@ public class GestorRevisionManual {
         
         this.fechaHoraActual = getFechaHoraActual();
 
+        // --> DELEGACION <--
         this.seleccionEventoSismico.derivar(fechaHoraActual, usuarioLogueado);
 
         this.finCU();

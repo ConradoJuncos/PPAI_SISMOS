@@ -148,14 +148,17 @@ public class EventoSismico {
         return informacionSismica;
     }
 
+    // --> DELEGACION <--
     public void rechazar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         this.estadoActual.rechazar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
     }
 
+    // --> DELEGACION <--
     public void confirmar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         this.estadoActual.confirmar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
     }
 
+    // --> DELEGACION <--
     public void derivar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         this.estadoActual.derivar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
     }
