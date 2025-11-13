@@ -94,8 +94,8 @@ public class EventoSismico {
     }
 
     // Bloquear por revisión el evento sismico
-    public void bloquearPorRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-        this.estadoActual.bloquearPorRevision(seleccionEventoSismico, this.cambiosEstado, fechaHoraActual, usuarioLogueado);
+    public void revisar(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+        this.estadoActual.revisar(seleccionEventoSismico, this.cambiosEstado, fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener el Cambio de Estado (Historial de Estado) Actual del Evento
@@ -156,8 +156,8 @@ public class EventoSismico {
         this.estadoActual.confirmar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
     }
 
-    public void derivarAExperto(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        this.estadoActual.derivarAExperto(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
+    public void derivar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+        this.estadoActual.derivar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado );
     }
 
 

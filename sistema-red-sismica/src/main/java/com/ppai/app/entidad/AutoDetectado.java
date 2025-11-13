@@ -9,7 +9,7 @@ public class AutoDetectado extends Estado {
     }
 
     @Override
-    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+    public void revisar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         BloqueadoEnRevision estadoCreadoBloqueadoEnRevision = (BloqueadoEnRevision) crearProximoEstado();
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
         registrarCambioDeEstado(cambiosEstado, fechaHoraActual, empleado, estadoCreadoBloqueadoEnRevision);

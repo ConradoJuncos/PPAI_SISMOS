@@ -31,7 +31,7 @@ public class BloqueadoEnRevision extends Estado {
     }
 
     @Override
-    public void derivarAExperto(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+    public void derivar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         DerivadoAExperto estadoCreadoDerivadoAExperto = new DerivadoAExperto();
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
         registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoDerivadoAExperto);

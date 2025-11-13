@@ -62,10 +62,10 @@ public abstract class Estado {
     public void aceptarParaRevision(){}
 
     // ESTE ES EL IMPORTANTE!!!!!
-    public void bloquearPorRevision(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+    public void revisar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
     }
     // revisar parámetros y retorno
-    public void derivarAExperto(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){}
+    public void derivar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){}
 
     // revisar parámetros y retorno
     public void resolverDerivacion(){}

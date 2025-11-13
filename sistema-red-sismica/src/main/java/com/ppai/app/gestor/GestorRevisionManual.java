@@ -118,7 +118,7 @@ public class GestorRevisionManual {
      */
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
-        this.seleccionEventoSismico.bloquearPorRevision(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
+        this.seleccionEventoSismico.revisar(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
         obtenerYMostrarDatosEventoSeleccionado();
     }
 
@@ -290,7 +290,7 @@ public class GestorRevisionManual {
         
         this.fechaHoraActual = getFechaHoraActual();
 
-        this.seleccionEventoSismico.derivarAExperto(fechaHoraActual, usuarioLogueado);
+        this.seleccionEventoSismico.derivar(fechaHoraActual, usuarioLogueado);
 
         this.finCU();
     }
