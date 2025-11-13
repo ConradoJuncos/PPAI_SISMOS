@@ -368,11 +368,6 @@ public class GestorRevisionManual {
     private LocalDateTime getFechaHoraActual() {
 
         // Se retorna la fecha y hora actualizada del sistema
-        return actualizarFechaHoraActual();
-    }
-
-    // Obtener la fecha y hora actualizada
-    private LocalDateTime actualizarFechaHoraActual() {
         return LocalDateTime.now();
     }
 
