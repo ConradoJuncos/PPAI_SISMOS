@@ -280,8 +280,6 @@ public class GestorRevisionManual {
         pantalla.solicitarOpcAccionEvento();
     }
 
-    // ...existing code...
-
     // Rechazar el evento sismico anteriormente seleccioando por el usuario
     public void rechazarEventoSismicoSeleccionado() {
 

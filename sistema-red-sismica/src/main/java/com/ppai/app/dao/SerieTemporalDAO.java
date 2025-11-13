@@ -256,9 +256,6 @@ public class SerieTemporalDAO {
         return ts != null ? ts.toLocalDateTime() : null;
     }
 
-    // ...existing code...
-
-
     public Map<Integer, Integer> getRelacionesEventoSerie() throws SQLException {
         Map<Integer, Integer> relaciones = new HashMap<>();
         String sql = "SELECT idSerieTemporal, idEventoSismico FROM SerieTemporal";

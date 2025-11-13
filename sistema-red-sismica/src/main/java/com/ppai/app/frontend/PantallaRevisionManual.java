@@ -364,8 +364,6 @@ public class PantallaRevisionManual extends JFrame {
         panelEstacion.add(panelEncabezadoConImagen);
         panelEstacion.add(javax.swing.Box.createVerticalStrut(10));
 
-        // ...existing code...
-
         // Información de la serie temporal
         JLabel lblInfoSerie = new JLabel("Serie Temporal #" + idSerie);
         lblInfoSerie.setFont(new Font("Segoe UI", Font.BOLD, 12));

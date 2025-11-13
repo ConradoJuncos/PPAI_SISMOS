@@ -4,6 +4,7 @@ import com.ppai.app.datos.DatabaseConnection;
 import com.ppai.app.entidad.*;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class CambioEstadoDAO {
@@ -11,6 +12,9 @@ public class CambioEstadoDAO {
     private final EstadoDAO estadoDAO = new EstadoDAO();
     private final EmpleadoDAO empleadoDAO = new EmpleadoDAO();
     private final MotivoFueraServicioDAO motivoFueraServicioDAO = new MotivoFueraServicioDAO();
+
+    // Formatter para formatear fechas al formato SQLite: "yyyy-MM-dd HH:mm:ss"
+    private static final DateTimeFormatter SQLITE_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /* --------------------------------------------------------------
        INSERT – guarda datos principales + relaciones. 
@@ -22,14 +26,14 @@ public class CambioEstadoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // SQLite maneja fechas como TEXT, usamos setString()
-            ps.setString(1, ce.getFechaHoraInicio() != null ? ce.getFechaHoraInicio().toString() : null);
-            ps.setString(2, ce.getFechaHoraFin() != null ? ce.getFechaHoraFin().toString() : null);
+            // SQLite maneja fechas como TEXT, usamos setString() con formato específico
+            ps.setString(1, ce.getFechaHoraInicio() != null ? ce.getFechaHoraInicio().format(SQLITE_DATETIME_FORMATTER) : null);
+            ps.setString(2, ce.getFechaHoraFin() != null ? ce.getFechaHoraFin().format(SQLITE_DATETIME_FORMATTER) : null);
 
             // Usamos la clave compuesta del Estado
             ps.setString(3, ce.getEstado().getAmbito());
             ps.setString(4, ce.getEstado().getNombreEstado());
-            
+
             // idResponsableInspeccion puede ser NULL si no aplica
             if (ce.getResponsableInspeccion() != null) {
                 ps.setLong(5, ce.getResponsableInspeccion().getIdEmpleado());
@@ -71,14 +75,13 @@ public class CambioEstadoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // SQLite maneja fechas como TEXT, usamos setString()
-            ps.setString(1, ce.getFechaHoraInicio() != null ? ce.getFechaHoraInicio().toString() : null);
-            ps.setString(2, ce.getFechaHoraFin() != null ? ce.getFechaHoraFin().toString() : null);
+            // SQLite maneja fechas como TEXT, usamos setString() con formato específico
+            ps.setString(1, ce.getFechaHoraInicio() != null ? ce.getFechaHoraInicio().format(SQLITE_DATETIME_FORMATTER) : null);
+            ps.setString(2, ce.getFechaHoraFin() != null ? ce.getFechaHoraFin().format(SQLITE_DATETIME_FORMATTER) : null);
 
-            // Usamos la clave compuesta del Estado
             ps.setString(3, ce.getEstado().getAmbito());
             ps.setString(4, ce.getEstado().getNombreEstado());
-            
+
             if (ce.getResponsableInspeccion() != null) {
                 ps.setLong(5, ce.getResponsableInspeccion().getIdEmpleado());
             } else {
@@ -94,7 +97,7 @@ public class CambioEstadoDAO {
             ps.setLong(7, ce.getIdCambioEstado());
 
             ps.executeUpdate();
-            
+
             // Actualizar relación N:N con MotivoFueraServicio
             deleteMotivos(conn, ce.getIdCambioEstado());
             if (ce.getMotivoFueraServicio() != null && !ce.getMotivoFueraServicio().isEmpty()) {

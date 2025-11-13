@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import com.ppai.app.entidad.SerieTemporal;
 
 public class EventoSismicoDAO {
 
+    // Formatter para formatear fechas al formato SQLite: "yyyy-MM-dd HH:mm:ss"
+    private static final DateTimeFormatter SQLITE_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final ClasificacionSismoDAO clasificacionDAO = new ClasificacionSismoDAO();
     private final MagnitudRichterDAO magnitudDAO = new MagnitudRichterDAO();
     private final OrigenDeGeneracionDAO origenDAO = new OrigenDeGeneracionDAO();
@@ -44,9 +47,9 @@ public class EventoSismicoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // SQLite maneja fechas como TEXT, usamos setString()
-            ps.setString(1, e.getFechaHoraOcurrencia() != null ? e.getFechaHoraOcurrencia().toString() : null);
-            ps.setString(2, e.getFechaHoraFin() != null ? e.getFechaHoraFin().toString() : null);
+            // SQLite maneja fechas como TEXT, usamos setString() con formato específico
+            ps.setString(1, e.getFechaHoraOcurrencia() != null ? e.getFechaHoraOcurrencia().format(SQLITE_DATETIME_FORMATTER) : null);
+            ps.setString(2, e.getFechaHoraFin() != null ? e.getFechaHoraFin().format(SQLITE_DATETIME_FORMATTER) : null);
             ps.setString(3, e.getLatitudEpicentro());
             ps.setString(4, e.getLatitudHipocentro());
             ps.setString(5, e.getLongitudEpicentro());
@@ -99,9 +102,9 @@ public class EventoSismicoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // SQLite maneja fechas como TEXT, usamos setString()
-            ps.setString(1, e.getFechaHoraOcurrencia() != null ? e.getFechaHoraOcurrencia().toString() : null);
-            ps.setString(2, e.getFechaHoraFin() != null ? e.getFechaHoraFin().toString() : null);
+            // SQLite maneja fechas como TEXT, usamos setString() con formato específico
+            ps.setString(1, e.getFechaHoraOcurrencia() != null ? e.getFechaHoraOcurrencia().format(SQLITE_DATETIME_FORMATTER) : null);
+            ps.setString(2, e.getFechaHoraFin() != null ? e.getFechaHoraFin().format(SQLITE_DATETIME_FORMATTER) : null);
             ps.setString(3, e.getLatitudEpicentro());
             ps.setString(4, e.getLatitudHipocentro());
             ps.setString(5, e.getLongitudEpicentro());
