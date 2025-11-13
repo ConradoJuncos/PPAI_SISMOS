@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,9 @@ public class EventoSismicoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setObject(1, e.getFechaHoraOcurrencia());
-            ps.setObject(2, e.getFechaHoraFin());
+            // SQLite maneja fechas como TEXT, usamos setString()
+            ps.setString(1, e.getFechaHoraOcurrencia() != null ? e.getFechaHoraOcurrencia().toString() : null);
+            ps.setString(2, e.getFechaHoraFin() != null ? e.getFechaHoraFin().toString() : null);
             ps.setString(3, e.getLatitudEpicentro());
             ps.setString(4, e.getLatitudHipocentro());
             ps.setString(5, e.getLongitudEpicentro());
@@ -54,7 +56,13 @@ public class EventoSismicoDAO {
             ps.setInt(9, e.getMagnitudRichter().getNumero());
             ps.setLong(10, e.getOrigenGeneracion().getOrigenDeGeneracion());
             ps.setLong(11, e.getAlcanceSismo().getIdAlcanceSismo());
-            ps.setObject(12, e.getAnalistaSupervisor() != null ? e.getAnalistaSupervisor().getIdEmpleado() : null);
+
+            // idAnalistaSupervisor puede ser NULL
+            if (e.getAnalistaSupervisor() != null) {
+                ps.setLong(12, e.getAnalistaSupervisor().getIdEmpleado());
+            } else {
+                ps.setNull(12, Types.INTEGER);
+            }
 
             // CAMPOS NUEVOS: FK al Estado Actual
             ps.setString(13, e.getEstadoActual().getAmbito());
@@ -62,16 +70,12 @@ public class EventoSismicoDAO {
 
             ps.executeUpdate();
 
-            // ... (Resto de la lógica de INSERT: obtener keys, insertar SerieTemporal,
-            // CambioEstado) ...
+            // Obtener el ID generado
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     long idEvento = rs.getLong(1);
                     e.setIdEventoSismico(idEvento);
-
-                    // Persistir relaciones 1:N
-                    insertSerieTemporal(conn, idEvento, e.getSeriesTemporales());
-                    insertCambioEstado(conn, idEvento, e.getCambiosEstado());
+                    // Los CambioEstado se persisten de forma independiente en el gestor
                 }
             }
         }
@@ -95,8 +99,9 @@ public class EventoSismicoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setObject(1, e.getFechaHoraOcurrencia());
-            ps.setObject(2, e.getFechaHoraFin());
+            // SQLite maneja fechas como TEXT, usamos setString()
+            ps.setString(1, e.getFechaHoraOcurrencia() != null ? e.getFechaHoraOcurrencia().toString() : null);
+            ps.setString(2, e.getFechaHoraFin() != null ? e.getFechaHoraFin().toString() : null);
             ps.setString(3, e.getLatitudEpicentro());
             ps.setString(4, e.getLatitudHipocentro());
             ps.setString(5, e.getLongitudEpicentro());
@@ -106,7 +111,13 @@ public class EventoSismicoDAO {
             ps.setInt(9, e.getMagnitudRichter().getNumero());
             ps.setLong(10, e.getOrigenGeneracion().getOrigenDeGeneracion());
             ps.setLong(11, e.getAlcanceSismo().getIdAlcanceSismo());
-            ps.setObject(12, e.getAnalistaSupervisor() != null ? e.getAnalistaSupervisor().getIdEmpleado() : null);
+
+            // idAnalistaSupervisor puede ser NULL
+            if (e.getAnalistaSupervisor() != null) {
+                ps.setLong(12, e.getAnalistaSupervisor().getIdEmpleado());
+            } else {
+                ps.setNull(12, Types.INTEGER);
+            }
 
             // CAMPOS NUEVOS: FK al Estado Actual
             ps.setString(13, e.getEstadoActual().getAmbito());
@@ -116,11 +127,8 @@ public class EventoSismicoDAO {
 
             ps.executeUpdate();
 
-            // ... (Resto de la lógica de UPDATE: manejar SerieTemporal y CambioEstado) ...
-            deleteSerieTemporal(conn, e.getIdEventoSismico());
-            deleteCambioEstado(conn, e.getIdEventoSismico());
-            insertSerieTemporal(conn, e.getIdEventoSismico(), e.getSeriesTemporales());
-            insertCambioEstado(conn, e.getIdEventoSismico(), e.getCambiosEstado());
+            // Los CambioEstado se persisten de forma independiente en el gestor
+            // No es necesario manejarlos aquí
         }
     }
 

@@ -20,21 +20,35 @@ public class CambioEstadoDAO {
         String sql = "INSERT INTO CambioEstado (fechaHoraInicio, fechaHoraFin, ambitoEstado, nombreEstado, idResponsableInspeccion, idEventoSismico) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setObject(1, ce.getFechaHoraInicio());
-            ps.setObject(2, ce.getFechaHoraFin());
-            
+            // SQLite maneja fechas como TEXT, usamos setString()
+            ps.setString(1, ce.getFechaHoraInicio() != null ? ce.getFechaHoraInicio().toString() : null);
+            ps.setString(2, ce.getFechaHoraFin() != null ? ce.getFechaHoraFin().toString() : null);
+
             // Usamos la clave compuesta del Estado
             ps.setString(3, ce.getEstado().getAmbito());
             ps.setString(4, ce.getEstado().getNombreEstado());
             
             // idResponsableInspeccion puede ser NULL si no aplica
-            ps.setObject(5, ce.getResponsableInspeccion() != null ? ce.getResponsableInspeccion().getIdEmpleado() : null);
+            if (ce.getResponsableInspeccion() != null) {
+                ps.setLong(5, ce.getResponsableInspeccion().getIdEmpleado());
+            } else {
+                ps.setNull(5, Types.INTEGER);
+            }
+
+            // idEventoSismico puede ser NULL si no aplica
+            if (ce.getIdEventoSismico() > 0) {
+                ps.setLong(6, ce.getIdEventoSismico());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
 
             ps.executeUpdate();
 
-            try (ResultSet rs = ps.getGeneratedKeys()) {
+            // Obtener el ID generado usando last_insert_rowid() de SQLite
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT last_insert_rowid()")) {
                 if (rs.next()) {
                     long idCambio = rs.getLong(1);
                     ce.setIdCambioEstado(idCambio);
@@ -57,15 +71,27 @@ public class CambioEstadoDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setObject(1, ce.getFechaHoraInicio());
-            ps.setObject(2, ce.getFechaHoraFin());
-            
+            // SQLite maneja fechas como TEXT, usamos setString()
+            ps.setString(1, ce.getFechaHoraInicio() != null ? ce.getFechaHoraInicio().toString() : null);
+            ps.setString(2, ce.getFechaHoraFin() != null ? ce.getFechaHoraFin().toString() : null);
+
             // Usamos la clave compuesta del Estado
             ps.setString(3, ce.getEstado().getAmbito());
             ps.setString(4, ce.getEstado().getNombreEstado());
             
-            ps.setObject(5, ce.getResponsableInspeccion() != null ? ce.getResponsableInspeccion().getIdEmpleado() : null);
-            ps.setLong  (6, ce.getIdCambioEstado());
+            if (ce.getResponsableInspeccion() != null) {
+                ps.setLong(5, ce.getResponsableInspeccion().getIdEmpleado());
+            } else {
+                ps.setNull(5, Types.INTEGER);
+            }
+
+            if (ce.getIdEventoSismico() > 0) {
+                ps.setLong(6, ce.getIdEventoSismico());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
+
+            ps.setLong(7, ce.getIdCambioEstado());
 
             ps.executeUpdate();
             
@@ -213,8 +239,14 @@ public class CambioEstadoDAO {
     }
 
     private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
-        Timestamp ts = rs.getTimestamp(column);
-        return ts != null ? ts.toLocalDateTime() : null;
+        String dateStr = rs.getString(column);
+        if (dateStr == null) {
+            return null;
+        }
+        // SQLite puede almacenar fechas con espacio en lugar de 'T'
+        // Convertir "2025-02-21 19:10:00" a "2025-02-21T19:10:00"
+        dateStr = dateStr.replace(" ", "T");
+        return LocalDateTime.parse(dateStr);
     }
 
     // ==============================================================

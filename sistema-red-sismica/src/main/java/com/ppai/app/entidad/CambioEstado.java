@@ -13,6 +13,7 @@ public class CambioEstado {
     private Estado estado;
     private List<MotivoFueraServicio> motivoFueraServicio = new ArrayList<MotivoFueraServicio>();
     private Empleado responsableInspeccion;
+    private long idEventoSismico;  // FK a EventoSismico
 
     // Constructor sin parámetros
     public CambioEstado(){}
@@ -83,5 +84,11 @@ public class CambioEstado {
     }
     public void setResponsableInspeccion(Empleado responsableInspeccion){
         this.responsableInspeccion = responsableInspeccion;
+    }
+    public long getIdEventoSismico() {
+        return this.idEventoSismico;
+    }
+    public void setIdEventoSismico(long idEventoSismico) {
+        this.idEventoSismico = idEventoSismico;
     }
 }

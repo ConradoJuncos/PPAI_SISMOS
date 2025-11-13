@@ -10,6 +10,9 @@ import com.ppai.app.entidad.Empleado;
 import com.ppai.app.entidad.EventoSismico;
 import com.ppai.app.entidad.Usuario;
 import com.ppai.app.entidad.Sismografo;
+import com.ppai.app.entidad.CambioEstado;
+import com.ppai.app.dao.CambioEstadoDAO;
+import com.ppai.app.dao.EventoSismicoDAO;
 import com.ppai.app.frontend.PantallaRevisionManual;
 
 public class GestorRevisionManual {
@@ -33,6 +36,10 @@ public class GestorRevisionManual {
     // Referencia a la pantalla (interfaz)
     private PantallaRevisionManual pantalla;
 
+    // DAOs para persistencia
+    private CambioEstadoDAO cambioEstadoDAO;
+    private EventoSismicoDAO eventoSismicoDAO;
+
     // Constructor
     public GestorRevisionManual(PantallaRevisionManual pantalla, List<EventoSismico> eventosSismicos,
                                   List<Sismografo> sismografos, Usuario usuarioLogueado) {
@@ -40,6 +47,10 @@ public class GestorRevisionManual {
         this.eventosSismicos = eventosSismicos;
         this.sismografos = sismografos;
         this.usuarioLogueado = usuarioLogueado;
+
+        // Inicializar DAOs
+        this.cambioEstadoDAO = new CambioEstadoDAO();
+        this.eventoSismicoDAO = new EventoSismicoDAO();
 
         // Para debug
         System.out.println("Gestor Revision Manual creado, con estos eventos sismicos: ");
@@ -308,7 +319,56 @@ public class GestorRevisionManual {
     }
 
     private void finCU() {
-        System.out.println("Caso de uso ejecutado correctamente");
+        System.out.println("Finalizando caso de uso: persistiendo cambios...");
+
+        try {
+            // Obtener los cambios de estado del evento sísmico
+            List<CambioEstado> cambiosDelEvento = seleccionEventoSismico.getCambiosEstado();
+
+            if (cambiosDelEvento != null && !cambiosDelEvento.isEmpty()) {
+                // Persistir cada cambio de estado nuevo
+                for (CambioEstado cambio : cambiosDelEvento) {
+                    // Solo persistir si no tiene ID (es nuevo)
+                    if (cambio.getIdCambioEstado() == 0) {
+                        // Setear el idEventoSismico antes de insertar
+                        cambio.setIdEventoSismico(seleccionEventoSismico.getIdEventoSismico());
+
+                        // Insertar el CambioEstado (esto genera el ID)
+                        cambioEstadoDAO.insert(cambio);
+                        System.out.println("✓ CambioEstado persistido: " + cambio.getEstado().getNombreEstado() + " con ID: " + cambio.getIdCambioEstado());
+
+                        // Persistir la relación en EventoSismico_CambioEstado
+                        insertarRelacionEventoCambio(seleccionEventoSismico.getIdEventoSismico(), cambio.getIdCambioEstado());
+                    }
+                }
+                System.out.println("✓ Total de cambios de estado persistidos correctamente.");
+            }
+
+            // Persistir el evento sísmico actualizado con su nuevo estado
+            eventoSismicoDAO.update(seleccionEventoSismico);
+            System.out.println("✓ EventoSismico actualizado correctamente.");
+
+            System.out.println("Caso de uso ejecutado y persistido correctamente.");
+
+        } catch (Exception e) {
+            System.err.println("✗ Error al persistir cambios en finCU(): " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al finalizar el caso de uso: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Inserta la relación entre EventoSismico y CambioEstado en la tabla intermedia.
+     */
+    private void insertarRelacionEventoCambio(long idEventoSismico, long idCambioEstado) throws Exception {
+        String sql = "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (?, ?)";
+        try (java.sql.Connection conn = com.ppai.app.datos.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idEventoSismico);
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+            System.out.println("✓ Relación EventoSismico_CambioEstado persistida: [" + idEventoSismico + ", " + idCambioEstado + "]");
+        }
     }
 
     private void validarDatosSismicos() {
