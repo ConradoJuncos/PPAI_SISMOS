@@ -135,8 +135,7 @@ public class GestorRevisionManual {
      */
     private void obtenerYMostrarDatosEventoSeleccionado() {
         this.setMetadatosEventoSismicoSeleccionado(obtenerMetadatosEventoSeleccionado());
-
-        // Extraer información sísmica del evento seleccionado
+        
         extraerInformacionSismicaEventoSeleccionado();
 
         // Clasificar información por estación sismológica
@@ -273,37 +272,34 @@ public class GestorRevisionManual {
 
     // Rechazar el evento sismico anteriormente seleccioando por el usuario
     public void rechazarEventoSismicoSeleccionado() {
-
-        // 1. Validar los datos sismicos si hubieran sido modificados
         this.validarDatosSismicos();
 
-        this.actualizarEventoSismicoARechazado();
+        this.fechaHoraActual = getFechaHoraActual();
 
-        // 3. llamar a fin caso de uso finCU()
+        this.seleccionEventoSismico.rechazar(fechaHoraActual, usuarioLogueado);
+
         this.finCU();
     }
 
     // Aceptar el evento sismico anteriormente seleccioando por el usuario
     public void confirmarEventoSismicoSeleccionado() {
-
-        // 1. Validar los datos sismicos si hubieran sido modificados
         this.validarDatosSismicos();
 
-        this.actualizarEventoSismicoAConfirmado();
+        this.fechaHoraActual = getFechaHoraActual();
 
-        // 3. llamar a fin caso de uso finCU()
+        this.seleccionEventoSismico.confirmar(fechaHoraActual, usuarioLogueado);
+
         this.finCU();
     }
 
-    // Derivar a experto el evento sismico anteriormente seleccioando por el usuario
     public void derivarAExpertoEventoSismicoSeleccionado() {
 
-        // 1. Validar los datos sismicos si hubieran sido modificados
         this.validarDatosSismicos();
+        
+        this.fechaHoraActual = getFechaHoraActual();
 
-        this.actualizarEventoSismicoADerivadoAExperto();
+        this.seleccionEventoSismico.derivarAExperto(fechaHoraActual, usuarioLogueado);
 
-        // 3. llamar a fin caso de uso finCU()
         this.finCU();
     }
 
@@ -374,18 +370,6 @@ public class GestorRevisionManual {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void actualizarEventoSismicoARechazado() {
-        this.seleccionEventoSismico.rechazar(fechaHoraActual, usuarioLogueado);
-    }
-
-    private void actualizarEventoSismicoAConfirmado() {
-        this.seleccionEventoSismico.confirmar(fechaHoraActual, usuarioLogueado);
-    }
-
-    private void actualizarEventoSismicoADerivadoAExperto() {
-        this.seleccionEventoSismico.derivarAExperto(fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener fecha y hora actual del sistema

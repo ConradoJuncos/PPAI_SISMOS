@@ -38,16 +38,16 @@ public class SerieTemporal {
     private ArrayList<String> recolectarInformacionSerieTemporal() {
         ArrayList<String> informacionSerieTemporal = new ArrayList<>();
 
-        // Agregar datos de la serie temporal
-        informacionSerieTemporal.add(String.valueOf(this.idSerieTemporal));
-        informacionSerieTemporal.add(this.fechaHoraRegistro != null ? this.fechaHoraRegistro.toString() : "");
-        informacionSerieTemporal.add(this.frecuenciaMuestreo != null ? this.frecuenciaMuestreo : "");
+        Long idSerie = this.getIdSerieTemporal();
 
-        // Agregar datos de cada muestra sísmica asociada
+        // Agregar datos de la serie temporal
+        informacionSerieTemporal.add(String.valueOf(idSerie));
+        informacionSerieTemporal.add(this.fechaHoraRegistro != null ? this.getFechaHoraRegistro().toString() : "");
+        informacionSerieTemporal.add(this.frecuenciaMuestreo != null ? this.getFrecuenciaMuestreo() : "");
+        
         if (this.muestrasSismicas != null) {
             for (MuestraSismica muestra : this.muestrasSismicas) {
                 ArrayList<String> datosMuestra = muestra.getDatos();
-                // Agregar los datos de la muestra como un string concatenado
                 informacionSerieTemporal.add(String.join("|", datosMuestra));
             }
         }
