@@ -147,7 +147,7 @@ public class GestorRevisionManual {
      * Obtiene los metadatos del evento sísmico seleccionado.
      */
     private List<String> obtenerMetadatosEventoSeleccionado() {
-        return seleccionEventoSismico.obtenerMetadatosEventoSeleccionado();
+        return seleccionEventoSismico.obtenerMetadatos();
     }
 
     /**

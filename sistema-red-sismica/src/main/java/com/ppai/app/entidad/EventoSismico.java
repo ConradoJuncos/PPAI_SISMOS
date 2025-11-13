@@ -115,7 +115,7 @@ public class EventoSismico {
         return null; // Para evitar fallos
     }
 
-    public ArrayList<String> obtenerMetadatosEventoSeleccionado() {
+    public ArrayList<String> obtenerMetadatos() {
         ArrayList<String> metadatos = new ArrayList<String>();
         metadatos.add(alcanceSismo.getNombre());
         metadatos.add(clasificacionSismo.getNombre());
