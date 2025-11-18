@@ -56,33 +56,17 @@ public class DatabaseConnection {
         dropStatements.add("DROP TABLE IF EXISTS EventoSismico_CambioEstado;");
         dropStatements.add("DROP TABLE IF EXISTS MuestraSismica_DetalleMuestraSismica;");
         dropStatements.add("DROP TABLE IF EXISTS SerieTemporal_MuestraSismica;");
-        dropStatements.add("DROP TABLE IF EXISTS Usuario_Perfil;");
-        dropStatements.add("DROP TABLE IF EXISTS Perfil_Perimso;");
-        dropStatements.add("DROP TABLE IF EXISTS Perfil;");
-        dropStatements.add("DROP TABLE IF EXISTS Permiso;");
-        dropStatements.add("DROP TABLE IF EXISTS Usuario_Suscripcion;");
-        dropStatements.add("DROP TABLE IF EXISTS Suscripcion;");
         dropStatements.add("DROP TABLE IF EXISTS DetalleMuestraSismica;");
         dropStatements.add("DROP TABLE IF EXISTS MuestraSismica;");
         dropStatements.add("DROP TABLE IF EXISTS SerieTemporal;");
         dropStatements.add("DROP TABLE IF EXISTS EventoSismico;");
         dropStatements.add("DROP TABLE IF EXISTS Usuario;");
-        dropStatements.add("DROP TABLE IF EXISTS TareaAsignada_ApreciacionTipo;");
-        dropStatements.add("DROP TABLE IF EXISTS ApreciacionTipo;");
-        dropStatements.add("DROP TABLE IF EXISTS TareaAsignada;");
-        dropStatements.add("DROP TABLE IF EXISTS Reparacion_Sismografo;");
-        dropStatements.add("DROP TABLE IF EXISTS Sismografo_CambioEstado;");
-        dropStatements.add("DROP TABLE IF EXISTS CambioEstado_MotivoFueraServicio;");
         dropStatements.add("DROP TABLE IF EXISTS CambioEstado;");
-        dropStatements.add("DROP TABLE IF EXISTS MotivoFueraServicio;");
         dropStatements.add("DROP TABLE IF EXISTS Sismografo;");
         dropStatements.add("DROP TABLE IF EXISTS EstacionSismologica;");
         dropStatements.add("DROP TABLE IF EXISTS ModeloSismografo;");
-        dropStatements.add("DROP TABLE IF EXISTS Fabricante;");
         dropStatements.add("DROP TABLE IF EXISTS Estado;");
         dropStatements.add("DROP TABLE IF EXISTS Empleado;");
-        dropStatements.add("DROP TABLE IF EXISTS Reparacion;");
-        dropStatements.add("DROP TABLE IF EXISTS Rol;");
         dropStatements.add("DROP TABLE IF EXISTS MagnitudRichter;");
         dropStatements.add("DROP TABLE IF EXISTS OrigenDeGeneracion;");
         dropStatements.add("DROP TABLE IF EXISTS AlcanceSismo;");
@@ -142,23 +126,6 @@ public class DatabaseConnection {
                     );
                 """);
 
-        tables.add("CREATE TABLE IF NOT EXISTS Rol (\n" +
-                "    idRol INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    nombre TEXT NOT NULL UNIQUE,\n" +
-                "    descripcion TEXT\n" +
-                ");");
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Reparacion (
-                        nroReparacion INTEGER NOT NULL,
-                        comentarioReparacion TEXT,
-                        comentarioSolucion TEXT,
-                        fechaEnvioReparacion TEXT,
-                        fechaRespuestaReparacion TEXT,
-                        PRIMARY KEY (nroReparacion)
-                    );
-                """);
-
         tables.add("CREATE TABLE IF NOT EXISTS Empleado (\n" +
                 "    idEmpleado INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    nombre TEXT NOT NULL,\n" +
@@ -175,16 +142,6 @@ public class DatabaseConnection {
                 "    nombreEstado TEXT NOT NULL,\n" +
                 "    PRIMARY KEY (ambitoEstado, nombreEstado)\n" +
                 ");");
-
-        tables.add("""
-                        CREATE TABLE IF NOT EXISTS Fabricante (
-                            idFabricante INTEGER,
-                            nombre TEXT,
-                            razonSocial TEXT,
-                            PRIMARY KEY (idFabricante)
-
-                        );
-                """);
 
         tables.add("""
                     CREATE TABLE IF NOT EXISTS ModeloSismografo (
@@ -214,47 +171,6 @@ public class DatabaseConnection {
                 "    codigoEstacion INTEGER NOT NULL,\n" +
                 "    FOREIGN KEY (idModelo) REFERENCES ModeloSismografo(idModeloSismografo),\n" +
                 "    FOREIGN KEY (codigoEstacion) REFERENCES EstacionSismologica(codigoEstacion)\n" +
-                ");");
-
-        tables.add("CREATE TABLE IF NOT EXISTS MotivoFueraServicio (\n" +
-                "    idMotivoFueraServicio INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    nombre TEXT NOT NULL,\n" +
-                "    descripcion TEXT\n" +
-                ");");
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Reparacion_Sismografo (
-                        nroReparacion INTEGER NOT NULL,
-                        identificadorSismografo INTEGER NOT NULL,
-                        PRIMARY KEY (nroReparacion, identificadorSismografo),
-                        FOREIGN KEY (nroReparacion) REFERENCES Reparacion(nroReparacion),
-                        FOREIGN KEY (identificadorSismografo) REFERENCES Sismografo(identificadorSismografo)
-                    );
-                """);
-
-        tables.add("CREATE TABLE IF NOT EXISTS TareaAsignada (\n" +
-                "    idTareaAsignada INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    fechaHoraAsignacion DATETIME NOT NULL,\n" +
-                "    comentario TEXT,\n" +
-                "    fechaHoraRealizacion DATETIME,\n" +
-                "    idResponsable INTEGER NOT NULL,\n" +
-                "    nroReparacion INTEGER NOT NULL,\n" +
-                "    FOREIGN KEY (idResponsable) REFERENCES Empleado(idEmpleado),\n" +
-                "    FOREIGN KEY (nroReparacion) REFERENCES Reparacion(nroReparacion)\n" +
-                ");");
-
-        tables.add("CREATE TABLE IF NOT EXISTS ApreciacionTipo (\n" +
-                "    idApreciacionTipo INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    nombre TEXT NOT NULL,\n" +
-                "    descripcion TEXT\n" +
-                ");");
-
-        tables.add("CREATE TABLE IF NOT EXISTS TareaAsignada_ApreciacionTipo (\n" +
-                "    idTareaAsignada INTEGER NOT NULL,\n" +
-                "    idApreciacionTipo INTEGER NOT NULL,\n" +
-                "    PRIMARY KEY (idTareaAsignada, idApreciacionTipo),\n" +
-                "    FOREIGN KEY (idTareaAsignada) REFERENCES TareaAsignada(idTareaAsignada),\n" +
-                "    FOREIGN KEY (idApreciacionTipo) REFERENCES ApreciacionTipo(idApreciacionTipo)\n" +
                 ");");
 
         tables.add("""
@@ -327,62 +243,6 @@ public class DatabaseConnection {
                 ");");
 
         tables.add("""
-                    CREATE TABLE IF NOT EXISTS Suscripcion (
-                        idSuscripcion INTEGER PRIMARY KEY AUTOINCREMENT,
-                        fechaHoraInicioSuscripcion TEXT,
-                        fechaHoraFinSuscripcion TEXT
-                    );
-                """);
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Usuario_Suscripcion (
-                        idUsuario INTEGER NOT NULL,
-                        idSuscripcion INTEGER NOT NULL,
-                        PRIMARY KEY (idUsuario, idSuscripcion),
-                        FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
-                        FOREIGN KEY (idSuscripcion) REFERENCES Suscripcion(idSuscripcion)
-                    );
-                """);
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Permiso (
-                        idPermiso INTEGER NOT NULL,
-                        descripcion TEXT,
-                        nombre TEXT,
-                        PRIMARY KEY(idPermiso)
-                    );
-                """);
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Perfil (
-                        idPerfil INTEGER NOT NULL,
-                        descripcion TEXT,
-                        nombre TEXT,
-                        PRIMARY KEY(idPerfil)
-                    );
-                """);
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Perfil_Perimso (
-                        idPerfil INTEGER NOT NULL,
-                        idPermiso INTEGER NOT NULL,
-                        PRIMARY KEY (idPerfil, idPermiso),
-                        FOREIGN KEY (idPerfil) REFERENCES Perfil(idPerfil),
-                        FOREIGN KEY (idPermiso) REFERENCES Permiso(idPermiso)
-                    );
-                """);
-
-        tables.add("""
-                    CREATE TABLE IF NOT EXISTS Usuario_Perfil (
-                        idUsuario INTEGER NOT NULL,
-                        idPerfil INTEGER NOT NULL,
-                        PRIMARY KEY (idUsuario, idPerfil),
-                        FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
-                        FOREIGN KEY (idPerfil) REFERENCES Perfil(idPerfil)
-                    );
-                """);
-
-        tables.add("""
                     CREATE TABLE IF NOT EXISTS SerieTemporal_MuestraSismica (
                         idSerieTemporal INTEGER NOT NULL,
                         idMuestraSismica INTEGER NOT NULL,
@@ -423,22 +283,6 @@ public class DatabaseConnection {
                 "    FOREIGN KEY (ambitoEstado, nombreEstado) REFERENCES Estado(ambitoEstado, nombreEstado),\n" +
                 "    FOREIGN KEY (idResponsableInspeccion) REFERENCES Empleado(idEmpleado),\n" +
                 "    FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)\n" +
-                ");");
-
-        tables.add("CREATE TABLE IF NOT EXISTS CambioEstado_MotivoFueraServicio (\n" +
-                "    idCambioEstado INTEGER NOT NULL,\n" +
-                "    idMotivoFueraServicio INTEGER NOT NULL,\n" +
-                "    PRIMARY KEY (idCambioEstado, idMotivoFueraServicio),\n" +
-                "    FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),\n" +
-                "    FOREIGN KEY (idMotivoFueraServicio) REFERENCES MotivoFueraServicio(idMotivoFueraServicio)\n" +
-                ");");
-
-        tables.add("CREATE TABLE IF NOT EXISTS Sismografo_CambioEstado (\n" +
-                "    identificadorSismografo INTEGER NOT NULL,\n" +
-                "    idCambioEstado INTEGER NOT NULL,\n" +
-                "    PRIMARY KEY (identificadorSismografo, idCambioEstado),\n" +
-                "    FOREIGN KEY (identificadorSismografo) REFERENCES Sismografo(identificadorSismografo),\n" +
-                "    FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado)\n" +
                 ");");
 
         try (Statement s = conn.createStatement()) {
