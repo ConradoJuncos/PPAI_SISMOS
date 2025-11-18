@@ -7,7 +7,6 @@ public class Empleado {
     private String mail;
     private String nombre;
     private String telefono;
-    private Rol rol;
 
     public Empleado() {}
 
@@ -26,9 +25,6 @@ public class Empleado {
     public String getTelefono() { 
         return this.telefono; 
     }
-    public Rol getRol(){ 
-        return this.rol; 
-    }
     public void setIdEmpleado(long idEmpleado){
         this.idEmpleado = idEmpleado;
     }
@@ -43,9 +39,6 @@ public class Empleado {
     }
     public void setTelefono(String telefono){
         this.telefono = telefono;
-    }
-    public void setRol(Rol rol){
-        this.rol = rol;
     }
 
     

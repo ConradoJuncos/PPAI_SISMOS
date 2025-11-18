@@ -2,7 +2,6 @@ package com.ppai.app.dao;
 
 import com.ppai.app.datos.DatabaseConnection;
 import com.ppai.app.entidad.Empleado;
-import com.ppai.app.entidad.Rol;
 import java.sql.*;
 import java.util.*;
 

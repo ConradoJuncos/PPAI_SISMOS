@@ -9,8 +9,6 @@ public class Usuario {
     private long idUsuario;
     private String contraseña;
     private String nombreUsuario;
-    private List<Perfil> perfil = new ArrayList<Perfil>();
-    private List<Suscripcion> suscripcion = new ArrayList<Suscripcion>();
     private Empleado empleado;
 
     // Metodo Constructor con parametros
@@ -38,12 +36,6 @@ public class Usuario {
     public String getNombreUsuario(){
         return this.nombreUsuario;
     }
-    public List<Perfil> getPerfil(){
-        return this.perfil;
-    }
-    public List<Suscripcion> getSuscripcion(){
-        return this.suscripcion;
-    }
     public Empleado getEmpleado(){
         return this.empleado;
     }
@@ -55,12 +47,6 @@ public class Usuario {
     }
     public void setNombreUsuario(String nombreUsuario){
         this.nombreUsuario = nombreUsuario;
-    }
-    public void setPerfil(List<Perfil> perfil){
-        this.perfil = perfil;
-    }
-    public void setSuscripcion(List<Suscripcion> suscripcion){
-        this.suscripcion = suscripcion;
     }
     public void setEmpleado(Empleado empleado){
         this.empleado = empleado;

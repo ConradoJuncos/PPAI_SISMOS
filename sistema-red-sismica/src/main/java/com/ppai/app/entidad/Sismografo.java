@@ -13,7 +13,6 @@ public class Sismografo {
     private List<SerieTemporal> serieTemporal = new ArrayList<SerieTemporal>();
     private Estado estadoActual;
     private List<CambioEstado> cambioEstado = new ArrayList<CambioEstado>();
-    private List<Reparacion> reparacion = new ArrayList<Reparacion>();
     private EstacionSismologica estacionSismologica;
     private ModeloSismografo modelo;
 
@@ -70,9 +69,6 @@ public class Sismografo {
     public List<CambioEstado> getCambioEstado(){
         return this.cambioEstado;
     }
-    public List<Reparacion> getReparacion(){
-        return this.reparacion;
-    }
     public EstacionSismologica getEstacionSismologica(){
         return this.estacionSismologica;
     }
@@ -96,9 +92,6 @@ public class Sismografo {
     }
     public void setCambioEstado(List<CambioEstado> cambioEstado){
         this.cambioEstado = cambioEstado;
-    }
-    public void setReparacion(List<Reparacion> reparacion){
-        this.reparacion = reparacion;
     }
     public void setEstacionSismologica(EstacionSismologica estacionSismologica){
         this.estacionSismologica = estacionSismologica;

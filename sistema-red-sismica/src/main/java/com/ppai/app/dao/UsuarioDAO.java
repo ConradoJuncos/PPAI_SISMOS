@@ -3,7 +3,6 @@ package com.ppai.app.dao;
 import com.ppai.app.datos.DatabaseConnection;
 import com.ppai.app.entidad.Usuario;
 import com.ppai.app.entidad.Empleado;
-import com.ppai.app.entidad.Perfil;
 import com.ppai.app.entidad.Suscripcion;
 import java.sql.*;
 import java.util.ArrayList;

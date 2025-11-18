@@ -11,7 +11,6 @@ public class CambioEstado {
     private LocalDateTime fechaHoraFin;
     private LocalDateTime fechaHoraInicio;
     private Estado estado;
-    private List<MotivoFueraServicio> motivoFueraServicio = new ArrayList<MotivoFueraServicio>();
     private Empleado responsableInspeccion;
     private long idEventoSismico;  // FK a EventoSismico
 
@@ -47,9 +46,6 @@ public class CambioEstado {
     public Estado getEstado(){
         return this.estado;
     }
-    public List<MotivoFueraServicio> getMotivoFueraServicio(){
-        return this.motivoFueraServicio;
-    }
     public Empleado getResponsableInspeccion(){
         return this.responsableInspeccion;
     }
@@ -64,9 +60,6 @@ public class CambioEstado {
     }
     public void setEstado(Estado estado) {
         this.estado = estado;
-    }
-    public void setMotivoFueraServicio(List<MotivoFueraServicio> motivoFueraServicio) {
-        this.motivoFueraServicio = motivoFueraServicio;
     }
     public void setResponsableInspeccion(Empleado responsableInspeccion){
         this.responsableInspeccion = responsableInspeccion;
