@@ -20,7 +20,7 @@ public class EventoSismico {
     private OrigenDeGeneracion origenGeneracion;
     private AlcanceSismo alcanceSismo;
     private ArrayList<SerieTemporal> seriesTemporales = new ArrayList<SerieTemporal>();
-    private Estado estadoActual; 
+    private Estado estadoActual;
     private ArrayList<CambioEstado> cambiosEstado = new ArrayList<CambioEstado>();
     private Empleado analistaSupervisor; 
 

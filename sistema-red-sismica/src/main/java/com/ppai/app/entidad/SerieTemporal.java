@@ -11,7 +11,7 @@ public class SerieTemporal {
     private String condicionAlarma;
     private LocalDateTime fechaHoraRegistro;
     private String frecuenciaMuestreo;
-    private Estado estado; 
+    private Estado estado;
     private List<MuestraSismica> muestrasSismicas = new ArrayList<>();
 
     // Constructor sin parámetros

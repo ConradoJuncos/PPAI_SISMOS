@@ -20,8 +20,8 @@ public class SerieTemporalDAO {
     public void insert(SerieTemporal s) throws SQLException {
         String sql = """
                 INSERT INTO SerieTemporal
-                (condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, nombreEstado, ambitoEstado)
-                VALUES (?, ?, ?, ?, ?)
+                (condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo)
+                VALUES (?, ?, ?)
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection();

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 // Clase Abstracta de Estado (Patrón State)
 public abstract class Estado {
-    
+
     // Atributos
     private String nombreEstado;
     private String ambito;
@@ -53,7 +53,7 @@ public abstract class Estado {
 
     public void rechazar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){}
 
-    
+
 
     // Métodos Getter y Setter
     public String getAmbito(){
