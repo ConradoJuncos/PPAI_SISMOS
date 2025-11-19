@@ -1,8 +1,5 @@
 package com.ppai.app.entidad;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Usuario {
 
     // Atributos

@@ -10,9 +10,9 @@ public class Sismografo {
     private long identificadorSismografo;
     private LocalDateTime fechaAdquicision;
     private long nroSerie;
-    private List<SerieTemporal> serieTemporal = new ArrayList<SerieTemporal>();
+    private List<SerieTemporal> serieTemporal = new ArrayList<>();
     private Estado estadoActual;
-    private List<CambioEstado> cambioEstado = new ArrayList<CambioEstado>();
+    private List<CambioEstado> cambioEstado = new ArrayList<>();
     private EstacionSismologica estacionSismologica;
     private ModeloSismografo modelo;
 
@@ -33,7 +33,7 @@ public class Sismografo {
             if (serie.getIdSerieTemporal() == idSerieTemporal){
                 
                 // Creando un array de object para los datos de la estacion simsologica del sismografo
-                List<Object> datosEstacionSismologica = new ArrayList<Object>();
+                List<Object> datosEstacionSismologica = new ArrayList<>();
 
                 // Colocando el código de la estacion sismologica en la primera posicion
                 datosEstacionSismologica.add(this.estacionSismologica.getCodigoEstacion());

@@ -19,9 +19,9 @@ public class EventoSismico {
     private MagnitudRichter magnitudRichter;
     private OrigenDeGeneracion origenGeneracion;
     private AlcanceSismo alcanceSismo;
-    private ArrayList<SerieTemporal> seriesTemporales = new ArrayList<SerieTemporal>();
+    private ArrayList<SerieTemporal> seriesTemporales = new ArrayList<>();
     private Estado estadoActual;
-    private ArrayList<CambioEstado> cambiosEstado = new ArrayList<CambioEstado>();
+    private ArrayList<CambioEstado> cambiosEstado = new ArrayList<>();
     private Empleado analistaSupervisor; 
 
     // Método constructor sin parámetros
@@ -49,26 +49,17 @@ public class EventoSismico {
     public boolean esAutoDetectado(){ 
 
         // Consultar al estadoActual si es Auto Detectado
-        if (this.estadoActual.sosAutoDetectado()) {
-
-            return true;
-        }
-
-        return false;
+        return this.estadoActual.sosAutoDetectado();
     }
 
     // Preguntar si el evento sismico seleccionado es no revisado (no tiene analista asignado)
     public boolean sosNoRevisado(){
 
         // Verificar si hay un analista supervisor asignado
-        if (this.analistaSupervisor == null) {
-
-            // No nay analista supervisor asignado, es no revisado
-            return true;
-        }
+        // No nay analista supervisor asignado, es no revisado
+        return this.analistaSupervisor == null;
 
         // Hay analsta supervisor asignado, es revisado
-        return false;
     }
 
     // Obtener los datos princpales
@@ -96,7 +87,7 @@ public class EventoSismico {
     }
 
     // Obtener el Cambio de Estado (Historial de Estado) Actual del Evento
-    public CambioEstado obtenerCambioEstadoActual(){
+    public CambioEstado obtenerCambioEstadoActual() {
 
         // Sobre los cambio de estado del evento sismico
         for (CambioEstado historialEstado : cambiosEstado){

@@ -1,8 +1,6 @@
 package com.ppai.app.entidad;
 
-import java.time.LocalDateTime;
-
-public class Cerrado extends Estado{
+public class Cerrado extends Estado {
 
     // Hereda todos los métodos y atributos de la clase abstracta Estado
 

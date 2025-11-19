@@ -1,8 +1,6 @@
 package com.ppai.app.entidad;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CambioEstado {
 
@@ -27,10 +25,7 @@ public class CambioEstado {
     // Comportamiento
     // Verficar si el cambio de estado es actual
     public boolean esEstadoActual() {
-        if (this.fechaHoraFin == null) {
-            return true;
-        }
-        return false;
+        return this.fechaHoraFin == null;
     }
 
     // Métodos Getters y Setters
