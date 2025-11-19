@@ -340,6 +340,9 @@ public class GestorRevisionManual {
 
                         // Persistir la relación en CambioEstado
                         insertarRelacionEventoCambio(seleccionEventoSismico.getIdEventoSismico(), cambio.getIdCambioEstado());
+                    } else {
+                        cambioEstadoDAO.update(cambio);
+                        System.out.println("✓ CambioEstado actualizado: " + cambio.getEstado().getNombreEstado() + " con ID: " + cambio.getIdCambioEstado());
                     }
                 }
                 System.out.println("✓ Total de cambios de estado persistidos correctamente.");

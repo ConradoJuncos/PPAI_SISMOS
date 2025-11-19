@@ -359,5 +359,175 @@ public class CambioEstadoDAO {
         if (s == null) return null;
         return LocalDateTime.parse(s.replace(' ', 'T'));
     }
-}
 
+    /**
+     * Actualiza un cambio de estado existente:
+     * 1. Actualiza los datos en CambioEstado (fechaHoraFin, idEmpleado, etc.)
+     * 2. Actualiza el estado concreto en su tabla específica si es necesario
+     */
+    public void update(CambioEstado ce) throws SQLException {
+        Connection c = DatabaseConnection.getConnection();
+        try {
+            c.setAutoCommit(false);
+
+            // 1. Actualizar en CambioEstado
+            String sql = "UPDATE CambioEstado SET fechaHoraInicio = ?, idEventoSismico = ?, fechaHoraFin = ?, idEmpleado = ?, nombreEstado = ? WHERE idCambioEstado = ?";
+            try (PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, format(ce.getFechaHoraInicio()));
+                ps.setLong(2, ce.getIdEventoSismico());
+                ps.setString(3, format(ce.getFechaHoraFin()));
+                if (ce.getResponsableInspeccion() != null) {
+                    ps.setLong(4, ce.getResponsableInspeccion().getIdEmpleado());
+                } else {
+                    ps.setNull(4, Types.INTEGER);
+                }
+                ps.setString(5, ce.getEstado() != null ? ce.getEstado().getNombreEstado() : null);
+                ps.setLong(6, ce.getIdCambioEstado());
+                ps.executeUpdate();
+            }
+
+            // 2. Actualizar estado concreto si existe
+            String nombreEstado = ce.getEstado() != null ? ce.getEstado().getNombreEstado() : null;
+            if (nombreEstado != null) {
+                updateEstadoConcreto(c, ce.getIdCambioEstado(), nombreEstado);
+            }
+
+            c.commit();
+        } catch (SQLException e) {
+            c.rollback();
+            throw e;
+        } finally {
+            c.setAutoCommit(true);
+            c.close();
+        }
+    }
+
+    /**
+     * Actualiza el estado concreto en su tabla específica
+     */
+    private void updateEstadoConcreto(Connection c, long idCambioEstado, String nombreEstado) throws SQLException {
+        switch (nombreEstado) {
+            case "AutoDetectado":
+                updateAutoDetectado(c, idCambioEstado);
+                break;
+            case "BloqueadoEnRevision":
+                updateBloqueadoEnRevision(c, idCambioEstado);
+                break;
+            case "Rechazado":
+                updateRechazado(c, idCambioEstado);
+                break;
+            case "Derivado":
+                updateDerivado(c, idCambioEstado);
+                break;
+            case "ConfirmadoPorPersonal":
+                updateConfirmadoPorPersonal(c, idCambioEstado);
+                break;
+            case "PendienteDeRevision":
+                updatePendienteDeRevision(c, idCambioEstado);
+                break;
+            case "SinRevision":
+                updateSinRevision(c, idCambioEstado);
+                break;
+            case "Cerrado":
+                updateCerrado(c, idCambioEstado);
+                break;
+            case "PendienteDeCierre":
+                updatePendienteDeCierre(c, idCambioEstado);
+                break;
+            case "AutoConfirmado":
+                updateAutoConfirmado(c, idCambioEstado);
+                break;
+        }
+    }
+
+    // Métodos para actualizar estados concretos
+    private void updateAutoDetectado(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE AutoDetectado SET nombre = ? WHERE idAutoDetectado = (SELECT idAutoDetectado FROM CambioEstado_AutoDetectado WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "AutoDetectado");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateBloqueadoEnRevision(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE BloqueadoEnRevision SET nombre = ? WHERE idBloqueadoEnRevision = (SELECT idBloqueadoEnRevision FROM CambioEstado_BloqueadoEnRevision WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "BloqueadoEnRevision");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateRechazado(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE Rechazado SET nombre = ? WHERE idRechazado = (SELECT idRechazado FROM CambioEstado_Rechazado WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "Rechazado");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateDerivado(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE Derivado SET nombre = ? WHERE idDerivado = (SELECT idDerivado FROM CambioEstado_Derivado WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "Derivado");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateConfirmadoPorPersonal(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE ConfirmadoPorPersonal SET nombre = ? WHERE idConfirmadoPorPersonal = (SELECT idConfirmadoPorPersonal FROM CambioEstado_ConfirmadoPorPersonal WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "ConfirmadoPorPersonal");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updatePendienteDeRevision(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE PendienteDeRevision SET nombre = ? WHERE idPendienteDeRevision = (SELECT idPendienteDeRevision FROM CambioEstado_PendienteDeRevision WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "PendienteDeRevision");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateSinRevision(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE SinRevision SET nombre = ? WHERE idSinRevision = (SELECT idSinRevision FROM CambioEstado_SinRevision WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "SinRevision");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateCerrado(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE Cerrado SET nombre = ? WHERE idCerrado = (SELECT idCerrado FROM CambioEstado_Cerrado WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "Cerrado");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updatePendienteDeCierre(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE PendienteDeCierre SET nombre = ? WHERE idPendienteDeCierre = (SELECT idPendienteDeCierre FROM CambioEstado_PendienteDeCierre WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "PendienteDeCierre");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+
+    private void updateAutoConfirmado(Connection c, long idCambioEstado) throws SQLException {
+        String sql = "UPDATE AutoConfirmado SET nombre = ? WHERE idAutoConfirmado = (SELECT idAutoConfirmado FROM CambioEstado_AutoConfirmado WHERE idCambioEstado = ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "AutoConfirmado");
+            ps.setLong(2, idCambioEstado);
+            ps.executeUpdate();
+        }
+    }
+}
