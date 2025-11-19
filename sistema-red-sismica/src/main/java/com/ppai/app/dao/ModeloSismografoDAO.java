@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ppai.app.datos.DatabaseConnection;
-import com.ppai.app.entidad.Fabricante;
 import com.ppai.app.entidad.ModeloSismografo;
 
 public class ModeloSismografoDAO {
