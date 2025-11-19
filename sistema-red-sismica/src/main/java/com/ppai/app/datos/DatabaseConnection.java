@@ -283,9 +283,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS AutoDetectado (
                 idAutoDetectado INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idAutoDetectado),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idAutoDetectado)
             );
             """);
 
@@ -293,9 +291,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS BloqueadoEnRevision (
                 idBloqueadoEnRevision INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idBloqueadoEnRevision),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idBloqueadoEnRevision)
             );
             """);
 
@@ -303,9 +299,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS Rechazado (
                 idRechazado INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idRechazado),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idRechazado)
             );
             """);
 
@@ -313,9 +307,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS Derivado (
                 idDerivado INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idDerivado),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idDerivado)
             );
             """);
 
@@ -323,9 +315,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS ConfirmadoPorPersonal (
                 idConfirmadoPorPersonal INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idConfirmadoPorPersonal),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idConfirmadoPorPersonal)
             );
             """);
 
@@ -333,9 +323,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS PendienteDeRevision (
                 idPendienteDeRevision INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idPendienteDeRevision),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idPendienteDeRevision)
             );
             """);
 
@@ -343,9 +331,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS SinRevision (
                 idSinRevision INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idSinRevision),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idSinRevision)
             );
             """);
 
@@ -353,9 +339,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS Cerrado (
                 idCerrado INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idCerrado),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idCerrado)
             );
             """);
 
@@ -363,9 +347,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS PendienteDeCierre (
                 idPendienteDeCierre INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idPendienteDeCierre),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idPendienteDeCierre)
             );
             """);
 
@@ -373,9 +355,7 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS AutoConfirmado (
                 idAutoConfirmado INTEGER,
                 nombre TEXT,
-                idEventoSismico INTEGER,
-                PRIMARY KEY (idAutoConfirmado),
-                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
+                PRIMARY KEY (idAutoConfirmado)
             );
             """);
 
@@ -576,39 +556,126 @@ public class DatabaseConnection {
                 (2, NULL, NULL, -31.5375, -68.5364, 'Estación San Juan', NULL)
             """);
 
-            // Sismografo (1 equipo disponible vinculado a estación 1)
+            // Sismografo (3 equipos para los 3 eventos)
             stmt.executeUpdate("""
                 INSERT OR IGNORE INTO Sismografo (identificadorSismografo, fechaAdquisicion, nroSerie, idEstadoSismografo, idEstacionSismologica) VALUES
-                (1, '2024-11-02 00:00:00', 1523, 1, 1)
+                (1, '2024-11-02 00:00:00', 1523, 3, 1),
+                (2, '2024-11-03 00:00:00', 1524, 3, 1),
+                (3, '2024-11-04 00:00:00', 1525, 3, 2)
             """);
 
-            // SerieTemporal (2 series sin evento asociado, idEventoSismico NULL) frecuenciaMuestreo de ejemplo
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO AutoDetectado (idAutoDetectado, nombre) VALUES
+                (1, 'AutoDetectado'),
+                (2, 'AutoDetectado'),
+                (3, 'AutoDetectado')
+            """);
+
+            // EventoSismico (3 eventos: 1 AutoDetectado, 1 BloqueadoEnRevision, 1 ConfirmadoPorPersonal)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO EventoSismico (idEventoSismico, fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocntro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, magnitudRichter, idOrigenDeGeneracion, idAlcanceSismo, idEstadoActual, nombreEstadoActual, idEmpleado) VALUES
+                (1, NULL, '2025-02-21 19:05:41', '-31.4201', '-31.4201', '-64.1888', '-64.1888', 4.3, 2, 4, 1, 2, 1, 'AutoDetectado', 1),
+                (2, NULL, '2025-03-15 14:30:20', '-31.5375', '-31.5375', '-68.5364', '-68.5364', 5.1, 3, 5, 2, 2, 2, 'AutoDetectado', 1),
+                (3, NULL, '2025-04-10 08:15:10', '-32.1234', '-32.1234', '-65.4321', '-65.4321', 3.8, 1, 3, 1, 1, 3, 'AutoDetectado', 1)
+            """);
+
+            // SerieTemporal (9 series: 3 por cada evento)
             stmt.executeUpdate("""
                 INSERT OR IGNORE INTO SerieTemporal (idSerieTemporal, condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, idEstadoSerieTemporal, idEventoSismico, idSismografo) VALUES
-                (1, 'umbral alto', '2025-02-21 19:05:41', '50.0', 1, NULL, 1),
-                (2, 'umbral bajo', '2025-02-21 19:10:41', '25.0', 2, NULL, 1)
+                -- Series del Evento 1
+                (1, 'umbral alto', '2025-02-21 19:05:41', '50.0', 1, 1, 1),
+                (2, 'umbral medio', '2025-02-21 19:05:42', '50.0', 1, 1, 1),
+                (3, 'umbral bajo', '2025-02-21 19:05:43', '50.0', 2, 1, 1),
+                -- Series del Evento 2
+                (4, 'umbral alto', '2025-03-15 14:30:20', '60.0', 1, 2, 2),
+                (5, 'umbral medio', '2025-03-15 14:30:21', '60.0', 1, 2, 2),
+                (6, 'umbral bajo', '2025-03-15 14:30:22', '60.0', 1, 2, 2),
+                -- Series del Evento 3
+                (7, 'umbral alto', '2025-04-10 08:15:10', '40.0', 1, 3, 3),
+                (8, 'umbral medio', '2025-04-10 08:15:11', '40.0', 2, 3, 3),
+                (9, 'umbral bajo', '2025-04-10 08:15:12', '40.0', 1, 3, 3)
             """);
 
-            // MuestraSismica (2 muestras por serie = 4 total)
+            // MuestraSismica (27 muestras: 3 por cada serie)
             stmt.executeUpdate("""
                 INSERT OR IGNORE INTO MuestraSismica (idMuestraSismica, fechaHoraMuestraSismica, idSerieTemporal) VALUES
-                (1, '2025-02-21 19:05:41', 1),
-                (2, '2025-02-21 19:10:41', 1),
-                (3, '2025-02-21 19:05:41', 2),
-                (4, '2025-02-21 19:10:41', 2)
+                -- Muestras de Serie 1
+                (1, '2025-02-21 19:05:41', 1), (2, '2025-02-21 19:05:46', 1), (3, '2025-02-21 19:05:51', 1),
+                -- Muestras de Serie 2
+                (4, '2025-02-21 19:05:42', 2), (5, '2025-02-21 19:05:47', 2), (6, '2025-02-21 19:05:52', 2),
+                -- Muestras de Serie 3
+                (7, '2025-02-21 19:05:43', 3), (8, '2025-02-21 19:05:48', 3), (9, '2025-02-21 19:05:53', 3),
+                -- Muestras de Serie 4
+                (10, '2025-03-15 14:30:20', 4), (11, '2025-03-15 14:30:25', 4), (12, '2025-03-15 14:30:30', 4),
+                -- Muestras de Serie 5
+                (13, '2025-03-15 14:30:21', 5), (14, '2025-03-15 14:30:26', 5), (15, '2025-03-15 14:30:31', 5),
+                -- Muestras de Serie 6
+                (16, '2025-03-15 14:30:22', 6), (17, '2025-03-15 14:30:27', 6), (18, '2025-03-15 14:30:32', 6),
+                -- Muestras de Serie 7
+                (19, '2025-04-10 08:15:10', 7), (20, '2025-04-10 08:15:15', 7), (21, '2025-04-10 08:15:20', 7),
+                -- Muestras de Serie 8
+                (22, '2025-04-10 08:15:11', 8), (23, '2025-04-10 08:15:16', 8), (24, '2025-04-10 08:15:21', 8),
+                -- Muestras de Serie 9
+                (25, '2025-04-10 08:15:12', 9), (26, '2025-04-10 08:15:17', 9), (27, '2025-04-10 08:15:22', 9)
             """);
 
-            // DetalleMuestraSismica (3 detalles por muestra: frecuencia, longitud, velocidad)
+            // DetalleMuestraSismica (81 detalles: 3 por cada muestra, uno de cada tipo)
             stmt.executeUpdate("""
                 INSERT OR IGNORE INTO DetalleMuestraSismica (idDetalleMuestraSismica, idTipoDeDato, valor, idMuestraSismica) VALUES
-                -- Muestra 1
+                -- Detalles de Muestra 1
                 (1, 1, 10.00, 1), (2, 2, 0.70, 1), (3, 3, 7.00, 1),
-                -- Muestra 2
+                -- Detalles de Muestra 2
                 (4, 1, 10.05, 2), (5, 2, 0.69, 2), (6, 3, 7.02, 2),
-                -- Muestra 3
+                -- Detalles de Muestra 3
                 (7, 1, 9.98, 3), (8, 2, 0.71, 3), (9, 3, 6.99, 3),
-                -- Muestra 4
-                (10, 1, 10.02, 4), (11, 2, 0.67, 4), (12, 3, 7.01, 4)
+                -- Detalles de Muestra 4
+                (10, 1, 10.10, 4), (11, 2, 0.68, 4), (12, 3, 7.05, 4),
+                -- Detalles de Muestra 5
+                (13, 1, 10.02, 5), (14, 2, 0.72, 5), (15, 3, 7.01, 5),
+                -- Detalles de Muestra 6
+                (16, 1, 9.95, 6), (17, 2, 0.73, 6), (18, 3, 6.98, 6),
+                -- Detalles de Muestra 7
+                (19, 1, 10.08, 7), (20, 2, 0.67, 7), (21, 3, 7.03, 7),
+                -- Detalles de Muestra 8
+                (22, 1, 10.12, 8), (23, 2, 0.74, 8), (24, 3, 7.06, 8),
+                -- Detalles de Muestra 9
+                (25, 1, 9.92, 9), (26, 2, 0.75, 9), (27, 3, 6.96, 9),
+                -- Detalles de Muestra 10
+                (28, 1, 11.00, 10), (29, 2, 0.80, 10), (30, 3, 7.50, 10),
+                -- Detalles de Muestra 11
+                (31, 1, 11.05, 11), (32, 2, 0.79, 11), (33, 3, 7.52, 11),
+                -- Detalles de Muestra 12
+                (34, 1, 10.98, 12), (35, 2, 0.81, 12), (36, 3, 7.49, 12),
+                -- Detalles de Muestra 13
+                (37, 1, 11.10, 13), (38, 2, 0.78, 13), (39, 3, 7.55, 13),
+                -- Detalles de Muestra 14
+                (40, 1, 11.02, 14), (41, 2, 0.82, 14), (42, 3, 7.51, 14),
+                -- Detalles de Muestra 15
+                (43, 1, 10.95, 15), (44, 2, 0.83, 15), (45, 3, 7.48, 15),
+                -- Detalles de Muestra 16
+                (46, 1, 11.08, 16), (47, 2, 0.77, 16), (48, 3, 7.53, 16),
+                -- Detalles de Muestra 17
+                (49, 1, 11.12, 17), (50, 2, 0.84, 17), (51, 3, 7.56, 17),
+                -- Detalles de Muestra 18
+                (52, 1, 10.92, 18), (53, 2, 0.85, 18), (54, 3, 7.46, 18),
+                -- Detalles de Muestra 19
+                (55, 1, 9.50, 19), (56, 2, 0.65, 19), (57, 3, 6.80, 19),
+                -- Detalles de Muestra 20
+                (58, 1, 9.55, 20), (59, 2, 0.64, 20), (60, 3, 6.82, 20),
+                -- Detalles de Muestra 21
+                (61, 1, 9.48, 21), (62, 2, 0.66, 21), (63, 3, 6.79, 21),
+                -- Detalles de Muestra 22
+                (64, 1, 9.60, 22), (65, 2, 0.63, 22), (66, 3, 6.85, 22),
+                -- Detalles de Muestra 23
+                (67, 1, 9.52, 23), (68, 2, 0.67, 23), (69, 3, 6.81, 23),
+                -- Detalles de Muestra 24
+                (70, 1, 9.45, 24), (71, 2, 0.68, 24), (72, 3, 6.78, 24),
+                -- Detalles de Muestra 25
+                (73, 1, 9.58, 25), (74, 2, 0.62, 25), (75, 3, 6.83, 25),
+                -- Detalles de Muestra 26
+                (76, 1, 9.62, 26), (77, 2, 0.69, 26), (78, 3, 6.86, 26),
+                -- Detalles de Muestra 27
+                (79, 1, 9.42, 27), (80, 2, 0.70, 27), (81, 3, 6.76, 27)
             """);
 
             System.out.println("Datos iniciales insertados correctamente (tablas llenas según requerimientos). ");
