@@ -22,12 +22,24 @@ public class CambioEstadoDAO {
     public void insert(CambioEstado ce) throws SQLException {
         Connection c = DatabaseConnection.getConnection();
         try {
-            c.setAutoCommit(false); // Transacción para garantizar atomicidad
+            c.setAutoCommit(false);
+
+            String nombreEstado = ce.getEstado() != null ? ce.getEstado().getNombreEstado() : null;
+
+            // Validar datos obligatorios
+            if (ce.getFechaHoraInicio() == null) {
+                throw new IllegalArgumentException("fechaHoraInicio no puede ser nulo");
+            }
+            if (ce.getIdEventoSismico() <= 0) {
+                throw new IllegalArgumentException("idEventoSismico no puede ser nulo o inválido");
+            }
+            if (nombreEstado == null) {
+                throw new IllegalArgumentException("nombreEstado no puede ser nulo");
+            }
 
             // 1. Insertar en CambioEstado
             String sql = "INSERT INTO CambioEstado (fechaHoraInicio, idEventoSismico, fechaHoraFin, idEmpleado, nombreEstado) VALUES (?, ?, ?, ?, ?)";
             long idCambioEstado;
-            String nombreEstado = ce.getEstado() != null ? ce.getEstado().getNombreEstado() : null;
 
             try (PreparedStatement ps = c.prepareStatement(sql)) {
                 ps.setString(1, format(ce.getFechaHoraInicio()));
@@ -53,18 +65,26 @@ public class CambioEstadoDAO {
                 }
             }
 
-            // 2. Insertar estado concreto y 3. Crear relación
-            if (nombreEstado != null) {
-                insertEstadoConcreto(c, idCambioEstado, nombreEstado);
-            }
+            // 2. Insertar estado concreto y 3. Crear relación (mantener conexión abierta)
+            insertEstadoConcreto(c, idCambioEstado, nombreEstado);
 
             c.commit();
-        } catch (SQLException e) {
-            c.rollback();
-            throw e;
+            System.out.println("✓ CambioEstado insertado: " + nombreEstado + " con ID: " + idCambioEstado);
+        } catch (SQLException | IllegalArgumentException e) {
+            try {
+                c.rollback();
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error durante rollback: " + rollbackEx.getMessage());
+            }
+            System.err.println("✗ Error al insertar CambioEstado: " + e.getMessage());
+            throw e instanceof SQLException ? (SQLException) e : new SQLException(e);
         } finally {
-            c.setAutoCommit(true);
-            c.close();
+            try {
+                c.setAutoCommit(true);
+                c.close();
+            } catch (SQLException e) {
+                System.err.println("Error cerrando conexión: " + e.getMessage());
+            }
         }
     }
 
@@ -393,12 +413,22 @@ public class CambioEstadoDAO {
             }
 
             c.commit();
+            System.out.println("✓ CambioEstado actualizado: " + nombreEstado + " con ID: " + ce.getIdCambioEstado());
         } catch (SQLException e) {
-            c.rollback();
+            try {
+                c.rollback();
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error durante rollback: " + rollbackEx.getMessage());
+            }
+            System.err.println("✗ Error al actualizar CambioEstado: " + e.getMessage());
             throw e;
         } finally {
-            c.setAutoCommit(true);
-            c.close();
+            try {
+                c.setAutoCommit(true);
+                c.close();
+            } catch (SQLException e) {
+                System.err.println("Error cerrando conexión: " + e.getMessage());
+            }
         }
     }
 
