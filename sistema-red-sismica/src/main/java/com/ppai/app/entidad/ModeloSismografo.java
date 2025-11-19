@@ -6,7 +6,6 @@ public class ModeloSismografo {
     private long idModeloSismografo; 
     private String caracteristicas;
     private String nombreModelo;
-    private Fabricante fabricante;
 
     // Métodos Getter y Setter
     public long getIdModeloSismografo(){
@@ -18,9 +17,6 @@ public class ModeloSismografo {
     public String getNombreModelo(){
         return this.nombreModelo;
     }
-    public Fabricante getFabricante(){
-        return this.fabricante;
-    }
     public void setIdModeloSismografo(long idModeloSismografo) {
         this.idModeloSismografo = idModeloSismografo;
     }
@@ -30,9 +26,4 @@ public class ModeloSismografo {
     public void setNombre(String nombreModelo){
         this.nombreModelo = nombreModelo;
     }
-    public void setFabricante(Fabricante fabricante){
-        this.fabricante = fabricante;
-    }
-
-
 }

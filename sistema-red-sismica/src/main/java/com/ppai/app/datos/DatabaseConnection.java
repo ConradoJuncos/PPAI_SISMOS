@@ -283,7 +283,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS AutoDetectado (
                 idAutoDetectado INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idAutoDetectado)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idAutoDetectado),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -291,7 +293,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS BloqueadoEnRevision (
                 idBloqueadoEnRevision INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idBloqueadoEnRevision)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idBloqueadoEnRevision),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -299,7 +303,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS Rechazado (
                 idRechazado INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idRechazado)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idRechazado),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -307,7 +313,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS Derivado (
                 idDerivado INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idDerivado)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idDerivado),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -315,7 +323,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS ConfirmadoPorPersonal (
                 idConfirmadoPorPersonal INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idConfirmadoPorPersonal)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idConfirmadoPorPersonal),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -323,7 +333,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS PendienteDeRevision (
                 idPendienteDeRevision INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idPendienteDeRevision)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idPendienteDeRevision),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -331,7 +343,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS SinRevision (
                 idSinRevision INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idSinRevision)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idSinRevision),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -339,7 +353,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS Cerrado (
                 idCerrado INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idCerrado)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idCerrado),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -347,7 +363,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS PendienteDeCierre (
                 idPendienteDeCierre INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idPendienteDeCierre)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idPendienteDeCierre),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 
@@ -355,7 +373,9 @@ public class DatabaseConnection {
                 CREATE TABLE IF NOT EXISTS AutoConfirmado (
                 idAutoConfirmado INTEGER,
                 nombre TEXT,
-                PRIMARY KEY (idAutoConfirmado)
+                idEventoSismico INTEGER,
+                PRIMARY KEY (idAutoConfirmado),
+                FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico)
             );
             """);
 

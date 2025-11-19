@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class AutoDetectado extends Estado {
-    public AutoDetectado(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+    public AutoDetectado(){
         super("AutoDetectado", "EventoSismico");
     }
 

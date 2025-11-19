@@ -7,7 +7,7 @@ public class SinRevision extends Estado {
     // Hereda todos los métodos y atributos de la clase abstracta Estado
 
     // Método constructor
-    public SinRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+    public SinRevision(){
 
         super("SinRevision", "EventoSismico");
     }

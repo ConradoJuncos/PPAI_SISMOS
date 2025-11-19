@@ -7,7 +7,7 @@ public class PendienteDeRevision extends Estado {
     // Hereda todos los métodos y atributos de la clase abstracta Estado
 
     // Método constructor
-    public PendienteDeRevision(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+    public PendienteDeRevision(){
 
         super("PendienteDeRevision", "EveentoSismico");
     }

@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ppai.app.dao.CambioEstadoDAO;
+import com.ppai.app.dao.EventoSismicoDAO;
 import com.ppai.app.entidad.CambioEstado;
 import com.ppai.app.entidad.EventoSismico;
 import com.ppai.app.entidad.Sismografo;
