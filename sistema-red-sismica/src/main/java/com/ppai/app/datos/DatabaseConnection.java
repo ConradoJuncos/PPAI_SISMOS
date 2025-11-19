@@ -570,6 +570,20 @@ public class DatabaseConnection {
                 (3, NULL, '2025-04-10 08:15:10', '-32.1234', '-32.1234', '-65.4321', '-65.4321', 3.8, 1, 3, 1, 1, 3, 'AutoDetectado', NULL)
             """);
 
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO CambioEstado (idCambioEstado, fechaHoraInicio, idEventoSismico, fechaHoraFin, idEmpleado, nombreEstado) VALUES
+                (1, '2025-02-21 19:05:41.51351', 1, NULL, NULL, 'AutoDetectado'),
+                (2, '2025-03-15 14:30:20.78465', 2, NULL, NULL, 'AutoDetectado'),
+                (3, '2025-04-10 08:15:10.98253', 3, NULL, NULL, 'AutoDetectado')
+            """);
+
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO CambioEstado_AutoDetectado (idCambioEstado, idAutoDetectado) VALUES
+                (1, 1),
+                (2, 2),
+                (3, 3)
+            """);
+
             // SerieTemporal (9 series: 3 por cada evento)
             stmt.executeUpdate("""
                 INSERT OR IGNORE INTO SerieTemporal (idSerieTemporal, condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, idEstadoSerieTemporal, idEventoSismico, idSismografo) VALUES
