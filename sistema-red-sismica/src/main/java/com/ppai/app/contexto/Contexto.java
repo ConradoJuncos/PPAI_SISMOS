@@ -6,16 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ppai.app.dao.DetalleMuestraSismicaDAO;
-import com.ppai.app.dao.EmpleadoDAO;
-import com.ppai.app.dao.EstacionSismologicaDAO;
-import com.ppai.app.dao.EstadoDAO;
-import com.ppai.app.dao.EventoSismicoDAO;
-import com.ppai.app.dao.MuestraSismicaDAO;
-import com.ppai.app.dao.SerieTemporalDAO;
-import com.ppai.app.dao.SismografoDAO;
-import com.ppai.app.dao.TipoDeDatoDAO;
-import com.ppai.app.dao.UsuarioDAO;
 import com.ppai.app.entidad.CambioEstado;
 import com.ppai.app.entidad.DetalleMuestraSismica;
 import com.ppai.app.entidad.Empleado;

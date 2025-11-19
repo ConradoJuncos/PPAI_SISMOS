@@ -94,7 +94,7 @@ public class DatabaseConnection {
         // BASE DE DATOS RED SISMICA
 
         tables.add("""
-                CREATE TABLE AlcanceSismo (
+                CREATE TABLE IF NOT EXISTS AlcanceSismo (
                     idAlcanceSismo INTEGER,
                     nombre TEXT,
                     descripcion TEXT,
@@ -103,7 +103,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE MagnitudRichter (
+                CREATE TABLE IF NOT EXISTS MagnitudRichter (
                     numero INTEGER,
                     descripcion TEXT,
                     PRIMARY KEY (numero)
@@ -111,7 +111,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE ClasificacionSismo (
+                CREATE TABLE IF NOT EXISTS ClasificacionSismo (
                 idClasificacionSismo INTEGER,
                 kmProfundidadDesde REAL,
                 kmProfundidadHasta REAL,
@@ -121,7 +121,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE OrigenDeGeneracion (
+                CREATE TABLE IF NOT EXISTS OrigenDeGeneracion (
                 idOrigenDeGeneracion INTEGER,
                 descripcion TEXT,
                 nombre TEXT,
@@ -130,7 +130,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE TipoDeDato (
+                CREATE TABLE IF NOT EXISTS TipoDeDato (
                 idTipoDeDato INTEGER,
                 denominacion TEXT,
                 nombreUnidadMedida TEXT,
@@ -140,7 +140,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE Empleado (
+                CREATE TABLE IF NOT EXISTS Empleado (
                 idEmpleado INTEGER,
                 apellido TEXT,
                 mail TEXT,
@@ -151,7 +151,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE Usuario (
+                CREATE TABLE IF NOT EXISTS Usuario (
                 idUsuario INTEGER,
                 contraseña TEXT,
                 nombreUsuario TEXT,
@@ -162,7 +162,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE EventoSismico (
+                CREATE TABLE IF NOT EXISTS EventoSismico (
                 idEventoSismico INTEGER,
                 fechaHoraFin TEXT,
                 fechaHoraOcurrencia TEXT,
@@ -188,7 +188,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE EstadoSerieTemporal (
+                CREATE TABLE IF NOT EXISTS EstadoSerieTemporal (
                 idEstadoSerieTemporal INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idEstadoSerieTemporal)
@@ -196,7 +196,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE SerieTemporal (
+                CREATE TABLE IF NOT EXISTS SerieTemporal (
                 idSerieTemporal INTEGER,
                 condicionAlarma TEXT,
                 fechaHoraRegistro TEXT,
@@ -207,12 +207,12 @@ public class DatabaseConnection {
                 PRIMARY KEY (idSerieTemporal),
                 FOREIGN KEY (idEstadoSerieTemporal) REFERENCES EstadoSerieTemporal(idEstadoSerieTemporal),
                 FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico),
-                FOREIGN KEY (idSismografo) REFERENCES Sismografo(idSismografo)
+                FOREIGN KEY (idSismografo) REFERENCES Sismografo(identificadorSismografo)
             );
             """);
 
         tables.add("""
-                CREATE TABLE MuestraSismica (
+                CREATE TABLE IF NOT EXISTS MuestraSismica (
                 idMuestraSismica INTEGER,
                 fechaHoraMuestraSismica TEXT,
                 idSerieTemporal INTEGER,
@@ -222,7 +222,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE DetalleMuestraSismica (
+                CREATE TABLE IF NOT EXISTS DetalleMuestraSismica (
                 idDetalleMuestraSismica INTEGER,
                 idTipoDeDato INTEGER,
                 valor REAL,
@@ -234,7 +234,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE EstacionSismologica (
+                CREATE TABLE IF NOT EXISTS EstacionSismologica (
                 idEstacionSismologica INTEGER,
                 documentoCertificacionAdq TEXT,
                 fechaSolicitudCertificacion TEXT,
@@ -247,7 +247,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE EstadoSismografo (
+                CREATE TABLE IF NOT EXISTS EstadoSismografo (
                 idEstadoSismografo INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idEstadoSismografo)
@@ -255,7 +255,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE Sismografo (
+                CREATE TABLE IF NOT EXISTS Sismografo (
                 identificadorSismografo INTEGER,
                 fechaAdquisicion TEXT,
                 nroSerie INTEGER,
@@ -268,7 +268,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstadoSismografo (
+                CREATE TABLE IF NOT EXISTS CambioEstadoSismografo (
                 fechaHoraInicio TEXT,
                 identificadorSismografo INTEGER,
                 fechaHoraFin TEXT,
@@ -280,7 +280,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE AutoDetectado (
+                CREATE TABLE IF NOT EXISTS AutoDetectado (
                 idAutoDetectado INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idAutoDetectado)
@@ -288,7 +288,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE BloqueadoEnRevision (
+                CREATE TABLE IF NOT EXISTS BloqueadoEnRevision (
                 idBloqueadoEnRevision INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idBloqueadoEnRevision)
@@ -296,7 +296,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE Rechazado (
+                CREATE TABLE IF NOT EXISTS Rechazado (
                 idRechazado INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idRechazado)
@@ -304,7 +304,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE Derivado (
+                CREATE TABLE IF NOT EXISTS Derivado (
                 idDerivado INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idDerivado)
@@ -312,7 +312,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE ConfirmadoPorPersonal (
+                CREATE TABLE IF NOT EXISTS ConfirmadoPorPersonal (
                 idConfirmadoPorPersonal INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idConfirmadoPorPersonal)
@@ -320,7 +320,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE PendienteDeRevision (
+                CREATE TABLE IF NOT EXISTS PendienteDeRevision (
                 idPendienteDeRevision INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idPendienteDeRevision)
@@ -328,7 +328,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE SinRevision (
+                CREATE TABLE IF NOT EXISTS SinRevision (
                 idSinRevision INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idSinRevision)
@@ -336,7 +336,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE Cerrado (
+                CREATE TABLE IF NOT EXISTS Cerrado (
                 idCerrado INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idCerrado)
@@ -344,7 +344,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE PendienteDeCierre (
+                CREATE TABLE IF NOT EXISTS PendienteDeCierre (
                 idPendienteDeCierre INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idPendienteDeCierre)
@@ -352,7 +352,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE AutoConfirmado (
+                CREATE TABLE IF NOT EXISTS AutoConfirmado (
                 idAutoConfirmado INTEGER,
                 nombre TEXT,
                 PRIMARY KEY (idAutoConfirmado)
@@ -360,7 +360,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado (
+                CREATE TABLE IF NOT EXISTS CambioEstado (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 fechaHoraFin TEXT,
@@ -373,7 +373,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_AutoDetectado (
+                CREATE TABLE IF NOT EXISTS CambioEstado_AutoDetectado (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idAutoDetectado INTEGER,
@@ -384,7 +384,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_BloqueadoEnRevision (
+                CREATE TABLE IF NOT EXISTS CambioEstado_BloqueadoEnRevision (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idBloqueadoEnRevision INTEGER,
@@ -395,7 +395,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_Derivado (
+                CREATE TABLE IF NOT EXISTS CambioEstado_Derivado (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idDerivado INTEGER,
@@ -406,7 +406,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_Rechazado (
+                CREATE TABLE IF NOT EXISTS CambioEstado_Rechazado (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idRechazado INTEGER,
@@ -417,7 +417,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_ConfirmadoPorPersonal (
+                CREATE TABLE IF NOT EXISTS CambioEstado_ConfirmadoPorPersonal (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idConfirmadoPorPersonal INTEGER,
@@ -428,7 +428,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_PendienteDeRevision (
+                CREATE TABLE IF NOT EXISTS CambioEstado_PendienteDeRevision (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idPendienteDeRevision INTEGER,
@@ -439,7 +439,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_Cerrado (
+                CREATE TABLE IF NOT EXISTS CambioEstado_Cerrado (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idCerrado INTEGER,
@@ -450,7 +450,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_PendienteDeCierre (
+                CREATE TABLE IF NOT EXISTS CambioEstado_PendienteDeCierre (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idPendienteDeCierre INTEGER,
@@ -461,7 +461,7 @@ public class DatabaseConnection {
             """);
 
         tables.add("""
-                CREATE TABLE CambioEstado_AutoConfirmado (
+                CREATE TABLE IF NOT EXISTS CambioEstado_AutoConfirmado (
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 idAutoConfirmado INTEGER,
@@ -480,9 +480,118 @@ public class DatabaseConnection {
 
     public static void insertSampleData(Connection conn) throws SQLException {
         try (Statement stmt = conn.createStatement()) {
+            // Inserciones en orden para respetar FK.
 
+            // AlcanceSismo (opcional, no prohibida)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO AlcanceSismo (idAlcanceSismo, nombre, descripcion) VALUES
+                (1, 'Local', 'Perceptible solo cerca del epicentro'),
+                (2, 'Regional', 'Percibido en una región amplia'),
+                (3, 'Instrumental', 'Registrado principalmente por instrumentos')
+            """);
 
-            System.out.println("Datos iniciales insertados correctamente (tablas llenas).");
+            // MagnitudRichter
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO MagnitudRichter (numero, descripcion) VALUES
+                (3, 'Menor: generalmente no se siente'),
+                (4, 'Ligero: se siente, daños menores'),
+                (5, 'Moderado: daños leves en estructuras débiles')
+            """);
+
+            // ClasificacionSismo
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO ClasificacionSismo (idClasificacionSismo, kmProfundidadDesde, kmProfundidadHasta, nombre) VALUES
+                (1, 0.0, 70.0, 'Superficial'),
+                (2, 70.1, 300.0, 'Intermedio'),
+                (3, 300.1, 700.0, 'Profundo')
+            """);
+
+            // OrigenDeGeneracion
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO OrigenDeGeneracion (idOrigenDeGeneracion, descripcion, nombre) VALUES
+                (1, 'Movimiento en zona de subducción entre placas', 'Sismo interplaca'),
+                (2, 'Movimiento en fallas dentro de una misma placa', 'Sismo cortical')
+            """);
+
+            // TipoDeDato (frecuencia, longitud, velocidad de onda)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO TipoDeDato (idTipoDeDato, denominacion, nombreUnidadMedida, valorUmbral) VALUES
+                (1, 'Frecuencia de Onda', 'Hz', 15.0),
+                (2, 'Longitud de Onda', 'km/ciclo', 1.5),
+                (3, 'Velocidad de Onda', 'km/s', 8.0)
+            """);
+
+            // Empleado (único registro)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO Empleado (idEmpleado, apellido, mail, nombre, telefono) VALUES
+                (1, 'Trump', 'laura.perez@ccrs.gob.ar', 'Donald', '+54 9 351 555-1001')
+            """);
+
+            // Usuario (único registro, FK a Empleado)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO Usuario (idUsuario, contraseña, nombreUsuario, idEmpleado) VALUES
+                (1, 'claveSegura123', 'POTUSDonaldTrump', 1)
+            """);
+
+            // EstadoSerieTemporal (Activo / Inactivo)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO EstadoSerieTemporal (idEstadoSerieTemporal, nombre) VALUES
+                (1, 'Activo'),
+                (2, 'Inactivo')
+            """);
+
+            // EstadoSismografo (Disponible, EnInstalacion, EnLinea, FueraDeServicio)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO EstadoSismografo (idEstadoSismografo, nombre) VALUES
+                (1, 'Disponible'),
+                (2, 'EnInstalacion'),
+                (3, 'EnLinea'),
+                (4, 'FueraDeServicio')
+            """);
+
+            // EstacionSismologica (muestras básicas)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO EstacionSismologica (idEstacionSismologica, documentoCertificacionAdq, fechaSolicitudCertificacion, latitud, longitud, nombre, nroCertificacionAdquisicion) VALUES
+                (1, NULL, NULL, -31.4201, -64.1888, 'Estación Córdoba', NULL),
+                (2, NULL, NULL, -31.5375, -68.5364, 'Estación San Juan', NULL)
+            """);
+
+            // Sismografo (1 equipo disponible vinculado a estación 1)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO Sismografo (identificadorSismografo, fechaAdquisicion, nroSerie, idEstadoSismografo, idEstacionSismologica) VALUES
+                (1, '2024-11-02 00:00:00', 1523, 1, 1)
+            """);
+
+            // SerieTemporal (2 series sin evento asociado, idEventoSismico NULL) frecuenciaMuestreo de ejemplo
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO SerieTemporal (idSerieTemporal, condicionAlarma, fechaHoraRegistro, frecuenciaMuestreo, idEstadoSerieTemporal, idEventoSismico, idSismografo) VALUES
+                (1, 'umbral alto', '2025-02-21 19:05:41', '50.0', 1, NULL, 1),
+                (2, 'umbral bajo', '2025-02-21 19:10:41', '25.0', 2, NULL, 1)
+            """);
+
+            // MuestraSismica (2 muestras por serie = 4 total)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO MuestraSismica (idMuestraSismica, fechaHoraMuestraSismica, idSerieTemporal) VALUES
+                (1, '2025-02-21 19:05:41', 1),
+                (2, '2025-02-21 19:10:41', 1),
+                (3, '2025-02-21 19:05:41', 2),
+                (4, '2025-02-21 19:10:41', 2)
+            """);
+
+            // DetalleMuestraSismica (3 detalles por muestra: frecuencia, longitud, velocidad)
+            stmt.executeUpdate("""
+                INSERT OR IGNORE INTO DetalleMuestraSismica (idDetalleMuestraSismica, idTipoDeDato, valor, idMuestraSismica) VALUES
+                -- Muestra 1
+                (1, 1, 10.00, 1), (2, 2, 0.70, 1), (3, 3, 7.00, 1),
+                -- Muestra 2
+                (4, 1, 10.05, 2), (5, 2, 0.69, 2), (6, 3, 7.02, 2),
+                -- Muestra 3
+                (7, 1, 9.98, 3), (8, 2, 0.71, 3), (9, 3, 6.99, 3),
+                -- Muestra 4
+                (10, 1, 10.02, 4), (11, 2, 0.67, 4), (12, 3, 7.01, 4)
+            """);
+
+            System.out.println("Datos iniciales insertados correctamente (tablas llenas según requerimientos). ");
         } catch (SQLException e) {
             System.err.println("Error insertando datos: " + e.getMessage());
             throw e;
