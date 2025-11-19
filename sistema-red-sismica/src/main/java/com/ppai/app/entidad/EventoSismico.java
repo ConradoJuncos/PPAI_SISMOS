@@ -87,15 +87,12 @@ public class EventoSismico {
     }
 
     public Boolean sonMisDatosPrincipales(String datosPrincipales){
-        if (datosPrincipales != null && datosPrincipales.equals(obtenerDatosPrincipales())){
-            return true;
-        }
-        return false;
+        return datosPrincipales != null && datosPrincipales.equals(obtenerDatosPrincipales());
     }
 
     // Bloquear por revisión el evento sismico
-    public void revisar(EventoSismico seleccionEventoSismico, LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
-        this.estadoActual.revisar(seleccionEventoSismico, this.cambiosEstado, fechaHoraActual, usuarioLogueado);
+    public void revisar(LocalDateTime fechaHoraActual, Usuario usuarioLogueado){
+        this.estadoActual.revisar(this, this.cambiosEstado, fechaHoraActual, usuarioLogueado);
     }
 
     // Obtener el Cambio de Estado (Historial de Estado) Actual del Evento

@@ -510,19 +510,8 @@ public class PantallaRevisionManual extends JFrame {
             options[0] // The button to be initially focused
         );
 
-        switch (respuesta) {
-            case 0:
-                gestor.confirmarEventoSismicoSeleccionado();
-                break;
-            case 1:
-                gestor.derivarAExpertoEventoSismicoSeleccionado();
-                break;
-            case 2:
-                gestor.rechazarEventoSismicoSeleccionado();
-                break;
-            default:
-                break;
-        }
+        gestor.tomarNuevoEstado(respuesta);
+
     }
 
     // Informa al usuario sobre el cambio de estado del evento sísmico

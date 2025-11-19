@@ -119,7 +119,7 @@ public class GestorRevisionManual {
     private void bloquearEventoSismicoSeleccionado() {
         this.fechaHoraActual = getFechaHoraActual();
         // no tiene que enviar el evento
-        this.seleccionEventoSismico.revisar(this.seleccionEventoSismico, this.fechaHoraActual, this.usuarioLogueado);
+        this.seleccionEventoSismico.revisar(this.fechaHoraActual, this.usuarioLogueado);
         obtenerYMostrarDatosEventoSeleccionado();
     }
 
@@ -261,6 +261,23 @@ public class GestorRevisionManual {
      */
     public void tomarRechazoModificacion() {
         pantalla.solicitarOpcAccionEvento();
+    }
+
+    public void tomarNuevoEstado(int nuevoEstado) {
+        switch(nuevoEstado) {
+            case 0:
+                confirmarEventoSismicoSeleccionado();
+                break;
+            case 1:
+                derivarAExpertoEventoSismicoSeleccionado();
+                break;
+            case 2:
+                rechazarEventoSismicoSeleccionado();
+                break;
+            default:
+                System.err.println("No es un estado válido");
+                break;
+        }
     }
 
     // Rechazar el evento sismico anteriormente seleccioando por el usuario
