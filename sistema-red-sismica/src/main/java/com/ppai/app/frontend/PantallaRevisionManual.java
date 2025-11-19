@@ -217,6 +217,17 @@ public class PantallaRevisionManual extends JFrame {
     public void mostrarEventosSismicosYSolicitarSeleccion(List<String> datosPrincipales) {
         modeloTabla.setRowCount(0);
 
+        if (datosPrincipales == null || datosPrincipales.isEmpty()) {
+            lblEstado.setText("⚠ No hay más eventos sísmicos autodetectados");
+            javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "No hay más eventos sísmicos autodetectados para revisar.",
+                "Sin Eventos Disponibles",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
         for (String datos : datosPrincipales) {
             String[] partes = datos.split(",");
             if (partes.length >= 5) {
@@ -502,18 +513,37 @@ public class PantallaRevisionManual extends JFrame {
         switch (respuesta) {
             case 0:
                 gestor.confirmarEventoSismicoSeleccionado();
-                lblEstado.setText("Modificación de datos sísmicos aceptada.");
                 break;
             case 1:
                 gestor.derivarAExpertoEventoSismicoSeleccionado();
-                lblEstado.setText("Modificación de datos sísmicos TODO seleccionada.");
                 break;
             case 2:
                 gestor.rechazarEventoSismicoSeleccionado();
-                lblEstado.setText("Evento sísmico rechazado.");
                 break;
             default:
                 break;
         }
+    }
+
+    // Informa al usuario sobre el cambio de estado del evento sísmico
+    public void informarCambioEstado(String nuevoEstado) {
+        lblEstado.setText("✓ Estado del evento sísmico actualizado: " + nuevoEstado);
+        javax.swing.JOptionPane.showMessageDialog(
+            this,
+            "El estado del evento sísmico ha sido cambiado a: " + nuevoEstado,
+            "Estado Actualizado",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    // Informa al usuario que el caso de uso ha finalizado correctamente
+    public void informarFinCasoDeUso() {
+        lblEstado.setText("✓ Fin de Ejecución del Caso de Uso");
+        javax.swing.JOptionPane.showMessageDialog(
+            this,
+            "Fin de Ejecución del Caso de Uso\n\nLos cambios han sido guardados exitosamente.",
+            "Caso de Uso Finalizado",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE
+        );
     }
 }

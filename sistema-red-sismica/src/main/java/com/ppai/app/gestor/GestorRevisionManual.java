@@ -269,8 +269,9 @@ public class GestorRevisionManual {
 
         this.fechaHoraActual = getFechaHoraActual();
 
-        // --> DELEGACION <--
         this.seleccionEventoSismico.rechazar(fechaHoraActual, usuarioLogueado);
+
+        pantalla.informarCambioEstado("Rechazado");
 
         this.finCU();
     }
@@ -281,8 +282,9 @@ public class GestorRevisionManual {
 
         this.fechaHoraActual = getFechaHoraActual();
 
-        // --> DELEGACION <--
         this.seleccionEventoSismico.confirmar(fechaHoraActual, usuarioLogueado);
+
+        pantalla.informarCambioEstado("ConfirmadoPorPersonal");
 
         this.finCU();
     }
@@ -293,8 +295,9 @@ public class GestorRevisionManual {
         
         this.fechaHoraActual = getFechaHoraActual();
 
-        // --> DELEGACION <--
         this.seleccionEventoSismico.derivar(fechaHoraActual, usuarioLogueado);
+
+        pantalla.informarCambioEstado("Derivado");
 
         this.finCU();
     }
@@ -327,6 +330,10 @@ public class GestorRevisionManual {
 
             // Persistir el evento sísmico actualizado con su nuevo estado
             eventoSismicoDAO.update(seleccionEventoSismico);
+
+            // Informar finalizacion de caso de uso
+            pantalla.informarFinCasoDeUso();
+
             System.out.println("✓ EventoSismico actualizado correctamente.");
 
             System.out.println("Caso de uso ejecutado y persistido correctamente.");
