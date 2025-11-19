@@ -11,24 +11,15 @@ public class DetalleMuestraSismica {
     public DetalleMuestraSismica(){}
 
     public boolean sosDenominacionTipoDeDatoVelocidadOnda() {
-        if (this.tipoDeDato.sosDenominacionVelocidadOnda()) {   
-            return true;
-        }
-        return false;
+        return this.tipoDeDato.sosDenominacionVelocidadOnda();
     }
 
     public boolean sosDenominacionTipoDeDatoFrecuenciaOnda() {
-        if (this.tipoDeDato.sosDenominacionFrecuenciaOnda()) {
-            return true;
-        }
-        return false;
+        return this.tipoDeDato.sosDenominacionFrecuenciaOnda();
     }
 
     public boolean sosDenominacionTipoDeDatoLongitudOnda() {
-        if (this.tipoDeDato.sosDenominacionLongitudOnda()) {
-            return true;
-        }
-        return false;
+        return this.tipoDeDato.sosDenominacionLongitudOnda();
     }
 
     // Métodos Getter y Setter

@@ -10,27 +10,15 @@ public class TipoDeDato {
 
     // Comportamiento
     public boolean sosDenominacionVelocidadOnda(){
-        if (this.denominacion.equals("Velocidad de onda")) {
-            return true;
-        }
-
-        return false;
+        return this.denominacion.equals("Velocidad de Onda");
     }
 
     public boolean sosDenominacionFrecuenciaOnda(){
-        if (this.denominacion.equals("Frecuencia de onda")) {
-            return true;
-        }
-
-        return false;
+        return this.denominacion.equals("Frecuencia de Onda");
     }
 
     public boolean sosDenominacionLongitudOnda() {
-        if (this.denominacion.equals("Longitud de onda")) {
-            return true;
-        }
-
-        return false;
+        return this.denominacion.equals("Longitud de Onda");
     }
 
 
