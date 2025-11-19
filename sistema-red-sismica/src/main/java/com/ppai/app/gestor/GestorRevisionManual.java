@@ -318,7 +318,7 @@ public class GestorRevisionManual {
                         cambioEstadoDAO.insert(cambio);
                         System.out.println("✓ CambioEstado persistido: " + cambio.getEstado().getNombreEstado() + " con ID: " + cambio.getIdCambioEstado());
 
-                        // Persistir la relación en EventoSismico_CambioEstado
+                        // Persistir la relación en CambioEstado
                         insertarRelacionEventoCambio(seleccionEventoSismico.getIdEventoSismico(), cambio.getIdCambioEstado());
                     }
                 }
@@ -342,13 +342,12 @@ public class GestorRevisionManual {
      * Inserta la relación entre EventoSismico y CambioEstado en la tabla intermedia.
      */
     private void insertarRelacionEventoCambio(long idEventoSismico, long idCambioEstado) throws Exception {
-        String sql = "INSERT INTO EventoSismico_CambioEstado (idEventoSismico, idCambioEstado) VALUES (?, ?)";
+        String sql = "INSERT INTO CambioEstado (idEventoSismico, idCambioEstado) VALUES (?, ?)";
         try (java.sql.Connection conn = com.ppai.app.datos.DatabaseConnection.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, idEventoSismico);
-            ps.setLong(2, idCambioEstado);
             ps.executeUpdate();
-            System.out.println("✓ Relación EventoSismico_CambioEstado persistida: [" + idEventoSismico + ", " + idCambioEstado + "]");
+            System.out.println("✓ Relación CambioEstado persistida: [" + idEventoSismico + ", " + idCambioEstado + "]");
         }
     }
 

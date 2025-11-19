@@ -54,7 +54,6 @@ public class DatabaseConnection {
         }
 
         // Eliminar tablas en orden inverso a la creación (para evitar conflictos de FK)
-        dropStatements.add("DROP TABLE IF EXISTS EventoSismico_CambioEstado;");
         dropStatements.add("DROP TABLE IF EXISTS MuestraSismica_DetalleMuestraSismica;");
         dropStatements.add("DROP TABLE IF EXISTS SerieTemporal_MuestraSismica;");
         dropStatements.add("DROP TABLE IF EXISTS DetalleMuestraSismica;");
@@ -361,12 +360,13 @@ public class DatabaseConnection {
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado (
+                idCambioEstado INTEGER,
                 fechaHoraInicio TEXT,
                 idEventoSismico INTEGER,
                 fechaHoraFin TEXT,
                 idEmpleado INTEGER,
                 nombreEstado TEXT,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado),
                 FOREIGN KEY (idEventoSismico) REFERENCES EventoSismico(idEventoSismico),
                 FOREIGN KEY (idEmpleado) REFERENCES Empleado(idEmpleado)
             );
@@ -374,99 +374,90 @@ public class DatabaseConnection {
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_AutoDetectado (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idAutoDetectado INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idAutoDetectado),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idAutoDetectado),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idAutoDetectado) REFERENCES AutoDetectado(idAutoDetectado)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_BloqueadoEnRevision (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idBloqueadoEnRevision INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idBloqueadoEnRevision),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idBloqueadoEnRevision),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idBloqueadoEnRevision) REFERENCES BloqueadoEnRevision(idBloqueadoEnRevision)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_Derivado (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idDerivado INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idDerivado),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idDerivado),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idDerivado) REFERENCES Derivado(idDerivado)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_Rechazado (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idRechazado INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idRechazado),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idRechazado),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idRechazado) REFERENCES Rechazado(idRechazado)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_ConfirmadoPorPersonal (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idConfirmadoPorPersonal INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idConfirmadoPorPersonal),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idConfirmadoPorPersonal),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idConfirmadoPorPersonal) REFERENCES ConfirmadoPorPersonal(idConfirmadoPorPersonal)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_PendienteDeRevision (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idPendienteDeRevision INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idPendienteDeRevision),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idPendienteDeRevision),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idPendienteDeRevision) REFERENCES PendienteDeRevision(idPendienteDeRevision)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_Cerrado (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idCerrado INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idCerrado),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idCerrado),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idCerrado) REFERENCES Cerrado(idCerrado)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_PendienteDeCierre (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idPendienteDeCierre INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idPendienteDeCierre),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idPendienteDeCierre),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idPendienteDeCierre) REFERENCES PendienteDeCierre(idPendienteDeCierre)
             );
             """);
 
         tables.add("""
                 CREATE TABLE IF NOT EXISTS CambioEstado_AutoConfirmado (
-                fechaHoraInicio TEXT,
-                idEventoSismico INTEGER,
+                idCambioEstado INTEGER,
                 idAutoConfirmado INTEGER,
-                PRIMARY KEY (fechaHoraInicio, idEventoSismico, idAutoConfirmado),
-                FOREIGN KEY (fechaHoraInicio, idEventoSismico) REFERENCES CambioEstado(fechaHoraInicio, idEventoSismico),
+                PRIMARY KEY (idCambioEstado, idAutoConfirmado),
+                FOREIGN KEY (idCambioEstado) REFERENCES CambioEstado(idCambioEstado),
                 FOREIGN KEY (idAutoConfirmado) REFERENCES AutoConfirmado(idAutoConfirmado)
             );
             """);
@@ -574,9 +565,9 @@ public class DatabaseConnection {
             // EventoSismico (3 eventos: 1 AutoDetectado, 1 BloqueadoEnRevision, 1 ConfirmadoPorPersonal)
             stmt.executeUpdate("""
                 INSERT OR IGNORE INTO EventoSismico (idEventoSismico, fechaHoraFin, fechaHoraOcurrencia, latitudEpicentro, latitudHipocntro, longitudEpicentro, longitudHipocentro, valorMagnitud, idClasificacionSismo, magnitudRichter, idOrigenDeGeneracion, idAlcanceSismo, idEstadoActual, nombreEstadoActual, idEmpleado) VALUES
-                (1, NULL, '2025-02-21 19:05:41', '-31.4201', '-31.4201', '-64.1888', '-64.1888', 4.3, 2, 4, 1, 2, 1, 'AutoDetectado', 1),
-                (2, NULL, '2025-03-15 14:30:20', '-31.5375', '-31.5375', '-68.5364', '-68.5364', 5.1, 3, 5, 2, 2, 2, 'AutoDetectado', 1),
-                (3, NULL, '2025-04-10 08:15:10', '-32.1234', '-32.1234', '-65.4321', '-65.4321', 3.8, 1, 3, 1, 1, 3, 'AutoDetectado', 1)
+                (1, NULL, '2025-02-21 19:05:41', '-31.4201', '-31.4201', '-64.1888', '-64.1888', 4.3, 2, 4, 1, 2, 1, 'AutoDetectado', NULL),
+                (2, NULL, '2025-03-15 14:30:20', '-31.5375', '-31.5375', '-68.5364', '-68.5364', 5.1, 3, 5, 2, 2, 2, 'AutoDetectado', NULL),
+                (3, NULL, '2025-04-10 08:15:10', '-32.1234', '-32.1234', '-65.4321', '-65.4321', 3.8, 1, 3, 1, 1, 3, 'AutoDetectado', NULL)
             """);
 
             // SerieTemporal (9 series: 3 por cada evento)
