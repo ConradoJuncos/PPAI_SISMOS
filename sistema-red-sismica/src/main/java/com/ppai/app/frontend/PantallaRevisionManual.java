@@ -528,11 +528,16 @@ public class PantallaRevisionManual extends JFrame {
     // Informa al usuario que el caso de uso ha finalizado correctamente
     public void informarFinCasoDeUso() {
         lblEstado.setText("✓ Fin de Ejecución del Caso de Uso");
-        javax.swing.JOptionPane.showMessageDialog(
+        int opcion = javax.swing.JOptionPane.showConfirmDialog(
             this,
-            "Fin de Ejecución del Caso de Uso\n\nLos cambios han sido guardados exitosamente.",
+            "Fin de Ejecución del Caso de Uso\n\nLos cambios han sido guardados exitosamente.\n¿Desea cerrar el programa?",
             "Caso de Uso Finalizado",
+            javax.swing.JOptionPane.YES_NO_OPTION,
             javax.swing.JOptionPane.INFORMATION_MESSAGE
         );
+
+        if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }
 }
