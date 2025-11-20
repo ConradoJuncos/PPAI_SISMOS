@@ -7,7 +7,7 @@ public class ConfirmadoPorPersonal extends Estado {
     // Método constructor
     public ConfirmadoPorPersonal(){
 
-        super("ConfirmadoPorPersonal", "EventoSismico");
+        super("ConfirmadoPorPersonal");
     }
     
 }

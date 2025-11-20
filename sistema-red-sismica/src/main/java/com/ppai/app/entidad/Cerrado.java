@@ -6,7 +6,7 @@ public class Cerrado extends Estado {
 
     // Método constructor
     public Cerrado(){
-        super("Cerrado", "EventoSismico");
+        super("Cerrado");
         
     }
     

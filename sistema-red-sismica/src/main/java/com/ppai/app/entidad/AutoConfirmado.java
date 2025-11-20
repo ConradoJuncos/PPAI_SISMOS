@@ -6,7 +6,7 @@ public class AutoConfirmado extends Estado {
 
     // Método constructor
     public AutoConfirmado(){
-        super("AutoConfirmado", "EventoSismico");
+        super("AutoConfirmado");
     }
     
 }

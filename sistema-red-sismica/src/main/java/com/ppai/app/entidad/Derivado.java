@@ -7,7 +7,7 @@ public class Derivado extends Estado {
     // Método constructor
     public Derivado(){
 
-        super("Derivado", "EventoSismico");
+        super("Derivado");
     }
     
 }

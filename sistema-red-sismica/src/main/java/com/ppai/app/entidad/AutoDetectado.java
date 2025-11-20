@@ -5,12 +5,12 @@ import java.util.ArrayList;
 
 public class AutoDetectado extends Estado {
     public AutoDetectado(){
-        super("AutoDetectado", "EventoSismico");
+        super("AutoDetectado");
     }
 
     @Override
     public void revisar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        BloqueadoEnRevision estadoCreadoBloqueadoEnRevision = (BloqueadoEnRevision) crearProximoEstado();
+        BloqueadoEnRevision estadoCreadoBloqueadoEnRevision = (BloqueadoEnRevision) crearProximoEstado("BloqueadoEnRevision");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
         registrarCambioDeEstado(cambiosEstado, fechaHoraActual, empleado, estadoCreadoBloqueadoEnRevision);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoBloqueadoEnRevision);
@@ -18,7 +18,7 @@ public class AutoDetectado extends Estado {
 
     // Sobrescribiendo el método de proximo estado
     @Override
-    public Estado crearProximoEstado(){
+    public Estado crearProximoEstado(String nombreEstado){
         // Creando el proximo estado del evento sismico AutoDetectado --> BloqueadoEnRevision
         return(new BloqueadoEnRevision());
     }

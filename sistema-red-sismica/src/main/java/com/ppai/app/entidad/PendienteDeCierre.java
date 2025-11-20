@@ -7,7 +7,7 @@ public class PendienteDeCierre extends Estado {
     // Método constructor
     public PendienteDeCierre(){
 
-        super("PendienteDeCierre", "EventoSismico");
+        super("PendienteDeCierre");
     }
     
 }

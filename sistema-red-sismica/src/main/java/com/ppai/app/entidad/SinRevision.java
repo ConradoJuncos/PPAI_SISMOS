@@ -7,7 +7,7 @@ public class SinRevision extends Estado {
     // Método constructor
     public SinRevision(){
 
-        super("SinRevision", "EventoSismico");
+        super("SinRevision");
     }
     
 }

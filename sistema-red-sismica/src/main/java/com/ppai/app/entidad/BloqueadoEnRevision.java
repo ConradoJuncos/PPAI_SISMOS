@@ -11,12 +11,12 @@ public class BloqueadoEnRevision extends Estado {
     public BloqueadoEnRevision() {
 
         // Lamando al constructor de la clase padre Estado
-        super("BloqueadoEnRevision", "EventoSismico");
+        super("BloqueadoEnRevision");
     }
 
     @Override
     public void rechazar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        Rechazado estadoCreadoRechazado = new Rechazado();
+        Rechazado estadoCreadoRechazado = (Rechazado) crearProximoEstado("Rechazado");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
         registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoRechazado);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoRechazado);
@@ -24,7 +24,7 @@ public class BloqueadoEnRevision extends Estado {
 
     @Override
     public void confirmar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        ConfirmadoPorPersonal estadoCreadoConfirmadoPorPersonal = new ConfirmadoPorPersonal();
+        ConfirmadoPorPersonal estadoCreadoConfirmadoPorPersonal = (ConfirmadoPorPersonal) crearProximoEstado("ConfirmadoPorPersonal");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
         registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoConfirmadoPorPersonal);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoConfirmadoPorPersonal);
@@ -32,10 +32,20 @@ public class BloqueadoEnRevision extends Estado {
 
     @Override
     public void derivar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
-        Derivado estadoCreadoDerivado = new Derivado();
+        Derivado estadoCreadoDerivado = (Derivado) crearProximoEstado("Derivado");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
         registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoDerivado);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoDerivado);
+    }
+
+    @Override
+    public Estado crearProximoEstado(String nombreEstado) {
+        return switch (nombreEstado) {
+            case "Rechazado" -> new Rechazado();
+            case "ConfirmadoPorPersonal" -> new ConfirmadoPorPersonal();
+            case "Derivado" -> new Derivado();
+            default -> throw new IllegalArgumentException("Estado no válido: " + nombreEstado);
+        };
     }
 
     public void registrarCambioDeEstado(ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Empleado empleado, Estado nuevoEstado) {
@@ -46,11 +56,6 @@ public class BloqueadoEnRevision extends Estado {
         }
         CambioEstado nuevoCambioEstado = new CambioEstado(fechaHoraActual, nuevoEstado, empleado);
         cambiosEstado.add(nuevoCambioEstado);
-    }
-
-    @Override
-    public Empleado obtenerResponsableDeInspeccion(Usuario usuarioLogueado) {
-        return usuarioLogueado.getEmpleado();
     }
 
 }

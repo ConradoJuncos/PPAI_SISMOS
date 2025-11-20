@@ -8,16 +8,14 @@ public abstract class Estado {
 
     // Atributos
     private String nombreEstado;
-    private String ambito;
 
     // Método constructor con parámetros
-    public Estado(String nombreEstado, String ambito){
+    public Estado(String nombreEstado){
         this.nombreEstado = nombreEstado;
-        this.ambito = ambito;
     }
 
     // Comportamiento
-    public Estado crearProximoEstado(){
+    public Estado crearProximoEstado(String nombreEstado){
         return null;
     }
 
@@ -35,13 +33,7 @@ public abstract class Estado {
 
     // Consultar si el estado es auto detectado
     public boolean sosAutoDetectado() {
-
-        if (this.nombreEstado == "AutoDetectado"){
-            // Es auto detectado
-            return true;
-        }
-        // No es auto detectado
-        return false;
+        return this.nombreEstado == "AutoDetectado";
     }
 
     public void revisar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
@@ -56,14 +48,8 @@ public abstract class Estado {
 
 
     // Métodos Getter y Setter
-    public String getAmbito(){
-        return this.ambito;
-    }
     public String getNombreEstado(){
         return this.nombreEstado;
-    }
-    public void setAmbito(String ambito) {
-        this.ambito = ambito;
     }
     public void setNombreEstado(String nombreEstado){
         this.nombreEstado = nombreEstado;

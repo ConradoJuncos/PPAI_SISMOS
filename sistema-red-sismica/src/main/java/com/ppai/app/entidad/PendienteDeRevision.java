@@ -9,7 +9,7 @@ public class PendienteDeRevision extends Estado {
     // Método constructor
     public PendienteDeRevision(){
 
-        super("PendienteDeRevision", "EveentoSismico");
+        super("PendienteDeRevision");
     }
     
 }
