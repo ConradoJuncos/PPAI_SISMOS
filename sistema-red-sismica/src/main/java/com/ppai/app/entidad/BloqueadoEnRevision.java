@@ -15,26 +15,26 @@ public class BloqueadoEnRevision extends Estado {
     }
 
     @Override
-    public void rechazar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+    public void rechazar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         Rechazado estadoCreadoRechazado = (Rechazado) crearProximoEstado("Rechazado");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
-        registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoRechazado);
+        registrarCambioDeEstado(cambiosEstado, fechaHoraActual, empleado, estadoCreadoRechazado);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoRechazado);
     }
 
     @Override
-    public void confirmar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+    public void confirmar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         ConfirmadoPorPersonal estadoCreadoConfirmadoPorPersonal = (ConfirmadoPorPersonal) crearProximoEstado("ConfirmadoPorPersonal");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
-        registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoConfirmadoPorPersonal);
+        registrarCambioDeEstado(cambiosEstado, fechaHoraActual, empleado, estadoCreadoConfirmadoPorPersonal);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoConfirmadoPorPersonal);
     }
 
     @Override
-    public void derivar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambioEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
+    public void derivar(EventoSismico eventoSismicoSeleccionado, ArrayList<CambioEstado> cambiosEstado, LocalDateTime fechaHoraActual, Usuario usuarioLogueado) {
         Derivado estadoCreadoDerivado = (Derivado) crearProximoEstado("Derivado");
         Empleado empleado = obtenerResponsableDeInspeccion(usuarioLogueado);
-        registrarCambioDeEstado(cambioEstado, fechaHoraActual, empleado, estadoCreadoDerivado);
+        registrarCambioDeEstado(cambiosEstado, fechaHoraActual, empleado, estadoCreadoDerivado);
         eventoSismicoSeleccionado.setEstadoActual(estadoCreadoDerivado);
     }
 
